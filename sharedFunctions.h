@@ -17,3 +17,5 @@ char * removeFunction(int movieId);
 char * RespString(char * resp);
 
 char * RespInt(int resp);
+
+void connect(int bool_server);

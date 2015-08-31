@@ -5,6 +5,11 @@
 Datagram * data = malloc(sizeof(Data));
 Connection * sender = malloc(sizeof(Connection));
 
+void connect(int bool_server){
+	initChannel(0);
+	printf("Cliente conectado")
+}
+
 char * getMovieList(){
 	data->opcode=CONSULTAR_CARTELERA;
 	sender->pid=getpid();
