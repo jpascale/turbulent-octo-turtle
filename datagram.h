@@ -12,8 +12,7 @@ typedef enum {
 } route;
 
 struct Connection{
-	int pid;
-	route route;
+	int pid_sender;
 };
 
 struct Person{
