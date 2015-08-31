@@ -1,4 +1,4 @@
-#include "client.h"
+#include "sharedFunctions.h"
 #include "datagram.h"
 #include "communication.h"
 

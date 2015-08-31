@@ -1,19 +1,19 @@
-#include "server.h"
-#include "client.h"
+#include "sharedFunctions.h"
 #include "communication.h"
 #include "datagram.h"
 
 void main(){
 	
-	printf("Levantando server");
+	initChannel(1);
+	printf("Server conectado");
 
-	Datagram * data = malloc(sizeof(Data));
+	Datagram * data = malloc(sizeof(Datagram));
 	Connection * sender = malloc(sizeof(Connection));
 	
-	while(1){
-		receiveData(sender, sizeof(Datagram), data);
-		ProcessData(sender, data);
-	}
+//	while(1){
+//		receiveData(sender, sizeof(Datagram), data);
+//		ProcessData(sender, data);
+//	}
 }
 
 void ProcessData(Connection * sender, Datagram * data){

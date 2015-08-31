@@ -1,6 +1,6 @@
 #include "communication.h"
 #include "datagram.h"
-#include "common.h"
+//#include <common.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -15,10 +15,48 @@
 typedef enum { false, true } bool;
 
 void fatal(char *s);
-char *getmem(void);
+char * getmem(int bool_cs);
 void initmutex(void);
-void enter(void);
-void leave(void);
+void enter(int bool_cs);
+void leave(int bool_cs);
+
+
+static int bool_server;
+char *msg;
+static char buf[SIZE];
+int n;
+
+void initChannel(int b_server){
+	bool_server=b_server;
+	msg = getmem();
+	initmutex();
+	if(b_server)
+			memset(msg, 0, SIZE);
+
+}
+
+void sendData(Connection * connection, int size, void * params){
+		
+		enter(!bool_server);
+
+		msg=getmem(!bool_server);
+		sprintf(msg, "%.*s", size, params);
+		printf("Mando algo");
+	
+		leave(!bool_server);
+}
+
+void receiveData(Connection * sender, int size, void * buffer){
+
+		enter(bool_server);
+
+		msg=getmem(bool_server);
+		sprintf(msg, "%.*s", size, buffer);
+		printf("Recibo algo, %s",buffer);
+	
+		leave(bool_server);
+
+}
 
 void
 fatal(char *s)
@@ -28,12 +66,17 @@ fatal(char *s)
 }
 
 char *
-getmem(void)
+getmem(int bool_cs)
 {
 	int fd;
 	char *mem;
 	
-	if ( (fd = shm_open("/message", O_RDWR|O_CREAT, 0666)) == -1 )
+	char * name[16];
+	strcpy(name,"/message");
+	char var=bool_cs+'0';
+	strcat(name,&var);
+
+	if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 )
 		fatal("sh_open");
 	ftruncate(fd, SIZE);
 	if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
@@ -42,87 +85,36 @@ getmem(void)
 	return mem;
 }
 
-static sem_t *sd;
+static sem_t *sdcs;
+
+static sem_t *sdsc;
 
 void
 initmutex(void)
 {
-	if ( !(sd = sem_open("/mutex", O_RDWR|O_CREAT, 0666, 1)) )
+
+
+	if ( !(sdcs = sem_open("/mutexcs", O_RDWR|O_CREAT, 0666, 1)) )
+		fatal("sem_open");
+
+	if ( !(sdsc = sem_open("/mutexsc", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 }
 
 void
-enter(void)
+enter(bool_cs)
 {
-	sem_wait(sd);
+	if(bool_cs)
+		sem_wait(sdcs);
+	else
+		sem_wait(sdsc);
 }
 
 void
-leave(void)
+leave(int bool_cs)
 {
-	sem_post(sd);
+	if(bool_cs)
+		sem_post(sdcs);
+	else
+		sem_post(sdsc);
 }
-
-
-void initChannel(int bool_server){
-	
-}
-
-void sendData(Connection * connection, int size, void * params){
-
-}
-
-void receiveData(Connection * sender, int size, void * buffer){
-
-}
-
-
-
-//CLIENTE
-int
-main(int argc, char **argv)
-{
-	char *msg;
-	char buf[SIZE-1];
-	int n;
-	
-	msg = getmem();
-	initmutex();
-		
-	while ( (n = read(0, buf, sizeof buf)) > 0 )
-	{
-		enter();
-		sprintf(msg, "%.*s", n, buf);
-		printf("Cliente escribe: %s", msg);
-		leave();
-	}
-	printf("Cliente termina\n");
-	return 0;
- }
-
- //SERVER
- int
-main(int argc, char **argv)
-{
-	char *msg;
-	static char buf[SIZE];
-	int n;
-	
-	msg = getmem();
-	memset(msg, 0, SIZE);
-	initmutex();
-		
-	while ( true )
-	{
-		enter();
-		if ( strcmp(buf, msg) )
-		{
-			printf("Servidor lee: %s", msg);
-			strcpy(buf, msg);
-		}
-		leave();
-		sleep(1);
-	}
-	return 0;
- }
-

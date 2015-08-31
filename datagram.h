@@ -1,47 +1,52 @@
-typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS
+#ifndef _DATAGRAM_H
+#define _DATAGRAM_H
+
+
+typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 BUY_TICKET, UNDO_BUY_TICKET} command;
 
-
-struct Datagram{
+typedef struct{
 	int opcode;
 	void * params; // tagUNION
-};
+} Datagram;
 
 typedef enum {
 	TO_SERVER, TO_CLIENT
 } route;
 
-struct Connection{
+typedef struct{
 	int pid_sender;
-};
+}Connection;
 
-struct User{
+typedef struct{
 	char * full_name;
 	int DNI;
 	char * pass;
-};
+} User;
 
-struct Room{
+typedef struct{
 	int roomId;
 	int max_cap;
-};
+} Room;
 
-struct Movie{
+typedef struct{
 	char * title;
 	char * desc;
 	int length;
 	int movieId;
-};
+} Movie;
 
-struct Show{
+typedef struct{
 	int showId;
 	char * time;
 	int roomId;
 	int movieId;
-};
+} Show;
 
-struct Ticket{
+typedef struct{
 	int ticketId;
 	int client_dni;
 	int showId;
-};
+} Ticket;
+
+#endif
