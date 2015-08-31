@@ -64,7 +64,7 @@ leave(void)
 }
 
 
-void initChannel(Connection * local){
+void initChannel(int bool_server){
 	
 }
 
