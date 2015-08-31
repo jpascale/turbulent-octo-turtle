@@ -4,7 +4,7 @@ void main(){
 
 	printf("Vos quisiste consultar cartelera");
 	
-	consultarCartelera();	
+	getMovieList();	
 	
 
 }

@@ -18,10 +18,12 @@ void main(){
 
 void ProcessData(Connection * sender, Datagram * data){
 	switch(data->opcode){
-	case CONSULTAR_CARTELERA:
-		prinf("Llama consultar cartelera de server");
-		break;
-	default:
-		prinf("Comando no soportado");
+	
+		case GET_MOVIE_LIST:
+			printf("Llama consultar cartelera de server");
+			break;
+		
+		default:
+			printf("Comando no soportado");
 	}
 }

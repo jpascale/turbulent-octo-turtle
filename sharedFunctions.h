@@ -1,14 +1,14 @@
-char * ConsultarCartelera();
+char * getMovieList();
 
-char * ConsultarFunciones(int movieId);
+char * getMovieShow(int movieId);
 
-char * ConsultarAsientos(int showId);
+char * getShowSeats(int showId);
 
 // ret: ticketId
-char * ComprarTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
+char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
 
 // ret: confirmation code
-char * DeshacerCompra(int ticketId, char* nombre);
+char * UndoBuyTicket(int ticketId, char* nombre);
 
 char * addFunction(char* function);
 

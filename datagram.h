@@ -1,10 +1,10 @@
-typedef enum {CONSULTAR_CARTELERA,CONSULTAR_FUNCIONES,CONSULTAR_ASIENTOS
-COMPRAR_TICKET,DESHACER_COMPRA} command;
+typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS
+BUY_TICKET, UNDO_BUY_TICKET} command;
 
 
 struct Datagram{
 	int opcode;
-	void* params; // tagUNION
+	void * params; // tagUNION
 };
 
 typedef enum {
@@ -16,7 +16,7 @@ struct Connection{
 	route route;
 };
 
-struct Person{
+struct User{
 	char * full_name;
 	int DNI;
 	char * pass;

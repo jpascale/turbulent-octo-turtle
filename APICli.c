@@ -5,25 +5,25 @@
 Datagram * data = malloc(sizeof(Data));
 Connection * sender = malloc(sizeof(Connection));
 
-char * ConsultarCartelera(){
+char * getMovieList(){
 	data->opcode=CONSULTAR_CARTELERA;
 	sender->pid=getpid();
 	sendData(sender, sizeof(Datagram), data);
 }
 
-char * ConsultarFunciones(int movieId){
+char * getMovieShow(int movieId){
 
 }
 
-char * ConsultarAsientos(int showId){
+char * getShowSeats(int showId){
 
 }
 
 
-int ComprarTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
+int BuyTicket(int showId, int seat, int card, int sec_code, char * user_name){
 
 }
 
-int DeshacerCompra(int ticketId, char* nombre){
+int UndoBuyTicket(int ticketId, char * user_name){
 
 }
