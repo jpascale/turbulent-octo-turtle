@@ -16,4 +16,4 @@ char * removeFunction(int movieId);
 
 char * RespString(char * resp);
 
-char *  RespInt(int resp);
+char * RespInt(int resp);
