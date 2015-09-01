@@ -15,7 +15,7 @@ typedef enum {
 } route;
 
 typedef struct{
-	int pid_sender;
+	int sender_pid;
 }Connection;
 
 typedef struct{

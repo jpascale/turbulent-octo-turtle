@@ -5,15 +5,16 @@
 void main(){
 	
 	initChannel(1);
-	printf("Server conectado");
+	printf("Server conectado\n");
 
 	Datagram * data = malloc(sizeof(Datagram));
 	Connection * sender = malloc(sizeof(Connection));
 	
-//	while(1){
-//		receiveData(sender, sizeof(Datagram), data);
-//		ProcessData(sender, data);
-//	}
+	while(1){
+		receiveData(sender, sizeof(Datagram), data);
+		ProcessData(sender, data);
+	}
+
 }
 
 void ProcessData(Connection * sender, Datagram * data){

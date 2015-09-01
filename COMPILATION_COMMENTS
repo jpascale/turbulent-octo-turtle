@@ -1,0 +1,4 @@
+** Consideraciones para hacer el makeFile
+
+*SharedMem:
+ Para compilar linkeditar ambas partes con el modulo de connectionSharedMem, usar las etiquetas "-lrt -pthread" 

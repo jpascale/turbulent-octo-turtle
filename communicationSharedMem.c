@@ -1,14 +1,13 @@
 #include "communication.h"
 #include "datagram.h"
-//#include <common.h>
-
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <semaphore.h>
+#include <string.h>
+
 
 #define SIZE 1000
 
@@ -28,34 +27,38 @@ int n;
 
 void initChannel(int b_server){
 	bool_server=b_server;
-	msg = getmem();
 	initmutex();
-	if(b_server)
-			memset(msg, 0, SIZE);
+//	if(b_server)
+//			memset(msg, 0, SIZE);
 
 }
 
 void sendData(Connection * connection, int size, void * params){
-		
+		printf("A\n");
 		enter(!bool_server);
-
+		printf("B\n");
 		msg=getmem(!bool_server);
 		sprintf(msg, "%.*s", size, params);
-		printf("Mando algo");
+		printf("Paquete escrito en memoria\n");
 	
 		leave(!bool_server);
 }
 
 void receiveData(Connection * sender, int size, void * buffer){
 
+		printf("Leyendo de memoria, bloqueante\n");
+
+		while(buf[0]==0){
 		enter(bool_server);
-
 		msg=getmem(bool_server);
-		sprintf(msg, "%.*s", size, buffer);
-		printf("Recibo algo, %s",buffer);
-	
+		
+		sprintf(msg, "%.*s", size, buf);
+		
 		leave(bool_server);
-
+		}
+		printf("Recibo algo, %s\n",buf);
+	
+		memcpy(buffer,buf,SIZE);
 }
 
 void
@@ -71,10 +74,11 @@ getmem(int bool_cs)
 	int fd;
 	char *mem;
 	
-	char * name[16];
-	strcpy(name,"/message");
-	char var=bool_cs+'0';
-	strcat(name,&var);
+	char * name= (char*)malloc(16);
+	if(bool_cs)
+		memcpy(name,"memcs",6);
+	else
+		memcpy(name,"memsc",6);
 
 	if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 )
 		fatal("sh_open");
@@ -92,8 +96,6 @@ static sem_t *sdsc;
 void
 initmutex(void)
 {
-
-
 	if ( !(sdcs = sem_open("/mutexcs", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 
@@ -102,7 +104,7 @@ initmutex(void)
 }
 
 void
-enter(bool_cs)
+enter(int bool_cs)
 {
 	if(bool_cs)
 		sem_wait(sdcs);

@@ -1,19 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "sharedFunctions.h"
 #include "datagram.h"
 #include "communication.h"
 
-Datagram * data = malloc(sizeof(Data));
-Connection * sender = malloc(sizeof(Connection));
+static Datagram * data;
+static Connection * sender;
+
 
 void connect(int bool_server){
 	initChannel(0);
-	printf("Cliente conectado")
+	data = malloc(sizeof(Datagram));
+	sender = malloc(sizeof(Connection));
+
+	printf("Cliente conectado.\n");
 }
 
 char * getMovieList(){
-	data->opcode=CONSULTAR_CARTELERA;
-	sender->pid=getpid();
+	printf("Entrando a APLCli \n");
+	data->opcode=GET_MOVIE_LIST;
+	sender->sender_pid=getpid();
+	//Buffer goes empty
 	sendData(sender, sizeof(Datagram), data);
+
+	//receiveData(sender, sizeof(Datagram), data);
+
+	printf("Data cruda, sin unmarshall %s\n",data);
+	return data;
 }
 
 char * getMovieShow(int movieId){
@@ -25,10 +39,10 @@ char * getShowSeats(int showId){
 }
 
 
-int BuyTicket(int showId, int seat, int card, int sec_code, char * user_name){
+char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
 
 }
 
-int UndoBuyTicket(int ticketId, char * user_name){
+char * UndoBuyTicket(int ticketId, char* nombre){
 
 }
