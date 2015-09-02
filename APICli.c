@@ -21,12 +21,12 @@ char * getMovieList(){
 	printf("Entrando a APLCli \n");
 	sender->sender_pid=getpid();
 	data->opcode=GET_MOVIE_LIST;
-	
+	data->client_pid=getpid();
 
 	//Buffer goes empty
-	sendData(sender, sizeof(Datagram), data);
+	sendData(sender, sizeof(data), data);
 
-	receiveData(sender, sizeof(Datagram), data);
+	receiveData(sender, sizeof(data), data);
 
 	printf("Data cruda, sin unmarshall %s\n",data);
 	return data;

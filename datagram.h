@@ -8,7 +8,6 @@ BUY_TICKET, UNDO_BUY_TICKET} command;
 
 typedef union{
 	int i;
-
 }DataStruct;
 
 

@@ -40,8 +40,10 @@ void sendData(Connection * connection, int size, void * params){
 		else
 			msg=getmem(0);
 
-	//	sprintf(msg, "%.*s", size,params);
-		sprintf(msg, "Buenas mr server %i",bool_server);
+
+// DESTINATION; SOURCE; NUM
+		memcpy(msg, "%.*s", size,(char*)params);
+
 		printf("Paquete escrito en memoria\n");
 		leave(!bool_server);
 }
