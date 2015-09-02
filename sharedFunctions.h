@@ -1,3 +1,7 @@
+#ifndef _SHARED_FUNCTIONS_H_
+
+#define _SHARED_FUNCTIONS_H_
+
 char * getMovieList();
 
 char * getMovieShow(int movieId);
@@ -19,3 +23,5 @@ char * RespString(char * resp);
 char * RespInt(int resp);
 
 void connect(int bool_server);
+
+#endif

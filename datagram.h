@@ -1,6 +1,9 @@
+#ifndef _DATAGRAM_H_
+
+#define _DATAGRAM_H_
+
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 BUY_TICKET, UNDO_BUY_TICKET} command;
-
 
 typedef struct{
 	int opcode;
@@ -12,7 +15,7 @@ typedef enum {
 } route;
 
 typedef struct{
-	int pid_sender;
+	int sender_pid;
 }Connection;
 
 typedef struct{
@@ -45,3 +48,5 @@ typedef struct{
 	int client_dni;
 	int showId;
 } Ticket;
+
+#endif

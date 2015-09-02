@@ -8,8 +8,7 @@
 static Datagram * data;
 static Connection * sender;
 
-
-void connect(int bool_server){
+void connect(){
 	initChannel(0);
 	data = malloc(sizeof(Datagram));
 	sender = malloc(sizeof(Connection));
@@ -23,7 +22,7 @@ char * getMovieList(){
 	sender->sender_pid=getpid();
 	//Buffer goes empty
 	sendData(sender, sizeof(Datagram), data);
-
+	
 	//receiveData(sender, sizeof(Datagram), data);
 
 	printf("Data cruda, sin unmarshall %s\n",data);
