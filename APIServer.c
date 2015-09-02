@@ -30,5 +30,5 @@ void ProcessData(Connection * sender, Datagram * data){
 		default:
 			printf("Comando no soportado");
 	}
-	sendData(0,0,0);
+	sendData(sender,sizeof(Datagram),data);
 }

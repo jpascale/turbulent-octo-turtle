@@ -15,7 +15,7 @@
 typedef enum { false, true } bool;
 
 void fatal(char *s);
-char * getmem(int bool_cs);
+char * getmem(int mem_code);
 void initmutex(void);
 void enter(int bool_cs);
 void leave(int bool_cs);
@@ -34,7 +34,12 @@ void initChannel(int b_server){
 
 void sendData(Connection * connection, int size, void * params){
 		enter(!bool_server);
-		msg=getmem(!bool_server);
+
+		if(bool_server)
+			msg=getmem(connection->sender_pid);
+		else
+			msg=getmem(0);
+
 	//	sprintf(msg, "%.*s", size,params);
 		sprintf(msg, "Buenas mr server %i",bool_server);
 		printf("Paquete escrito en memoria\n");
@@ -43,7 +48,12 @@ void sendData(Connection * connection, int size, void * params){
 
 void receiveData(Connection * sender, int size, void * buffer){
 
-		msg=getmem(bool_server);
+		if(bool_server)
+			msg=getmem(0);
+		else
+			msg=getmem(sender->sender_pid);
+
+
 		printf("Leyendo de memoria, bloqueante\n");
 
 		char* current=calloc(size,0);
@@ -73,28 +83,33 @@ fatal(char *s)
 }
 
 char *
-getmem(int bool_cs)
+getmem(int mem_code)
 {
 	int fd;
-	char *mem;
-	
-	if(bool_cs){
-		if ( (fd = shm_open("mem_cs", O_RDWR|O_CREAT, 0666)) == -1 )
-			fatal("sh_open");
-		ftruncate(fd, SIZE);
-		if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
-			fatal("mmap");
-		close(fd);
+	char * mem;
+	char * name= malloc(16);
+
+	if(mem_code == 0){
+		strcpy(name,"mem_cliServ");
 	}else{
-		
-		if ( (fd = shm_open("mem_sc", O_RDWR|O_CREAT, 0666)) == -1 )
-			fatal("sh_open");
-		ftruncate(fd, SIZE);
-		if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
-			fatal("mmap");
-		close(fd);
-	
+		strcpy(name,"mem_cli_");
+		char* aux=name+8;
+		while(mem_code!=0){
+			*aux=mem_code%10+'0';
+			mem_code/=10;
+			aux++;
+		}
+		*aux=0;
 	}
+
+	if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 )
+		fatal("sh_open");
+	ftruncate(fd, SIZE);
+	if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
+		fatal("mmap");
+	close(fd);
+
+	printf("Memoria usada: %s\n",name);
 	return mem;
 }
 

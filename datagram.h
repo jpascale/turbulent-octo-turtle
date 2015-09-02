@@ -7,8 +7,15 @@ BUY_TICKET, UNDO_BUY_TICKET} command;
 
 typedef struct{
 	int opcode;
-	void * params; // tagUNION
+	int client_pid;
+	DataStruct data; // tagUNION
 } Datagram;
+
+
+typedef union{
+
+
+} DataStruct;
 
 typedef enum {
 	TO_SERVER, TO_CLIENT
