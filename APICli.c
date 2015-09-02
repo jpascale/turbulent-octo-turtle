@@ -9,7 +9,7 @@ static Datagram * data;
 static Connection * sender;
 
 
-void connect(int bool_server){
+void connect(){
 	initChannel(0);
 	data = malloc(sizeof(Datagram));
 	sender = malloc(sizeof(Connection));

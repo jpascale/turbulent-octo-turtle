@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 void main(){
-	connect(0);
+	connect();
 
 	//SHELL
 	printf("Vos quisiste consultar Cartelera\n");

@@ -36,7 +36,7 @@ void sendData(Connection * connection, int size, void * params){
 		enter(!bool_server);
 		msg=getmem(!bool_server);
 	//	sprintf(msg, "%.*s", size,params);
-		sprintf(msg, "Buenas mr server");
+		sprintf(msg, "Buenas mr server %i",bool_server);
 		printf("Paquete escrito en memoria\n");
 		leave(!bool_server);
 }
@@ -46,20 +46,23 @@ void receiveData(Connection * sender, int size, void * buffer){
 		msg=getmem(bool_server);
 		printf("Leyendo de memoria, bloqueante\n");
 
-		while( !strcmp(buf, msg) ){
+		char* current=calloc(size,0);
+
+		while( strlen(current)==0){
 			enter(bool_server);
 			
+			strcpy(current, msg);
+
 			leave(bool_server);
 		}
 		
-		strcpy(buf, msg);
 
-		printf("msg: |%s|",msg);
-		printf("buf: |%s|",buf);
-		printf("%i",strcmp(buf,msg));
 		
-		printf("Recibo algo, %s\n",buf);
-		memcpy(buffer,buf,size);
+		printf("Recibo algo: %s\n",current);
+
+		memset(msg, 0, size);
+
+		memcpy(buffer,current,size);
 }
 
 void

@@ -18,4 +18,4 @@ char * RespString(char * resp);
 
 char * RespInt(int resp);
 
-void connect(int bool_server);
+void connect();

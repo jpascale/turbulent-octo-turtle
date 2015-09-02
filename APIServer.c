@@ -19,6 +19,8 @@ void main(){
 }
 
 void ProcessData(Connection * sender, Datagram * data){
+	sleep(2);
+
 	switch(data->opcode){
 	
 		case GET_MOVIE_LIST:
@@ -28,4 +30,5 @@ void ProcessData(Connection * sender, Datagram * data){
 		default:
 			printf("Comando no soportado");
 	}
+	sendData(0,0,0);
 }
