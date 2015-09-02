@@ -1,6 +1,7 @@
 #include "sharedFunctions.h"
 #include "communication.h"
 #include "datagram.h"
+#include <stdio.h>
 
 void main(){
 	
@@ -9,7 +10,7 @@ void main(){
 
 	Datagram * data = malloc(sizeof(Datagram));
 	Connection * sender = malloc(sizeof(Connection));
-	
+	printf("Cargado\n");
 	while(1){
 		receiveData(sender, sizeof(Datagram), data);
 		ProcessData(sender, data);

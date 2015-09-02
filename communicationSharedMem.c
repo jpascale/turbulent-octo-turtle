@@ -34,9 +34,7 @@ void initChannel(int b_server){
 }
 
 void sendData(Connection * connection, int size, void * params){
-		printf("A\n");
 		enter(!bool_server);
-		printf("B\n");
 		msg=getmem(!bool_server);
 		sprintf(msg, "%.*s", size, params);
 		printf("Paquete escrito en memoria\n");
@@ -47,14 +45,14 @@ void sendData(Connection * connection, int size, void * params){
 void receiveData(Connection * sender, int size, void * buffer){
 
 		printf("Leyendo de memoria, bloqueante\n");
-
+		memset(msg, 0, SIZE);
 		while(buf[0]==0){
-		enter(bool_server);
-		msg=getmem(bool_server);
-		
-		sprintf(msg, "%.*s", size, buf);
-		
-		leave(bool_server);
+			enter(bool_server);
+			msg=getmem(bool_server);
+			
+			sprintf(msg, "%.*s", size, buf);
+			
+			leave(bool_server);
 		}
 		printf("Recibo algo, %s\n",buf);
 	
@@ -96,10 +94,10 @@ static sem_t *sdsc;
 void
 initmutex(void)
 {
-	if ( !(sdcs = sem_open("/mutexcs", O_RDWR|O_CREAT, 0666, 1)) )
+	if ( !(sdcs = sem_open("/mutexcsA", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 
-	if ( !(sdsc = sem_open("/mutexsc", O_RDWR|O_CREAT, 0666, 1)) )
+	if ( !(sdsc = sem_open("/mutexscA", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 }
 
