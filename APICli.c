@@ -19,8 +19,10 @@ void connect(){
 
 char * getMovieList(){
 	printf("Entrando a APLCli \n");
-	data->opcode=GET_MOVIE_LIST;
 	sender->sender_pid=getpid();
+	data->opcode=GET_MOVIE_LIST;
+	
+
 	//Buffer goes empty
 	sendData(sender, sizeof(Datagram), data);
 

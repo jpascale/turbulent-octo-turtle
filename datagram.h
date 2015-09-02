@@ -5,17 +5,18 @@
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 BUY_TICKET, UNDO_BUY_TICKET} command;
 
+
+typedef union{
+	int i;
+
+}DataStruct;
+
+
 typedef struct{
 	int opcode;
 	int client_pid;
 	DataStruct data; // tagUNION
 } Datagram;
-
-
-typedef union{
-
-
-} DataStruct;
 
 typedef enum {
 	TO_SERVER, TO_CLIENT

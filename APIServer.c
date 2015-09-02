@@ -30,5 +30,6 @@ void ProcessData(Connection * sender, Datagram * data){
 		default:
 			printf("Comando no soportado");
 	}
+	sender->sender_pid=data->client_pid;
 	sendData(sender,sizeof(Datagram),data);
 }
