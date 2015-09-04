@@ -13,6 +13,8 @@ void main(){
 	printf("Cargado\n");
 	while(1){
 		receiveData(sender, sizeof(Datagram), data);
+		
+		printf("Recive:%i \n"+data->client_pid);
 		ProcessData(sender, data);
 	}
 

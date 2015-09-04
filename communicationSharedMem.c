@@ -27,25 +27,25 @@ int n;
 
 void initChannel(int b_server){
 	bool_server=b_server;
-	initmutex();
-	
+	initmutex();	
 	memset(buf, 0, SIZE);
 }
 
 void sendData(Connection * connection, int size, void * params){
-		enter(!bool_server);
-
+	enter(!bool_server);
 		if(bool_server)
-			msg=getmem(connection->sender_pid);
-		else
-			msg=getmem(0);
+		msg=getmem(connection->sender_pid);
+	else
+		msg=getmem(0);
 
+// memcpy(DEST; SOURCE; BYTES)
+	Datagram * aux=params;
+	printf("%i -> %i, %i\n", aux->opcode,aux->client_pid,size);
+// TERMINA EL TEST DEL DATAGRAM
 
-// DESTINATION; SOURCE; NUM
-		memcpy(msg, "%.*s", size,(char*)params);
-
-		printf("Paquete escrito en memoria\n");
-		leave(!bool_server);
+	memcpy(msg, params,size);
+	printf("Paquete escrito en memoria por %i\n",aux->client_pid);
+	leave(!bool_server);
 }
 
 void receiveData(Connection * sender, int size, void * buffer){
@@ -60,21 +60,20 @@ void receiveData(Connection * sender, int size, void * buffer){
 
 		char* current=calloc(size,0);
 
-		while( strlen(current)==0){
+		while(strlen(current)==0){
 			enter(bool_server);
 			
-			strcpy(current, msg);
+			memcpy(current, msg);
 
 			leave(bool_server);
 		}
 		
 
 		
-		printf("Recibo algo: %s\n",current);
-
-		memset(msg, 0, size);
+		printf("Recibo algo\n");
 
 		memcpy(buffer,current,size);
+		printf("salgo\n");
 }
 
 void
