@@ -17,19 +17,20 @@ void connect(){
 
 char * getMovieList(){
 
-	printf("Entrando a APLCli \n");
+	printf("Entrando a APLCli. Dame el opcode =) \n");
 	
-	data.size = 1;
-	data.opcode = 2;
-	data.client_pid = 3;
-	data.data.i = 9;
+	data.opcode = 0;
 
-	//Buffer goes empty
+	data.client_pid = getpid();
+	data.size = sizeof(data);
+
+	sender.sender_pid=getpid();
+
 	sendData(&sender, &data);
 
 	receiveData(&sender, &data);
 
-	printf("Data cruda, sin unmarshall recivida: \n",data);
+	printf("Data cruda, sin unmarshall recibida: \n",data);
 	
 // ACA VA EL UNMARSHALL!!!!
 

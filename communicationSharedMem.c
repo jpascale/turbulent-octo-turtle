@@ -33,17 +33,15 @@ void initChannel(int b_server){
 
 void sendData(Connection * connection, Datagram * params){
 	enter(!bool_server);
-		if(bool_server)
+	if(bool_server)
 		msg=getmem(connection->sender_pid);
 	else
 		msg=getmem(0);
 
 // memcpy(DEST; SOURCE; BYTES)
-	printf("%i -> %i, %i\n", params->opcode,params->client_pid,params->size);
-// TERMINA EL TEST DEL DATAGRAM
 
-//	memcpy(msg, params,size);
-	printf("Paquete escrito en memoria por %i\n",params->client_pid);
+	memcpy(msg, params,params->size);
+	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
 	leave(!bool_server);
 }
 
@@ -57,22 +55,23 @@ void receiveData(Connection * sender, Datagram * buffer){
 
 		printf("Leyendo de memoria, bloqueante\n");
 
-		char* current=calloc(1000,0);
+		char* current=calloc(10000,1);
 
 		while(strlen(current)==0){
 			enter(bool_server);
 			
-			memcpy(current, msg,1000);
+			memcpy(current, msg,sizeof(int));
 
 			leave(bool_server);
 		}
-		
+		printf("Busco un mensaje de size= %i\n",*((int*)current));
 
-		
-		printf("Recibo algo\n");
+		memcpy(current, msg,*((int*)current));
+	
+		printf("Recibido\n");
 
-//		memcpy(buffer,current,size);
-		printf("salgo\n");
+		memcpy(buffer,current,SIZE);
+		sprintf(msg,"\0\0\0\0");
 }
 
 void
@@ -109,7 +108,7 @@ getmem(int mem_code)
 		fatal("mmap");
 	close(fd);
 
-	printf("Memoria usada: %s\n",name);
+	printf("Memoria pedida: %s\n",name);
 	return mem;
 }
 

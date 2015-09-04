@@ -2,6 +2,7 @@
 #include "communication.h"
 #include "datagram.h"
 #include <stdio.h>
+#include <unistd.h>
 
 Datagram data;
 Connection sender;
@@ -14,27 +15,43 @@ void main(){
 
 	printf("Cargado\n");
 	while(1){
-		receiveData(&sender, &data);
-		
-		printf("Recive:%i \n",data.client_pid);
-		ProcessData(&sender, &data);
-	}
 
+		receiveData(&sender, &data);
+		printf("Reccive:%i \n",data.client_pid);
+
+		switch(int forked_pid=fork()){
+			case -1:
+				fatal("forked server\n");
+			case 0:
+				ProcessData(&sender, &data);
+				sendData(&sender, &data);
+				printf("TTERMINASDSADSAD_--------\n");
+				exit(0);
+			default:
+				printf("Soy papa server y mi hijo %i responde a %i\n",forked_pid,data.opcode);
+		}
+	}
 }
 
 void ProcessData(Connection * sender, Datagram * data){
-	sleep(2);
-
+	sleep(3);
+	printf("Opcode: %i\n",data->opcode);
 	switch(data->opcode){
 	
 		case GET_MOVIE_LIST:
-			printf("Llama consultar cartelera de server");
+			printf("Llama consultar cartelera de server\n");
 			break;
-		
 		default:
-			printf("Comando no soportado");
+			printf("Comando no soportado\n");
 	}
 	sender->sender_pid=data->client_pid;
-	printf("%i\n\n",sender->sender_pid);
-	sendData(sender,data);
+	data->size=3;
+	printf("Le mando una respuesta a %i\n\n",sender->sender_pid);
+}
+
+void
+fatal(char *s)
+{
+	perror(s);
+	exit(1);
 }

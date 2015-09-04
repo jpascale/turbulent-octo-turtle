@@ -44,8 +44,6 @@ typedef struct{
 	int max_cap;
 } Room;
 
-
-
 typedef struct{
 	int showId;
 	char * time;
