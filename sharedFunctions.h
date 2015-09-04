@@ -1,3 +1,6 @@
+#ifndef _SHARED_FUNCTIONS_H
+#define _SHARED_FUNCTIONS_H
+
 char * getMovieList();
 
 char * getMovieShow(int movieId);
@@ -8,7 +11,7 @@ char * getShowSeats(int showId);
 char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
 
 // ret: confirmation code
-char * UndoBuyTicket(int ticketId, char* nombre;
+char * UndoBuyTicket(int ticketId, char* nombre);
 
 char * addFunction(char* function);
 
@@ -19,3 +22,5 @@ char * RespString(char* resp);
 char * RespInt(int resp);
 
 void connect();
+
+#endif

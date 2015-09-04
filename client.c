@@ -1,11 +1,9 @@
 //#include "sharedFunctions.h"
-#include "datagram.h"
 #include <stdio.h>
 
 void main(){
-	//connect();
 
-	Datagram datag;
+/*	Datagram datag;
 	datag.size = 1;
 	datag.opcode = 2;
 	datag.client_pid = 3;
@@ -28,12 +26,13 @@ void main(){
 
 	Datagram * datag3 = (Datagram * ) datag2;
 	printf("%c\n", ((char*)datag3)[12]);
-	
+*/	
 
+	connect();
 
 	//SHELL
-//	printf("Vos quisiste consultar Cartelera\n");
+	printf("Vos quisiste consultar Cartelera\n");
 	
-	//getMovieList();
-//	printf("Cliente termina\n");
+	getMovieList();
+	printf("Cliente termina\n");
 }

@@ -5,31 +5,35 @@
 #include "datagram.h"
 #include "communication.h"
 
-static Datagram * data;
-static Connection * sender;
+Datagram data;
+Connection sender;
 
 
 void connect(){
 	initChannel(0);
-	data = malloc(sizeof(Datagram));
-	sender = malloc(sizeof(Connection));
-
+	
 	printf("Cliente conectado.\n");
 }
 
 char * getMovieList(){
+
 	printf("Entrando a APLCli \n");
-	sender->sender_pid=getpid();
-	data->opcode=GET_MOVIE_LIST;
-	data->client_pid=getpid();
+	
+	data.size = 1;
+	data.opcode = 2;
+	data.client_pid = 3;
+	data.data.i = 9;
 
 	//Buffer goes empty
-	sendData(sender, sizeof(data), data);
+	sendData(&sender, &data);
 
-	receiveData(sender, sizeof(data), data);
+	receiveData(&sender, &data);
 
-	printf("Data cruda, sin unmarshall %s\n",data);
-	return data;
+	printf("Data cruda, sin unmarshall recivida: \n",data);
+	
+// ACA VA EL UNMARSHALL!!!!
+
+	return 0;
 }
 
 char * getMovieShow(int movieId){

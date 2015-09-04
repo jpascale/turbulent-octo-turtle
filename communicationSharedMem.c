@@ -31,7 +31,7 @@ void initChannel(int b_server){
 	memset(buf, 0, SIZE);
 }
 
-void sendData(Connection * connection, int size, void * params){
+void sendData(Connection * connection, Datagram * params){
 	enter(!bool_server);
 		if(bool_server)
 		msg=getmem(connection->sender_pid);
@@ -39,16 +39,15 @@ void sendData(Connection * connection, int size, void * params){
 		msg=getmem(0);
 
 // memcpy(DEST; SOURCE; BYTES)
-	Datagram * aux=params;
-	printf("%i -> %i, %i\n", aux->opcode,aux->client_pid,size);
+	printf("%i -> %i, %i\n", params->opcode,params->client_pid,params->size);
 // TERMINA EL TEST DEL DATAGRAM
 
-	memcpy(msg, params,size);
-	printf("Paquete escrito en memoria por %i\n",aux->client_pid);
+//	memcpy(msg, params,size);
+	printf("Paquete escrito en memoria por %i\n",params->client_pid);
 	leave(!bool_server);
 }
 
-void receiveData(Connection * sender, int size, void * buffer){
+void receiveData(Connection * sender, Datagram * buffer){
 
 		if(bool_server)
 			msg=getmem(0);
@@ -58,12 +57,12 @@ void receiveData(Connection * sender, int size, void * buffer){
 
 		printf("Leyendo de memoria, bloqueante\n");
 
-		char* current=calloc(size,0);
+		char* current=calloc(1000,0);
 
 		while(strlen(current)==0){
 			enter(bool_server);
 			
-			memcpy(current, msg);
+			memcpy(current, msg,1000);
 
 			leave(bool_server);
 		}
@@ -72,7 +71,7 @@ void receiveData(Connection * sender, int size, void * buffer){
 		
 		printf("Recibo algo\n");
 
-		memcpy(buffer,current,size);
+//		memcpy(buffer,current,size);
 		printf("salgo\n");
 }
 

@@ -1,4 +1,4 @@
-gcc client.c APICli.c sharedFunctions.h  communication.h communicationSharedMem.c  datagram.h -lrt -pthread -o shmCli
+gcc client.c APICli.c communicationSharedMem.c -lrt -pthread -o shmCli
 
 
-gcc server.c APIServer.c sharedFunctions.h  communication.h communicationSharedMem.c  datagram.h -lrt -pthread -o shmServer
+gcc server.c APIServer.c communicationSharedMem.c -lrt -pthread -o shmServer

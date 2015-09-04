@@ -3,19 +3,21 @@
 #include "datagram.h"
 #include <stdio.h>
 
+Datagram data;
+Connection sender;
+
 void main(){
 	
 	initChannel(1);
 	printf("Server conectado\n");
 
-	Datagram * data = malloc(sizeof(Datagram));
-	Connection * sender = malloc(sizeof(Connection));
+
 	printf("Cargado\n");
 	while(1){
-		receiveData(sender, sizeof(Datagram), data);
+		receiveData(&sender, &data);
 		
-		printf("Recive:%i \n"+data->client_pid);
-		ProcessData(sender, data);
+		printf("Recive:%i \n",data.client_pid);
+		ProcessData(&sender, &data);
 	}
 
 }
@@ -34,5 +36,5 @@ void ProcessData(Connection * sender, Datagram * data){
 	}
 	sender->sender_pid=data->client_pid;
 	printf("%i\n\n",sender->sender_pid);
-	sendData(sender,sizeof(Datagram),data);
+	sendData(sender,data);
 }
