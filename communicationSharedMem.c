@@ -8,7 +8,7 @@
 #include <semaphore.h>
 #include <string.h>
 #include <sys/shm.h>
-
+#include <unistd.h>
 
 #define SIZE 1000
 
@@ -38,10 +38,8 @@ void sendData(Connection * connection, Datagram * params){
 	else
 		msg=getmem(0);
 
-// memcpy(DEST; SOURCE; BYTES)
-
 	memcpy(msg, params,params->size);
-	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
+//	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
 	leave(!bool_server);
 }
 
@@ -53,7 +51,7 @@ void receiveData(Connection * sender, Datagram * buffer){
 			msg=getmem(sender->sender_pid);
 
 
-		printf("Leyendo de memoria, bloqueante\n");
+//		printf("Leyendo de memoria, bloqueante\n");
 
 		char* current=calloc(10000,1);
 
@@ -64,11 +62,11 @@ void receiveData(Connection * sender, Datagram * buffer){
 
 			leave(bool_server);
 		}
-		printf("Busco un mensaje de size= %i\n",*((int*)current));
+//		printf("Busco un mensaje de size= %i\n",*((int*)current));
 
 		memcpy(current, msg,*((int*)current));
 	
-		printf("Recibido\n");
+//		printf("Recibido\n");
 
 		memcpy(buffer,current,SIZE);
 		sprintf(msg,"\0\0\0\0");
@@ -91,14 +89,7 @@ getmem(int mem_code)
 	if(mem_code == 0){
 		strcpy(name,"mem_cliServ");
 	}else{
-		strcpy(name,"mem_cli_");
-		char* aux=name+8;
-		while(mem_code!=0){
-			*aux=mem_code%10+'0';
-			mem_code/=10;
-			aux++;
-		}
-		*aux=0;
+		sprintf(name,"mem_cli%i",mem_code);
 	}
 
 	if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 )
@@ -108,7 +99,7 @@ getmem(int mem_code)
 		fatal("mmap");
 	close(fd);
 
-	printf("Memoria pedida: %s\n",name);
+//	printf("Memoria pedida: %s\n",name);
 	return mem;
 }
 

@@ -3,39 +3,44 @@
 #include "datagram.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 Datagram data;
 Connection sender;
+
+
+void ProcessData(Connection * sender, Datagram * data);
 
 void main(){
 	
 	initChannel(1);
 	printf("Server conectado\n");
 
+	int forked_pid;
 
 	printf("Cargado\n");
 	while(1){
 
 		receiveData(&sender, &data);
-		printf("Reccive:%i \n",data.client_pid);
+		printf("Recive:%i \n",data.client_pid);
 
-		switch(int forked_pid=fork()){
+		switch(forked_pid=fork()){
 			case -1:
-				fatal("forked server\n");
+				perror("forked server\n");
+				exit(1);
 			case 0:
 				ProcessData(&sender, &data);
 				sendData(&sender, &data);
-				printf("TTERMINASDSADSAD_--------\n");
 				exit(0);
-			default:
-				printf("Soy papa server y mi hijo %i responde a %i\n",forked_pid,data.opcode);
 		}
 	}
 }
 
 void ProcessData(Connection * sender, Datagram * data){
-	sleep(3);
-	printf("Opcode: %i\n",data->opcode);
+	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
+	sleep(10);
+	printf("LISTO!\n");
+	//printf("Opcode: %i\n",data->opcode);
 	switch(data->opcode){
 	
 		case GET_MOVIE_LIST:
@@ -46,12 +51,5 @@ void ProcessData(Connection * sender, Datagram * data){
 	}
 	sender->sender_pid=data->client_pid;
 	data->size=3;
-	printf("Le mando una respuesta a %i\n\n",sender->sender_pid);
-}
-
-void
-fatal(char *s)
-{
-	perror(s);
-	exit(1);
+	//printf("Le mando una respuesta a %i\n\n",sender->sender_pid);
 }
