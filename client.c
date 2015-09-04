@@ -28,7 +28,8 @@ main(int argc, char **argv)
 {
 	int pid, n;
 	int fd;
-	
+	Datagram * data = malloc(1000);
+	data->data = 
 	connect();
 	
 	getMovieList();

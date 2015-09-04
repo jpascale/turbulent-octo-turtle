@@ -1,19 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "sharedFunctions.h"
 #include "communication.h"
 #include "datagram.h"
 
+#define MAGIC_NUMBER_TO_AVOID_WARNINGS 12
+
+
 void main(){
+	
 	
 	initChannel(1);
 	printf("Server conectado\n");
 
-	Datagram * data = malloc(sizeof(Datagram));
 	Connection * sender = malloc(sizeof(Connection));
 	
-	while(1){
-		receiveData(sender, sizeof(Datagram), data);
-		ProcessData(sender, data);
+	int pid, n;
+
+	connect();
+	
+	Connection * connection;
+	Datagram * data = malloc(1000);
+	
+	while(7 == 7){ //arreglar
+		receiveData(connection, MAGIC_NUMBER_TO_AVOID_WARNINGS, data);	
+		printf("%s", data);
 	}
+	
 
 }
 

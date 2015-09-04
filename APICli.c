@@ -25,7 +25,6 @@ char * getMovieList(){
 	
 	//receiveData(sender, sizeof(Datagram), data);
 
-	printf("Data cruda, sin unmarshall %s\n",data);
 	return data;
 }
 

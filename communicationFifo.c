@@ -21,7 +21,7 @@ void initChannel(int bool_server){
 	is_server = bool_server;
 }
 
-int fd;
+int fd, i;
 
 void sendData(Connection * connection, int size, void * params){
 	if (!is_server){
@@ -32,9 +32,10 @@ void sendData(Connection * connection, int size, void * params){
 }
 
 void receiveData(Connection * sender, int size, void * buffer){
-	fd = 
+	fd = open("/tmp/server.fifo", O_RDONLY); 
 	if(is_server)
-		while()
+		fd = open("/tmp/server.fifo", O_RDONLY); 
+	read(fd, buffer, 1000);	
 }
 
 void getFifoName(int pid, char * buffer){

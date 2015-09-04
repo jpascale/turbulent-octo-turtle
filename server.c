@@ -8,6 +8,7 @@
 #include "./datagram.h"
 
 #define NAME "/tmp/fifo"
+#define MAGIC_NUMBER_TO_AVOID_WARNINGS 12
 
 void
 fatal(char *s)
@@ -24,15 +25,10 @@ chau(int sig)
 }
 
 int
-main(int argc, char **argv)
+main2(int argc, char **argv)
 {
-	int pid, n;
-
-	connect();
-
-	while(7 == 7){ //arreglar
-		receiveData()	
-	}
+	int fd, i,n ;
+	char* buf;
 	
 	if ( access(NAME, 0) == -1 && mknod(NAME, S_IFIFO|0666, 0) == -1 )
 		fatal("Error mknod");

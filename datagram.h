@@ -6,8 +6,10 @@ typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 BUY_TICKET, UNDO_BUY_TICKET} command;
 
 typedef struct{
+	int pid;
 	int opcode;
 	void * params; // tagUNION
+	
 } Datagram;
 
 typedef enum {
