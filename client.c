@@ -1,7 +1,8 @@
 //#include "sharedFunctions.h"
 #include <stdio.h>
 #include <fcntl.h>
-
+#include <string.h>
+#include <stdlib.h>
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -12,10 +13,8 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-
 #define INPUT_SIZE 1024
-
-
+void parse(char* buff);
 int main (int argc, char const *argv[]) {
 
 /*
@@ -30,13 +29,19 @@ printf(ANSI_COLOR_CYAN    "This text is CYAN!"    ANSI_COLOR_RESET "\n");
 	connect();
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
 
-	char input[INPUT_SIZE];
+	char* input=malloc(INPUT_SIZE);
 	int n;
 	
 	while(1){
-		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
+		printf(ANSI_COLOR_GREEN":) " ANSI_COLOR_CYAN  " :" ANSI_COLOR_RED );
 		fflush(stdout);
-		gets(input);
+
+		fgets(input,INPUT_SIZE, stdin);
+		char* aux=input;
+		while(*(aux++));
+		aux-=2;
+		*(aux)=0;
+
 
 		parse(input);
 		
@@ -45,4 +50,25 @@ printf(ANSI_COLOR_CYAN    "This text is CYAN!"    ANSI_COLOR_RESET "\n");
 	printf(ANSI_COLOR_RESET "Cliente termina\n");
 
 	return 0;
+}
+
+const char * accepted_commands[] = {
+    "exit",
+    "getMovieList",
+};
+int accepted_commands_size=2;
+
+void parse(char* buff){
+
+	int i;
+	for(i=0;i<accepted_commands_size;i++){
+		if(!strcmp(accepted_commands[i],buff)){
+			if(i==0){
+				printf("Chau =D"ANSI_COLOR_RESET" \n");
+				exit(0);
+			}else if(i==1){
+				getMovieList();
+			}
+		}
+	}
 }

@@ -38,7 +38,7 @@ void main(){
 
 void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(10);
+	sleep(1);
 	printf("LISTO!\n");
 	//printf("Opcode: %i\n",data->opcode);
 	switch(data->opcode){
