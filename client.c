@@ -1,4 +1,3 @@
-//#include "sharedFunctions.h"
 #include <stdio.h>
 #include <fcntl.h>
 
@@ -15,8 +14,13 @@
 
 #define INPUT_SIZE 1024
 #define COM_SIZE 2
+#define STRING          0
+#define INT             1
+#define CHAR            2
 
-int convertArg(char ** args, char * argTypes, int cant);
+
+
+convertArg(char ** args, char * argTypes, int cant);
 void parse(char* buff);
 void loadCommands();
 void cexit();
@@ -44,9 +48,8 @@ int main (int argc, char const *argv[]) {
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
 		gets(input);
-		printf("Logged\n");
-		parse(input);
 		
+		parse(input);
 	}
 
 	printf(ANSI_COLOR_RESET "Cliente termina\n");
@@ -66,16 +69,19 @@ void loadCommands(){
     commands[1].name = "exit";
     commands[1].function = &cexit;
     commands[1].args = echoArgs;
-    commands[1].argsCant = 2;
+    commands[1].argsCant = 0;
     commands[1].desc = "Prints a given string with the provided format.";
 }
 
 void parse(char* buff){
 int index;
-for(index = 0; index<COM_SIZE ; index++){
-if(!strcmp(buff, commands[index].name)){
+char flag=0;
+for(index = 0;!flag &&  index<COM_SIZE ; index++){
+
+	if(!strcmp(buff, commands[index].name)){
 //	convertArg(args, commands[index].args, commands[index].argsCant);
-	
+	flag=1;
+printf("MATCHEA %i\n", commands[index].argsCant);
 	switch(commands[index].argsCant){
 	case 0:
 		commands[index].function();
