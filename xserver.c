@@ -21,5 +21,6 @@ main(int argc, char **argv)
 
 	while (1){
 		receiveData(&conn, &data);
+		sendData(&conn, &data);
 	}
  }

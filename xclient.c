@@ -15,7 +15,6 @@ typedef enum { false, true } bool;
 int
 main(int argc, char **argv)
 {
-	char msg[200];
 	int n;
 	Datagram data;
 	Connection conn;
@@ -28,6 +27,12 @@ main(int argc, char **argv)
 
 		printf("Cliente envia: %.*s", n, data.data.m.title);
 		sendData(&conn, &data);
+		receiveData(&conn, &data);
+		
+		//TODO: Remove this
+		int i;
+		for (i = 0; i < 1024; i++)
+			data.data.m.title[i] = '\0';
 	}
 	printf("Cliente termina\n");
 	return 0;

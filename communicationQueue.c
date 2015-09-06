@@ -32,6 +32,7 @@ void fatal(char * s);
 */
 
 typedef enum { false, true } bool;
+#define MAX_RDATA_SIZE 3000
 
 /*
 **		Global declares
@@ -47,7 +48,7 @@ ssize_t n;
 struct
 {
 	long mtype;
-	char mdata[3000];
+	char mdata[MAX_RDATA_SIZE];
 } 
 msg;
 
@@ -138,13 +139,29 @@ void create_ioqueue(void){
 
 void srv_send_data(Connection * connection, Datagram * sdData){
 
+	n = sdData->size;
+	msg.mtype = sdData->client_pid;
+	memcpy((void*)msg.mdata, (void*)sdData, sdData->size);
+
+	msgsnd(qout, &msg, n, 0);
+	//TODO: Remove this
+	int i;
+	for (i = 0; i < 1024; i++)
+		*(msg.mdata + 12 + i) = '\0';
+
 }
 
 void srv_receive_data(Connection * connection, Datagram * sdData){
+	
+	void * rdata = (void *)sdData;
+
 	if ( (n = msgrcv(qin, &msg, sizeof msg.mdata, 0, 0)) > 0 )
 	{
 		printf("Servidor: %s", msg.mdata + 12);
-		msgsnd(qout, &msg, n, 0);
+		
+		memcpy(rdata, msg.mdata, n);
+
+		return;
 	}
 }
 
@@ -152,20 +169,29 @@ void clt_send_data(Connection * connection, Datagram * sdData){
 
 	msg.mtype = getpid();
 	n = sdData->size;
+	sdData->client_pid = msg.mtype;
+
 	void * sdDataptr = (void *) sdData;
 
 	memcpy((void *)msg.mdata, sdData, n);
 
 	msgsnd(qout, &msg, n, 0);
-	n = msgrcv(qin, &msg, sizeof msg.mdata, msg.mtype, 0);
-	if ( n > 0 )
-		printf("Cliente recibe: %s", msg.mdata + 12);
-	//TODO: Remove this
-	*(msg.mdata + 12) = 0;
+
+	return;
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData){
 
+	n = msgrcv(qin, &msg, sizeof msg.mdata, msg.mtype, 0);
+	
+	memcpy((void * )sdData, (void *)msg.mdata, *((int *)msg.mdata));
+
+	if ( n > 0 )
+		printf("Cliente recibe: %s", msg.mdata + 12);
+	//TODO: Remove this
+	int i;
+	for (i = 0; i < 1024; i++)
+		*(msg.mdata + 12 + i) = '\0';
 }
 
 void fatal(char * s){
