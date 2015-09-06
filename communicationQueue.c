@@ -47,7 +47,7 @@ ssize_t n;
 struct
 {
 	long mtype;
-	char mtext[200];
+	char mdata[3000];
 } 
 msg;
 
@@ -141,9 +141,9 @@ void srv_send_data(Connection * connection, Datagram * sdData){
 }
 
 void srv_receive_data(Connection * connection, Datagram * sdData){
-	if ( (n = msgrcv(qin, &msg, sizeof msg.mtext, 0, 0)) > 0 )
+	if ( (n = msgrcv(qin, &msg, sizeof msg.mdata, 0, 0)) > 0 )
 	{
-		printf("Servidor: %.*s", n, msg.mtext);
+		printf("Servidor: %s", msg.mdata + 12);
 		msgsnd(qout, &msg, n, 0);
 	}
 }
@@ -151,13 +151,17 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
 void clt_send_data(Connection * connection, Datagram * sdData){
 
 	msg.mtype = getpid();
-	strncpy(msg.mtext, sdData->data.m.title, sdData->size);
 	n = sdData->size;
+	void * sdDataptr = (void *) sdData;
+
+	memcpy((void *)msg.mdata, sdData, n);
 
 	msgsnd(qout, &msg, n, 0);
-	n = msgrcv(qin, &msg, sizeof msg.mtext, msg.mtype, 0);
+	n = msgrcv(qin, &msg, sizeof msg.mdata, msg.mtype, 0);
 	if ( n > 0 )
-		printf("Cliente recibe: %.*s", n, msg.mtext);
+		printf("Cliente recibe: %s", msg.mdata + 12);
+	//TODO: Remove this
+	*(msg.mdata + 12) = 0;
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData){

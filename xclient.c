@@ -24,7 +24,7 @@ main(int argc, char **argv)
 
 	while ( (n = read(0, data.data.m.title, sizeof data.data.m.title)) > 0 )
 	{
-		data.size = n;
+		data.size = sizeof data;
 
 		printf("Cliente envia: %.*s", n, data.data.m.title);
 		sendData(&conn, &data);
