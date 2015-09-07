@@ -1,18 +1,8 @@
 #include "sharedFunctions.h"
 #include "communication.h"
 #include "datagram.h"
-<<<<<<< HEAD
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-Datagram data;
-Connection sender;
-
-
-void ProcessData(Connection * sender, Datagram * data);
-=======
 #include "sqlite/sqlite3.h"
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,7 +22,6 @@ static int callback_get_movie_list(void *NotUsed, int argc, char **argv, char **
    printf("entro al callback\n");
    return 0;
 }
->>>>>>> lepo
 
 void main(){
 	
