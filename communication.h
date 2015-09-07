@@ -6,5 +6,6 @@
 void sendData(Connection * connection, Datagram * params);
 void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
+void processData(Connection * sender, Datagram * data);
 
 #endif

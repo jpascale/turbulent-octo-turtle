@@ -36,12 +36,13 @@ Connection sender;
 
 
 void connect(){
-	initChannel(0);
-	
+	initChannel(0);	
+
 	printf("Cliente conectado.\n");
 }
 
 char * getMovieList(){
+
 
 	printf("Entrando a APLCli.\n");
 	
@@ -57,6 +58,7 @@ char * getMovieList(){
 	receiveData(&sender, &data);
 
 	printf("Data cruda, sin unmarshall recibida: \n",data);
+
 	
 // ACA VA EL UNMARSHALL!!!!
 
@@ -87,4 +89,5 @@ printf("E - %s\n",function);
 
 char * removeFunction(int movieId){
 printf("movieId: %i \n",movieId);
+
 }

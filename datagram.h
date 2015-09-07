@@ -34,26 +34,20 @@ typedef struct{
 }Connection;
 
 typedef struct{
-	char * full_name;
-	int DNI;
-	char * pass;
-} User;
-
-typedef struct{
 	int roomId;
 	int max_cap;
 } Room;
 
 typedef struct{
 	int showId;
-	char * time;
+	int time;
 	int roomId;
 	int movieId;
 } Show;
 
 typedef struct{
 	int ticketId;
-	int client_dni;
+	int seatNum;
 	int showId;
 } Ticket;
 

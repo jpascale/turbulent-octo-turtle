@@ -218,4 +218,5 @@ void help(){
 void cexit(){
 	printf("Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
+
 }
