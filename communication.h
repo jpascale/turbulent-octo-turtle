@@ -1,11 +1,11 @@
 #include "datagram.h"
 
-#ifndef _COMM_
+#ifndef _COMMUNICATION_H
+#define _COMMUNICATION_H
 
-#define _COMM_
-
-void sendData(Connection * connection, int size, void * params);
-void receiveData(Connection * sender, int size, void * buffer);
+void sendData(Connection * connection, Datagram * params);
+void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
+void processData(Connection * sender, Datagram * data);
 
 #endif

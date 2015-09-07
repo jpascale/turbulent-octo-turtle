@@ -1,16 +1,29 @@
-#ifndef _DATAGRAM_H_
+#ifndef _DATAGRAM_H
+#define _DATAGRAM_H
 
-#define _DATAGRAM_H_
+
 
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 BUY_TICKET, UNDO_BUY_TICKET} command;
 
+typedef struct {
+	char title[1024];
+	char desc[1024];
+	int length;
+	int movieId;
+} Movie;
+
+typedef union{
+	int i;
+	Movie m;
+}DataStruct;
+
 typedef struct{
-	int pid;
+	int size;
 	int opcode;
-	void * params; // tagUNION
-	
-} Datagram;
+	int client_pid;
+	DataStruct data; // tagUNION
+}Datagram;
 
 typedef enum {
 	TO_SERVER, TO_CLIENT
@@ -21,33 +34,20 @@ typedef struct{
 }Connection;
 
 typedef struct{
-	char * full_name;
-	int DNI;
-	char * pass;
-} User;
-
-typedef struct{
 	int roomId;
 	int max_cap;
 } Room;
 
 typedef struct{
-	char * title;
-	char * desc;
-	int length;
-	int movieId;
-} Movie;
-
-typedef struct{
 	int showId;
-	char * time;
+	int time;
 	int roomId;
 	int movieId;
 } Show;
 
 typedef struct{
 	int ticketId;
-	int client_dni;
+	int seatNum;
 	int showId;
 } Ticket;
 

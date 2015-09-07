@@ -1,6 +1,5 @@
-#ifndef _SHARED_FUNCTIONS_H_
-
-#define _SHARED_FUNCTIONS_H_
+#ifndef _SHARED_FUNCTIONS_H
+#define _SHARED_FUNCTIONS_H
 
 char * getMovieList();
 
@@ -18,7 +17,7 @@ char * addFunction(char* function);
 
 char * removeFunction(int movieId);
 
-char * RespString(char * resp);
+char * RespString(char* resp);
 
 char * RespInt(int resp);
 

@@ -1,1 +1,0 @@
-communicationSockets.o communicationSockets.d: communicationSockets.c

@@ -9,8 +9,8 @@
 
 #define NAME "/tmp/fifo"
 
-void sendData(Connection * connection, int size, void * params);
-void receiveData(Connection * sender, int size, void * buffer);
+void sendData(Connection * connection, Datagram * params);
+void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
 
 void getFifoName(int pid, char * buffer);
@@ -22,20 +22,35 @@ void initChannel(int bool_server){
 }
 
 int fd, i;
+char fileName[32];
 
-void sendData(Connection * connection, int size, void * params){
+void sendData(Connection * connection, Datagram * params){
+	
 	if (!is_server){
 		fd = open("/tmp/server.fifo", O_WRONLY);
 		mknod("/tmp/server.fifo", S_IFIFO|0666, 0);
-		write(fd, "mensaje", 7);
+		write(fd, params, *(int*)params);
+	}else{
+		sprintf(fileName, "/tmp/fifo_cli%d", connection->sender_pid);
+		fd = open(fileName, O_WRONLY);
+		mknod(fileName, S_IFIFO|0666, 0);
+		write(fd, params, *(int*)params);
 	}
 }
 
-void receiveData(Connection * sender, int size, void * buffer){
-	fd = open("/tmp/server.fifo", O_RDONLY); 
+void receiveData(Connection * sender, Datagram * buffer){
+	
 	if(is_server)
 		fd = open("/tmp/server.fifo", O_RDONLY); 
-	read(fd, buffer, 1000);	
+	else{
+		sprintf(fileName, "/tmp/fifo_cli%d", *(((int*)buffer)+2));
+		fd = open(fileName, O_RDONLY);	
+	}
+	
+	read(fd, buffer, sizeof(int));
+	int size = *((int*)buffer);
+	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
+		
 }
 
 void getFifoName(int pid, char * buffer){
