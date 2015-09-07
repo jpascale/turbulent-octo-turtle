@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void processData(Connection * sender, Datagram * data);
+
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 
 Datagram data;
