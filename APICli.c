@@ -64,18 +64,27 @@ char * getMovieList(){
 }
 
 char * getMovieShow(int movieId){
-
+printf("movieId: %i\n",movieId);
 }
 
 char * getShowSeats(int showId){
-
+printf("showId: %i\n",showId);
 }
 
 
 char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
-
+printf("showId:%i,asiento: %i, tarjeta: %i, secCode: %i, nombre: %s \n",showId,  asiento,  tarjeta, secCode, nombre);
 }
 
 char * UndoBuyTicket(int ticketId, char* nombre){
+printf("ticketId: %i, nombre: %s\n",ticketId, nombre);
+}
 
+
+char * addFunction(char* function){
+printf("E - %s\n",function);
+}
+
+char * removeFunction(int movieId){
+printf("movieId: %i \n",movieId);
 }

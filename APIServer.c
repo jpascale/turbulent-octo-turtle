@@ -20,7 +20,6 @@ void main(){
 
 	printf("Cargado\n");
 	while(1){
-
 		receiveData(&sender, &data);
 		printf("Recive:%i \n",data.client_pid);
 
@@ -31,6 +30,7 @@ void main(){
 			case 0:
 				ProcessData(&sender, &data);
 				sendData(&sender, &data);
+				printf("Respuesta enviada\n");
 				exit(0);
 		}
 	}
@@ -40,7 +40,6 @@ void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(1);
 	printf("LISTO!\n");
-	//printf("Opcode: %i\n",data->opcode);
 	switch(data->opcode){
 	
 		case GET_MOVIE_LIST:
@@ -51,5 +50,4 @@ void ProcessData(Connection * sender, Datagram * data){
 	}
 	sender->sender_pid=data->client_pid;
 	data->size=3;
-	//printf("Le mando una respuesta a %i\n\n",sender->sender_pid);
 }
