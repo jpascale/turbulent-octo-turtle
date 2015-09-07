@@ -7,6 +7,8 @@
 #include <stdlib.h>
 
 void processData(Connection * sender, Datagram * data);
+void LepoInicializaTablas();
+
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 
@@ -27,6 +29,51 @@ static int callback_get_movie_list(void *NotUsed, int argc, char **argv, char **
 
 void main(){
 	
+	void LepoInicializaTablas();
+
+	initChannel(1);
+	printf("Server conectado\n");
+
+	int forked_pid;
+
+	printf("Cargado\n");
+	while(1){
+		receiveData(&sender, &data);
+		printf("Recive:%i \n",data.client_pid);
+
+		switch(forked_pid=fork()){
+			case -1:
+				perror("forked server\n");
+				exit(1);
+			case 0:
+				ProcessData(&sender, &data);
+				sendData(&sender, &data);
+				printf("Respuesta enviada\n");
+				exit(0);
+		}
+	}
+}
+
+void ProcessData(Connection * sender, Datagram * data){
+	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
+	sleep(1);
+	printf("LISTO!\n");
+
+	switch(data->opcode){
+	
+		case GET_MOVIE_LIST:
+			printf("Llama consultar cartelera de server\n");
+			break;
+		default:
+			printf("Comando no soportado\n");
+	}
+	sender->sender_pid=data->client_pid;
+	
+	sendData(sender,data);
+}
+
+
+void LepoInicializaTablas(){
 	sqlite3 * db;
 	int rc;
 	char *errMsg = 0, *sql_create_rooms, *sql_insert, * sql_get_movie_list,
@@ -132,47 +179,4 @@ void main(){
 	rc = sqlite3_exec(db, sql_get_movie_list, callback_get_movie_list, (void*) auxAnswer, &errMsg);
 	
 	printf("a ver:\n%s", answer);
-
-
-
-
-	initChannel(1);
-	printf("Server conectado\n");
-
-	int forked_pid;
-
-	printf("Cargado\n");
-	while(1){
-		receiveData(&sender, &data);
-		printf("Recive:%i \n",data.client_pid);
-
-		switch(forked_pid=fork()){
-			case -1:
-				perror("forked server\n");
-				exit(1);
-			case 0:
-				ProcessData(&sender, &data);
-				sendData(&sender, &data);
-				printf("Respuesta enviada\n");
-				exit(0);
-		}
-	}
-}
-
-void ProcessData(Connection * sender, Datagram * data){
-	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(1);
-	printf("LISTO!\n");
-
-	switch(data->opcode){
-	
-		case GET_MOVIE_LIST:
-			printf("Llama consultar cartelera de server\n");
-			break;
-		default:
-			printf("Comando no soportado\n");
-	}
-	sender->sender_pid=data->client_pid;
-	
-	sendData(sender,data);
 }

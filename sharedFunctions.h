@@ -21,6 +21,8 @@ char * RespString(char* resp);
 
 char * RespInt(int resp);
 
-void connect();
+void connect(void);
+
+void handOff(void);
 
 #endif

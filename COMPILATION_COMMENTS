@@ -1,7 +1,7 @@
 ** Consideraciones para hacer el makeFile
 
 *SERVER:
- Debe ser compilado con las etiquetas "-pthread -ltl" AL FINAL, si o si.
+ Debe ser compilado con las etiquetas "sqlite/sqlite3.c -pthread -ltl" AL FINAL, si o si.
  
 *SharedMem & queues:
  Para compilar linkeditar ambas partes con el modulo de connectionSharedMem, usar las etiquetas "-lrt -pthread" 
