@@ -23,7 +23,8 @@ static int callback_get_movie_list(void *NotUsed, int argc, char **argv, char **
 }
 
 void main(){
-	
+	// SECTOR SQL ///////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	sqlite3 * db;
 	int rc;
 	char *errMsg = 0, *sql_create_rooms, *sql_insert, * sql_get_movie_list,
@@ -126,10 +127,29 @@ void main(){
    //termina de insertar cosas
 	auxAnswer = answer;
 	
+	////////////////////////// consultas ///////////////////////////////////////
+	
+	//char * getMovieList();
 	rc = sqlite3_exec(db, sql_get_movie_list, callback_get_movie_list, (void*) auxAnswer, &errMsg);
 	
+	//char * getMovieShow(int movieId);
+	
+	rc = sqlite3_exec(db, sql_get_movie_show, callback_get_movie_list)
+	
+	//char * getShowSeats(int showId);
+	//char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
+	//char * UndoBuyTicket(int ticketId, char* nombre);
+	//char * addFunction(char* function);
+	//char * removeFunction(int movieId);
+	//char * RespString(char* resp);
+	//char * RespInt(int resp);
+	//void connect();
+	
+	
+	
 	printf("a ver:\n%s", answer);
-
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /*	
