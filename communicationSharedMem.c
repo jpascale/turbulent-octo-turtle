@@ -26,13 +26,16 @@ char *msg;
 static char buf[SIZE];
 int n;
 char* current;
+static sem_t *sdA;
+static sem_t *sdB;
+static sem_t *sdC;
 
 void initChannel(int b_server){
 	bool_server=b_server;
 	initmutex();	
 	if(bool_server){
-		enter(0);
-		enter(2);
+		setSemToCero(sdA);
+		setSemToCero(sdC);
 	}
 	memset(buf, 0, SIZE);
 	current=calloc(10000,1);
@@ -108,11 +111,6 @@ getmem(int mem_code)
 }
 
 
-static sem_t *sdA;
-
-static sem_t *sdB;
-
-static sem_t *sdC;
 
 void
 initmutex(void)
@@ -166,5 +164,13 @@ printfSemStates(){
 	sem_getvalue(sdB, &b);
 	sem_getvalue(sdC, &c);
 	printf("semA: %i,semB: %i,semC: %i\n",a,b,c);
+}
 
+void setSemToCero(sem_t * sem){
+	int value;
+	sem_getvalue(sem, &value);
+	while(value!=0){
+		sem_post(sem);
+		sem_getvalue(sem, &value);
+	}
 }
