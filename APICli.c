@@ -44,11 +44,11 @@ char * UndoBuyTicket(int ticketId, char* nombre){
 }
 
 
-char * addShow(char* function){
-	printf("E - %s\n",function);
+
+char * addShow(int time, int roomID, int movieID){
+printf("E\n");
 }
 
 char * removeShow(int movieId){
-	printf("movieId: %i \n",movieId);
-
+printf("movieId: %i \n",movieId);
 }

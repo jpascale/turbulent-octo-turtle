@@ -129,6 +129,7 @@ void loadCommands(){
 	commands[8].function = &chelp;
 	commands[8].argsCant = 0;
 	commands[8].desc = "I need somebody... ";
+
 }
 
 void parse(char* buff){

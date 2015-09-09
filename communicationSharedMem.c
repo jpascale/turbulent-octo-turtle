@@ -34,8 +34,10 @@ void initChannel(int b_server){
 	bool_server=b_server;
 	initmutex();	
 	if(bool_server){
-		setSemToCero(sdA);
-		setSemToCero(sdC);
+//		setSemToCero(sdA);
+//		setSemToCero(sdC);
+		enter(0);
+		enter(2);
 	}
 	memset(buf, 0, SIZE);
 	current=calloc(10000,1);

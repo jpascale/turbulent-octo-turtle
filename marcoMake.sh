@@ -1,4 +1,4 @@
-gcc client.c APICli.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h sqlite/sqlite3.c -o shmCli -lrt -pthread -lpthread -ldl
+gcc client.c APICli.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h -lrt -pthread -o shmCli
 
 
-gcc server.c APIServer.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h sqlite/sqlite3.c -o shmServer -lrt -pthread -lpthread -ldl
+gcc -o shmServer server.c APIServer.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl
