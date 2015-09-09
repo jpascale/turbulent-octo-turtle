@@ -19,6 +19,9 @@ int is_server;
 
 void initChannel(int bool_server){
 	is_server = bool_server;
+	if(bool_server){
+		mknod("/tmp/server.fifo", S_IFIFO|0666, 0);
+	}
 }
 
 int fd, i;
@@ -40,14 +43,15 @@ void sendData(Connection * connection, Datagram * params){
 
 void receiveData(Connection * sender, Datagram * buffer){
 	
-	if(is_server)
+	if(is_server){
 		fd = open("/tmp/server.fifo", O_RDONLY); 
-	else{
+	}else{
 		sprintf(fileName, "/tmp/fifo_cli%d", *(((int*)buffer)+2));
 		fd = open(fileName, O_RDONLY);	
 	}
 	
 	read(fd, buffer, sizeof(int));
+	printf("esto leyo: %s\n", buffer);
 	int size = *((int*)buffer);
 	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
 		

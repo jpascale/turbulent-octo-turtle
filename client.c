@@ -106,19 +106,19 @@ void loadCommands(){
     commands[4].argsCant = 2;
     commands[4].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
-	char* addFunctionArgs= malloc(1000);
-	addFunctionArgs[0]=STRING;
-    commands[5].name = "addFunction";
-    commands[5].function = &addFunction;
-    commands[5].args = addFunctionArgs;
+	char* addShowArgs= malloc(1000);
+	addShowArgs[0]=STRING;
+    commands[5].name = "addShow";
+    commands[5].function = &addShow;
+    commands[5].args = addShowArgs;
     commands[5].argsCant = 1;
     commands[5].desc = "Agrega una pelicula a la cartelera.";
 
-	char* removeFunctionArgs= malloc(1000);
-	removeFunctionArgs[0]=STRING;
-    commands[6].name = "removeFunction";
-    commands[6].function = &removeFunction;
-    commands[6].args = removeFunctionArgs;
+	char* removeShowArgs= malloc(1000);
+	removeShowArgs[0]=STRING;
+    commands[6].name = "removeShow";
+    commands[6].function = &removeShow;
+    commands[6].args = removeShowArgs;
     commands[6].argsCant = 1;
     commands[6].desc = "Remueve una pelicula a la cartelera.";
 

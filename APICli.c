@@ -83,11 +83,11 @@ printf("ticketId: %i, nombre: %s\n",ticketId, nombre);
 }
 
 
-char * addFunction(char* function){
-printf("E - %s\n",function);
+char * addShow(int time, int roomID, int movieID){
+printf("E\n");
 }
 
-char * removeFunction(int movieId){
+char * removeShow(int movieId){
 printf("movieId: %i \n",movieId);
 
 }
