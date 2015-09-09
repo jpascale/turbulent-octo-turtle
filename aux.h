@@ -13,7 +13,7 @@ while(1) {
 }
 
 ProcessData(sender, data)
-	Buy(int cliente, bla, bla);
-		BuyResponse(cliente, response)
-			sendData(clientMap[cliente], response, sizeof(BuyResponseData));
+Buy(int cliente, bla, bla);
+BuyResponse(cliente, response)
+sendData(clientMap[cliente], response, sizeof(BuyResponseData));
 cliente

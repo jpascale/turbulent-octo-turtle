@@ -13,9 +13,9 @@ char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre)
 // ret: confirmation code
 char * UndoBuyTicket(int ticketId, char* nombre);
 
-char * addFunction(char* function);
+char * addShow(char* function);
 
-char * removeFunction(int movieId);
+char * removeShow(int movieId);
 
 char * RespString(char* resp);
 

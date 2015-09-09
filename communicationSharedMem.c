@@ -17,59 +17,63 @@ typedef enum { false, true } bool;
 void fatal(char *s);
 char * getmem(int mem_code);
 void initmutex(void);
-void enter(int bool_cs);
-void leave(int bool_cs);
+void enter(int code);
+void leave(int code);
+void printfSemStates();
 
 static int bool_server;
 char *msg;
 static char buf[SIZE];
 int n;
+char* current;
 
 void initChannel(int b_server){
 	bool_server=b_server;
 	initmutex();	
+	if(bool_server){
+		enter(0);
+		enter(2);
+	}
 	memset(buf, 0, SIZE);
+	current=calloc(10000,1);
 }
 
 void sendData(Connection * connection, Datagram * params){
-	enter(!bool_server);
+//	printfSemStates();
+
 	if(bool_server)
 		msg=getmem(connection->sender_pid);
 	else
 		msg=getmem(0);
-
+	
+	//printf("sout, %i\n",getpid());
+	enter(1);
+	//printf("sin, %i\n",getpid());
 	memcpy(msg, params,params->size);
+	leave((bool_server)?2:0);
+
 //	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
-	leave(!bool_server);
 }
 
 void receiveData(Connection * sender, Datagram * buffer){
 
-		if(bool_server)
-			msg=getmem(0);
-		else
-			msg=getmem(sender->sender_pid);
-
+	if(bool_server)
+		msg=getmem(0);
+	else
+		msg=getmem(sender->sender_pid);
 
 //		printf("Leyendo de memoria, bloqueante\n");
-
-		char* current=calloc(10000,1);
-
-		while(strlen(current)==0){
-			enter(bool_server);
-			
-			memcpy(current, msg,sizeof(int));
-
-			leave(bool_server);
-		}
+//		printf("rout, %i\n",getpid());
+	enter((bool_server)?0:2);
+//		printf("rin, %i\n",getpid());
+	memcpy(current, msg,sizeof(int));	
 //		printf("Busco un mensaje de size= %i\n",*((int*)current));
-
-		memcpy(current, msg,*((int*)current));
-	
+	memcpy(current, msg,*((int*)current));
+	sprintf(msg,"\0\0\0\0");	
+	leave(1);
 //		printf("Recibido\n");
-
-		memcpy(buffer,current,SIZE);
-		sprintf(msg,"\0\0\0\0");
+	memcpy(buffer,current,*((int*)current));
+//		printfSemStates();
 }
 
 void
@@ -104,34 +108,63 @@ getmem(int mem_code)
 }
 
 
-static sem_t *sdcs;
+static sem_t *sdA;
 
-static sem_t *sdsc;
+static sem_t *sdB;
+
+static sem_t *sdC;
 
 void
 initmutex(void)
 {
-	if ( !(sdcs = sem_open("mutex_cs", O_RDWR|O_CREAT, 0666, 1)) )
+	if ( !(sdA = sem_open("mutex_A", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 
-	if ( !(sdsc = sem_open("mutex_sc", O_RDWR|O_CREAT, 0666, 1)) )
+	if ( !(sdB = sem_open("mutex_B", O_RDWR|O_CREAT, 0666, 1)) )
+		fatal("sem_open");
+
+	if ( !(sdC = sem_open("mutex_C", O_RDWR|O_CREAT, 0666, 1)) )
 		fatal("sem_open");
 }
 
 void
-enter(int bool_cs)
+enter(int code)
 {
-	if(bool_cs)
-		sem_wait(sdcs);
-	else
-		sem_wait(sdsc);
+	switch(code){
+		case 0:
+		sem_wait(sdA);
+		break;
+		case 1:
+		sem_wait(sdB);
+		break;
+		case 2:
+		sem_wait(sdC);
+		break;
+	}
 }
 
 void
-leave(int bool_cs)
+leave(int code)
 {
-	if(bool_cs)
-		sem_post(sdcs);
-	else
-		sem_post(sdsc);
+	switch(code){
+		case 0:
+		sem_post(sdA);
+		break;
+		case 1:
+		sem_post(sdB);
+		break;
+		case 2:
+		sem_post(sdC);
+		break;
+	}
+}
+
+void
+printfSemStates(){
+	int a,b,c;
+	sem_getvalue(sdA, &a);
+	sem_getvalue(sdB, &b);
+	sem_getvalue(sdC, &c);
+	printf("semA: %i,semB: %i,semC: %i\n",a,b,c);
+
 }

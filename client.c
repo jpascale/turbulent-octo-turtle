@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -17,20 +18,21 @@
 #define STRING          0
 #define INT             1
 
-
+void cshowMovieList();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 void parse(char* buff);
 void loadCommands();
 void cexit();
-void help();
+void chelp();
+int splitArgs(char* args[], char* buffer);
 
 struct command
 {
-        char * name;
-        void (* function) ();
-        char * args;
-        int argsCant;
-        char* desc;
+	char * name;
+	void (* function) ();
+	char * args;
+	int argsCant;
+	char* desc;
 };
 
 static struct command commands[COM_SIZE] = {};
@@ -39,13 +41,9 @@ static struct command commands[COM_SIZE] = {};
 int main (int argc, char const *argv[]) {
 
 	loadCommands();
-
 	connect();
-
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
-
 	char input[INPUT_SIZE];
-
 	int n;
 	
 	while(1){
@@ -63,27 +61,27 @@ int main (int argc, char const *argv[]) {
 
 void loadCommands(){
 
-    commands[0].name = "getMovieList";
-    commands[0].function = &getMovieList;
-    commands[0].argsCant = 0;
-    commands[0].desc = "Muestra la cartelera disponible!";
+	commands[0].name = "showMovieList";
+	commands[0].function = &cshowMovieList;
+	commands[0].argsCant = 0;
+	commands[0].desc = "Muestra la cartelera disponible!";
 
-  
+	
 	char* getMovieShowArgs = malloc(1000);
-    getMovieShowArgs[0]=INT;	
-    commands[1].name = "getMovieShow";
-    commands[1].function = &getMovieShow;
-    commands[1].args = getMovieShowArgs;
-    commands[1].argsCant = 1;
-    commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
+	getMovieShowArgs[0]=INT;	
+	commands[1].name = "getMovieShow";
+	commands[1].function = &getMovieShow;
+	commands[1].args = getMovieShowArgs;
+	commands[1].argsCant = 1;
+	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
 
 	char* getShowSeatsArgs = malloc(1000);
-    getShowSeatsArgs[0]=INT;
-    commands[2].name = "getShowSeats";
-    commands[2].function = &getShowSeats;
-    commands[2].args = getShowSeatsArgs;
-    commands[2].argsCant = 1;
-    commands[2].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
+	getShowSeatsArgs[0]=INT;
+	commands[2].name = "getShowSeats";
+	commands[2].function = &getShowSeats;
+	commands[2].args = getShowSeatsArgs;
+	commands[2].argsCant = 1;
+	commands[2].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
 
 	char* BuyTicketArgs = malloc(1000);
 	BuyTicketArgs[0]=INT;
@@ -91,46 +89,46 @@ void loadCommands(){
 	BuyTicketArgs[2]=INT;
 	BuyTicketArgs[3]=INT;
 	BuyTicketArgs[4]=STRING;
-    commands[3].name = "buyTickets";
-    commands[3].function = &BuyTicket;
-    commands[3].args = BuyTicketArgs;
-    commands[3].argsCant = 5;
-    commands[3].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
+	commands[3].name = "buyTickets";
+	commands[3].function = &BuyTicket;
+	commands[3].args = BuyTicketArgs;
+	commands[3].argsCant = 5;
+	commands[3].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
 	char* UndoBuyTicketArgs= malloc(1000);
 	UndoBuyTicketArgs[0]=INT;
 	UndoBuyTicketArgs[1]=STRING;
-    commands[4].name = "undoBuyTicket";
-    commands[4].function = &UndoBuyTicket;
-    commands[4].args = UndoBuyTicketArgs;
-    commands[4].argsCant = 2;
-    commands[4].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
+	commands[4].name = "undoBuyTicket";
+	commands[4].function = &UndoBuyTicket;
+	commands[4].args = UndoBuyTicketArgs;
+	commands[4].argsCant = 2;
+	commands[4].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
-	char* addFunctionArgs= malloc(1000);
-	addFunctionArgs[0]=STRING;
-    commands[5].name = "addFunction";
-    commands[5].function = &addFunction;
-    commands[5].args = addFunctionArgs;
-    commands[5].argsCant = 1;
-    commands[5].desc = "Agrega una pelicula a la cartelera.";
+	char* addShowArgs= malloc(1000);
+	addShowArgs[0]=STRING;
+	commands[5].name = "addShow";
+	commands[5].function = &addShow;
+	commands[5].args = addShowArgs;
+	commands[5].argsCant = 1;
+	commands[5].desc = "Agrega una pelicula a la cartelera.";
 
-	char* removeFunctionArgs= malloc(1000);
-	removeFunctionArgs[0]=STRING;
-    commands[6].name = "removeFunction";
-    commands[6].function = &removeFunction;
-    commands[6].args = removeFunctionArgs;
-    commands[6].argsCant = 1;
-    commands[6].desc = "Remueve una pelicula a la cartelera.";
+	char* removeShowArgs= malloc(1000);
+	removeShowArgs[0]=STRING;
+	commands[6].name = "removeShow";
+	commands[6].function = &removeShow;
+	commands[6].args = removeShowArgs;
+	commands[6].argsCant = 1;
+	commands[6].desc = "Remueve una pelicula a la cartelera.";
 
-    commands[7].name = "exit";
-    commands[7].function = &cexit;
-    commands[7].argsCant = 0;
-    commands[7].desc = "Sale del programa.";
+	commands[7].name = "exit";
+	commands[7].function = &cexit;
+	commands[7].argsCant = 0;
+	commands[7].desc = "Sale del programa.";
 
-    commands[8].name = "help";
-    commands[8].function = &help;
-    commands[8].argsCant = 0;
-    commands[8].desc = "I need somebody... ";
+	commands[8].name = "help";
+	commands[8].function = &chelp;
+	commands[8].argsCant = 0;
+	commands[8].desc = "I need somebody... ";
 }
 
 void parse(char* buff){
@@ -151,22 +149,25 @@ void parse(char* buff){
 			}else{
 				convertArg(args, commands[index].args, commands[index].argsCant);
 				switch(commands[index].argsCant){
-				case 0:
+					case 0:
 					commands[index].function();
 					break;
-				case 1:
+					case 1:
 					commands[index].function(args[1]);
 					break;
-				case 2:
+					case 2:
 					commands[index].function(args[1], args[2]);
 					break;
-				case 5:
+					case 5:
 					commands[index].function(args[1], args[2], args[3], args[4], args[5]);
 					break;
-					}
 				}
 			}
 		}
+	}
+	if(!flag){
+		printf(ANSI_COLOR_MAGENTA "Comando invalido: %s. Intente el comando 'help'\n",args[0]);
+	}
 }
 
 int splitArgs(char* args[], char* buffer){
@@ -184,21 +185,18 @@ int splitArgs(char* args[], char* buffer){
 
 int convertArg(char ** args, unsigned  char * argTypes, int cant){
 	int  j;
-	for(j=1; j<=cant; j++){
-		printf("Ciclo con %i\n",argTypes[j-1]);
-		
+	for(j=1; j<=cant; j++){	
 		switch(argTypes[j-1]){
 			case INT:
-				args[j]=atoi(args[j]);
-				break;
+			args[j]=atoi(args[j]);
+			break;
 			default:
-				break;
-		}	
+			break;
+		}
 	}
-	
 }
 
-void help(){
+void chelp(){
 	int i,j;
 	for(i=0;i<COM_SIZE;i++){
 		printf(ANSI_COLOR_GREEN "------ %s -------\n", commands[i].name);
@@ -215,8 +213,44 @@ void help(){
 	}
 }
 
+void cshowMovieList(){
+	printf(ANSI_COLOR_CYAN"---- CONSULTANDO CARTELERA ----\n");
+	char* answer=getMovieList();
+	char* aux1;
+	char* aux2;
+	int cont=0;
+	int flag=0;
+	while(!flag){
+		if(cont==0){
+			aux1=answer;
+			cont=1;
+		}else{
+			while(answer[0]!=';' && answer[0]!='\0'){
+				answer++;
+			}
+			if(cont==1){
+				if(answer[0]==';'){
+					answer[0]='\0';
+					answer++;
+					aux2=answer;
+					cont=2;
+				}else{
+					printf("ERROR?\n");
+				}
+			}else{
+				answer[0]='\0';
+				answer++;
+				printf(ANSI_COLOR_MAGENTA"Nombre:"ANSI_COLOR_CYAN " %s " ANSI_COLOR_MAGENTA " Id de la pelicula:"ANSI_COLOR_CYAN" %s\n",aux1,aux2);
+				cont=0;
+				if(answer[0]=='\0')
+					flag=1;
+			}
+		}
+	}
+}
+
 void cexit(){
-	printf("Saliendo!" ANSI_COLOR_RESET "\n");
+	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
 
 }
