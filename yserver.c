@@ -14,6 +14,7 @@ int main(void){
 
 	while (1){
 		receiveData(&conn, &data);
+    	printf("Dat income: %s", data.data.m.title);
 		sendData(&conn, &data);
 	}
 }

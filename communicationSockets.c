@@ -144,19 +144,13 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
         	printf("Accepted %d socket.\n", client_sock);
 
     	int read_size;
-
      	Datagram data;
 
      	if (DEBUG)
      		printf("Esperando para leer\n");
 
     	if ((read_size = recv(client_sock, &data, sizeof data, 0)) > 0){
-
-    		//Poner en send data
-    		if (DEBUG)
-    			printf("Dat income: %s", data.data.m.title);
     		memcpy(sdData, &data, sizeof data);
-    		
     		return;
     	}
      
@@ -225,22 +219,29 @@ void clt_send_data(Connection * connection, Datagram * sdData){
       		puts("Send failed");
        		return;
    		}else{
-   			printf("Sent.\n");
+   			if (DEBUG)
+   				printf("Sent.\n");
        	}
         
-        if(recv(sock, &data, sizeof data, 0) < 0){
-            puts("recv failed");
-            return;
-        }
-         
-        if (DEBUG)
-        	printf("DEBUG Server: %s", data.data.m.title);
-
-       	close(sock);
-       	printf("DEBUG: Desconectado.\n");
+       	return;
     }
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData){
+    
+	Datagram data;
 
+    if(recv(sock, &data, sizeof data, 0) < 0){
+        puts("recv failed"); 
+        return;
+    }
+
+    close(sock);
+
+    memcpy(sdData, &data, sizeof data);
+    
+    if (DEBUG)
+   		printf("DEBUG: Desconectado.\n");
+
+   	return;
 }
