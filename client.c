@@ -18,12 +18,15 @@
 #define STRING          0
 #define INT             1
 
-void cshowMovieList();
-int convertArg(char ** args, unsigned char * argTypes, int cant);
-void parse(char* buff);
-void loadCommands();
+void cgetMovieList();
+void cgetMovieShow(int i);
+void cgetShowSeats(int i);
+void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
 void cexit();
 void chelp();
+void parse(char* buff);
+void loadCommands();
+int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 
 struct command
@@ -61,8 +64,8 @@ int main (int argc, char const *argv[]) {
 
 void loadCommands(){
 
-	commands[0].name = "showMovieList";
-	commands[0].function = &cshowMovieList;
+	commands[0].name = "getMovieList";
+	commands[0].function = &cgetMovieList;
 	commands[0].argsCant = 0;
 	commands[0].desc = "Muestra la cartelera disponible!";
 
@@ -70,7 +73,7 @@ void loadCommands(){
 	char* getMovieShowArgs = malloc(1000);
 	getMovieShowArgs[0]=INT;	
 	commands[1].name = "getMovieShow";
-	commands[1].function = &getMovieShow;
+	commands[1].function = &cgetMovieShow;
 	commands[1].args = getMovieShowArgs;
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
@@ -78,7 +81,7 @@ void loadCommands(){
 	char* getShowSeatsArgs = malloc(1000);
 	getShowSeatsArgs[0]=INT;
 	commands[2].name = "getShowSeats";
-	commands[2].function = &getShowSeats;
+	commands[2].function = &cgetShowSeats;
 	commands[2].args = getShowSeatsArgs;
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
@@ -90,7 +93,7 @@ void loadCommands(){
 	BuyTicketArgs[3]=INT;
 	BuyTicketArgs[4]=STRING;
 	commands[3].name = "buyTickets";
-	commands[3].function = &BuyTicket;
+	commands[3].function = &cBuyTicket;
 	commands[3].args = BuyTicketArgs;
 	commands[3].argsCant = 5;
 	commands[3].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
@@ -214,7 +217,7 @@ void chelp(){
 	}
 }
 
-void cshowMovieList(){
+void cgetMovieList(){
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO CARTELERA ----\n");
 	char* answer=getMovieList();
 	char* aux1;
@@ -237,6 +240,7 @@ void cshowMovieList(){
 					cont=2;
 				}else{
 					printf("ERROR?\n");
+					flag=1;
 				}
 			}else{
 				answer[0]='\0';
@@ -248,6 +252,26 @@ void cshowMovieList(){
 			}
 		}
 	}
+}
+
+void
+cgetMovieShow(int i){
+	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
+	char* answer=getMovieShow(i);
+	printf(ANSI_COLOR_GREEN" %s ",answer);
+}
+
+void
+cgetShowSeats(int i){
+	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
+	char* answer=getShowSeats(i);
+	printf(ANSI_COLOR_GREEN" %s ",answer);
+}
+
+void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
+	printf(ANSI_COLOR_CYAN"---- REALIZANDO COMPRA ----\n");
+	int i=BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
+	printf("El server responde %i, deberia ser el ticketID\n");
 }
 
 void cexit(){

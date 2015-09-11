@@ -15,7 +15,7 @@ void connect(){
 }
 
 char * getMovieList(){
-	data.opcode = 0;
+	data.opcode = GET_MOVIE_LIST;
 	data.client_pid = getpid();
 	data.size = sizeof(data);
 	sender.sender_pid=getpid();
@@ -27,16 +27,48 @@ char * getMovieList(){
 }
 
 char * getMovieShow(int movieId){
-	printf("movieId: %i\n",movieId);
+	data.opcode = GET_MOVIE_SHOW;
+	data.client_pid = getpid();
+	data.data.i=movieId;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
 }
 
 char * getShowSeats(int showId){
-	printf("showId: %i\n",showId);
+	data.opcode = GET_SHOW_SEATS;
+	data.client_pid = getpid();
+	data.data.i=showId;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
 }
 
 
 char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
-	printf("showId:%i,asiento: %i, tarjeta: %i, secCode: %i, nombre: %s \n",showId,  asiento,  tarjeta, secCode, nombre);
+	data.opcode = BUY_TICKET;
+	data.client_pid = getpid();
+	data.data.buy.showId=showId;
+	data.data.buy.asiento=asiento;
+	data.data.buy.tarjeta=tarjeta;
+	data.data.buy.secCode=secCode;
+	data.data.buy.nombre=nombre;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.i;
+
 }
 
 char * UndoBuyTicket(int ticketId, char* nombre){

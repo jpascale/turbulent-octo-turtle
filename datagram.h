@@ -4,15 +4,24 @@
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
 	BUY_TICKET, UNDO_BUY_TICKET} command;
 
-	typedef union{
-		int i;
-		char text[1024];
-	}DataStruct;
+typedef struct{
+	int showId;
+	int asiento;
+	int tarjeta;
+	int secCode;
+	char* nombre;
+}buyStruct;
 
-	typedef struct{
-		int size;
-		int opcode;
-		int client_pid;
+typedef union{
+	int i;
+	char text[1024];
+	buyStruct buy;
+}DataStruct;
+
+typedef struct{
+	int size;
+	int opcode;
+	int client_pid;
 	DataStruct data; // tagUNION
 }Datagram;
 

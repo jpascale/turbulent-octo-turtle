@@ -5,36 +5,47 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "./datagram.h"
-
+#include "datagram.h"
+#include "sharedFunctions.h"
 #define NAME "/tmp/fifo"
 #define MAGIC_NUMBER_TO_AVOID_WARNINGS 12
 
 
-
-void 
-chau(int sig)
-{
-	printf("Padre recibe SIGPIPE y termina\n");
-	exit(1);
+char * getMovieList(){
+	char* ans=malloc(1000);
+	ans="NOMBRE1 ; ID1 ; NOMBRE2 ; ID2 ; NOMBRE3 ; ID3";
+	return ans;
 }
 
-int
-main2(int argc, char **argv)
-{
-	int fd, i,n ;
-	char* buf;
-	
-	if ( access(NAME, 0) == -1 && mknod(NAME, S_IFIFO|0666, 0) == -1 )
-	perror("mknod");
-	exit(1);
-	
-	fd = open(NAME, O_RDONLY);
-	while ( (n = read(fd, buf, sizeof buf)) > 0 )
-	{
-		printf("Hijo lee del pipe: %.*s", n, buf);
-		if ( memcmp(buf, "end", 3) == 0 )
-			exit(1);
-	}
-	printf("Hijo termina\n");
+char * getMovieShow(int movieId){
+	char* ans=malloc(1000);
+	sprintf(ans, "Cadena de datos del movieId: %i generado en server\n",movieId);
+	return ans;
+}
+
+char * getShowSeats(int showId){
+	char* ans=malloc(1000);
+	sprintf(ans, "Cadena de asientos del show: %i generado en server\n",showId);
+	return ans;
+}
+// ret: ticketId
+char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
+
+	return 7;
+}
+// ret: confirmation code
+char * UndoBuyTicket(int ticketId, char* nombre){
+
+}
+char * addShow(int time, int roomID, int movieID){
+
+}
+char * removeShow(int movieId){
+
+}
+char * addMovie(int length, char * title, char * desc){
+
+}
+char * removeMovie(int movieID){
+
 }

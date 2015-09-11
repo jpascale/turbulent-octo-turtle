@@ -21,10 +21,6 @@ char * addMovie(int length, char * title, char * desc);
 
 char * removeMovie(int movieID);
 
-char * RespString(char* resp);
-
-char * RespInt(int resp);
-
 void connect(void);
 
 void handOff(void);

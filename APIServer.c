@@ -45,20 +45,31 @@ void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(2);
 	printf("FIN DEL SLEEP!\n");
-
-	switch(data->opcode){
-		
+	sender->sender_pid=data->client_pid;
+	char* ans;
+	int num;
+	switch(data->opcode){	
 		case GET_MOVIE_LIST:
-		printf("Llama consultar cartelera de server\n");
+		ans=getMovieList();
+		strcpy(data->data.text, ans);
+		break;
+		case GET_MOVIE_SHOW:
+		ans=getMovieShow(data->data.i);
+		strcpy(data->data.text, ans);
+		break; 
+		case GET_SHOW_SEATS:
+		ans=getShowSeats(data->data.i);
+		strcpy(data->data.text, ans);
+		break;
+		case BUY_TICKET:
+		num=BuyTicket(data->data.buy.showId, data->data.buy.asiento, data->data.buy.tarjeta,data->data.buy.secCode,data->data.buy.nombre);
+		data->data.i=num;
+		printf("%i\n",num);
+		break;
+		case UNDO_BUY_TICKET:
 		break;
 		default:
-		printf("Comando no soportado\n");
+			printf("Comando no soportado!\n");
+			sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n",data->opcode);
 	}
-	char* hard_ans="NOMBRE1 ; ID1 ; NOMBRE2 ; ID2 ; NOMBRE3 ; ID3";
-	char* lepoDice=malloc(9999);
-	sender->sender_pid=data->client_pid;
-	strcpy( data->data.text, hard_ans);
-	SQLgetMovieList(lepoDice);
-	printf("Lepo dice: %s\n",lepoDice);
-	printf("Copiado: %s\n",hard_ans);
 }
