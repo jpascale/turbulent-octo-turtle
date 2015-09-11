@@ -99,13 +99,13 @@ void srv_init_channel(void){
     //Create socket
     socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1){
-        printf("Could not create socket");
+        printf("Could not create socket\n");
     }
     puts("Socket created");
      
     //Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");//INADDR_ANY;
     server.sin_port = htons(8888);
      
     //Bind
@@ -132,38 +132,36 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
  
  	if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
 
-        puts("Connection accepted");
+        printf("Connection %d accepted\n", client_sock);
          
-        new_sock = malloc(4);
-        *new_sock = client_sock;
          
     //__________Receive incoming data____________
         
         //socket descriptor
-    	int sock = *(int*)new_sock;
+    	int sock = client_sock;
     	int read_size;
     	char * message;
-    	char client_message[2000];
+    	char client_message[100];
      	memset(client_message, 0, sizeof client_message);
 
-    	if ((read_size = recv(sock , client_message , 2000 , 0)) > 0){
+     	printf("Antes del recv\n");
+    	if ((read_size = recv(sock, client_message, 100, 0)) > 0){
 
     		//Poner en send data
     		printf("Dat income: %s", client_message);
-        	write(sock , client_message , strlen(client_message));
+        	write(sock, client_message, read_size);
+        	close(sock);
     	}
      
     	if (read_size == 0){
-        	printf("Client disconnected\n");
+        	printf("Client %d disconnected\n", sock);
         	fflush(stdout);
     	} else if (read_size == -1){
         	perror("recv failed");
     	}
          
-    	//Free the socket pointer
-    	close(client_sock);
-    	free(new_sock);
-    	//free(socket_desc);
+    	//close(client_sock);
+
     //___________________________________________
     }
      
