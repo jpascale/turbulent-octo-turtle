@@ -30,9 +30,13 @@ typedef enum { false, true } bool;
 #define server_ip "127.0.0.1"
 #define port 8000
 
+#define DEBUG true
+
 /*
 **		Global declares
 */
+//TODO: Merge if possible
+//SERVER
 bool is_server;
 
 int socket_desc;
@@ -41,6 +45,11 @@ int c;
 int * new_sock;
 struct sockaddr_in server, client;
 
+//CLIENT
+int sock;
+struct sockaddr_in server;
+char message[100];
+char server_reply[2000];
 
 /*
 **		Module functions
@@ -101,76 +110,76 @@ void srv_init_channel(void){
     if (socket_desc == -1){
         printf("Could not create socket\n");
     }
-    puts("Socket created");
      
     //Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");//INADDR_ANY;
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_port = htons(8888);
      
+    int enable = 1;
+	if (setsockopt(socket_desc, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+    	perror("setsockopt(SO_REUSEADDR) failed");
+
     //Bind
     if(bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0){
         perror("bind failed. Error");
         return;
     }
 
-    puts("bind done");
-     
     //Listen
     listen(socket_desc , 3);
      
-    c = sizeof(struct sockaddr_in);
-        
-    //Accept an incoming connection
-    puts("Waiting for incoming connections...");
     c = sizeof(struct sockaddr_in);
 
     return;
 }
 
 void srv_receive_data(Connection * connection, Datagram * sdData){
- 
- 	if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
 
-        printf("Connection %d accepted\n", client_sock);
-         
+ 	if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
          
     //__________Receive incoming data____________
-        
+        if (DEBUG)
+        	printf("Accepted %d socket.\n", client_sock);
         //socket descriptor
     	int sock = client_sock;
     	int read_size;
-    	char * message;
-    	char client_message[100];
-     	memset(client_message, 0, sizeof client_message);
 
-     	printf("Antes del recv\n");
-    	if ((read_size = recv(sock, client_message, 100, 0)) > 0){
+     	Datagram data;
+
+     	if (DEBUG)
+     		printf("Esperando para leer\n");
+
+    	if ((read_size = recv(sock, &data, sizeof data, 0)) > 0){
 
     		//Poner en send data
-    		printf("Dat income: %s", client_message);
-        	write(sock, client_message, read_size);
+    		if (DEBUG)
+    			printf("Dat income: %s", data.data.m.title);
+        	write(sock, &data, sizeof data);
         	close(sock);
     	}
      
     	if (read_size == 0){
-        	printf("Client %d disconnected\n", sock);
+        	if (DEBUG)
+        		printf("Client %d disconnected\n", sock);
         	fflush(stdout);
     	} else if (read_size == -1){
         	perror("recv failed");
     	}
-         
-    	//close(client_sock);
 
-    //___________________________________________
+    	if (sock < 0){
+    		printf ("SOCK < 0");
+    		exit(1);
+    	}
     }
      
     if (client_sock < 0)
     {
-        perror("accept failed");
+        perror("El puerto esta siendo usado.\n");
         return;
     }
-     
+    
+
     return;
      
 }
@@ -181,10 +190,49 @@ void srv_send_data(Connection * coneccion, Datagram * sdData){
 
 void clt_init_channel(void){
 	is_server = false;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+    
+    if (sock == -1)
+    {
+        printf("Could not create socket");
+    }
+    printf("Socket created\n");
+     
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_family = AF_INET;
+    server.sin_port = htons(8888);
 }
 
 void clt_send_data(Connection * connection, Datagram * sdData){
+	
+	Datagram data;
+	memcpy(&data, sdData, sizeof data);
 
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+        printf ("Socket error\n");
+    }
+
+    if (connect(sock, (struct sockaddr *)&server, sizeof(server))>= 0){
+   		
+   		if(send(sock, &data, sizeof data, 0) < 0){
+      		puts("Send failed");
+       		return;
+   		}else{
+   			printf("Sent.\n");
+       	}
+        
+        if(recv(sock, &data, sizeof data, 0) < 0){
+            puts("recv failed");
+            return;
+        }
+         
+        if (DEBUG)
+        	printf("DEBUG Server: %s", data.data.m.title);
+
+       	close(sock);
+       	printf("DEBUG: Desconectado.\n");
+    }
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData){
