@@ -21,32 +21,19 @@ int main(int argc , char *argv[])
     server.sin_family = AF_INET;
     server.sin_port = htons(8888);
 
-   /* if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0)
-    {
-        perror("falla connect");
-        return 1;
-    }
-     
-    printf("Connected\n");
-    */
-
     int w;
 
     while(1){
-        //printf("Enter message: ");
+
         if (read(0, message, sizeof message) > 0){
-         	//sacar
+
          	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
          		printf ("Socket error\n");
          	}
-         	/*server.sin_addr.s_addr = inet_addr("127.0.0.1");
-         	server.sin_family = AF_INET;
-         	server.sin_port = htons(8888);*/
-         	///sacar
-        	if ((w=connect(sock, (struct sockaddr *)&server, sizeof(server)))>= 0){
-        		printf("DEBUG send: %s.\n", message);
 
-        		if(send(sock, message, sizeof message, 0) < 0){// strlen(message), 0) < 0){
+        	if ((w=connect(sock, (struct sockaddr *)&server, sizeof(server)))>= 0){
+
+        		if(send(sock, message, sizeof message, 0) < 0){
             		puts("Send failed");
             		return 1;
         		}else{
@@ -67,7 +54,6 @@ int main(int argc , char *argv[])
         		printf("DEBUG: Desconectado.\n");
         	}
 
-        	printf("w: %d\n", w);
         }
     }
      
