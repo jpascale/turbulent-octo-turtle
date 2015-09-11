@@ -113,9 +113,10 @@ void srv_init_channel(void){
      
     //Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server.sin_port = htons(8888);
-     
+    server.sin_addr.s_addr = inet_addr(server_ip);
+    server.sin_port = htons(port);
+    
+    //This allows another socket to bind the ip, port, allows instant server reboot
     int enable = 1;
 	if (setsockopt(socket_desc, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
     	perror("setsockopt(SO_REUSEADDR) failed");
@@ -199,9 +200,9 @@ void clt_init_channel(void){
     }
     printf("Socket created\n");
      
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_addr.s_addr = inet_addr(server_ip);
     server.sin_family = AF_INET;
-    server.sin_port = htons(8888);
+    server.sin_port = htons(port);
 }
 
 void clt_send_data(Connection * connection, Datagram * sdData){
