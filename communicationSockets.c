@@ -142,8 +142,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
     //__________Receive incoming data____________
         if (DEBUG)
         	printf("Accepted %d socket.\n", client_sock);
-        //socket descriptor
-    	int sock = client_sock;
+
     	int read_size;
 
      	Datagram data;
@@ -151,25 +150,26 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
      	if (DEBUG)
      		printf("Esperando para leer\n");
 
-    	if ((read_size = recv(sock, &data, sizeof data, 0)) > 0){
+    	if ((read_size = recv(client_sock, &data, sizeof data, 0)) > 0){
 
     		//Poner en send data
     		if (DEBUG)
     			printf("Dat income: %s", data.data.m.title);
-        	write(sock, &data, sizeof data);
-        	close(sock);
+    		memcpy(sdData, &data, sizeof data);
+    		
+    		return;
     	}
      
     	if (read_size == 0){
         	if (DEBUG)
-        		printf("Client %d disconnected\n", sock);
+        		printf("Client %d disconnected\n", client_sock);
         	fflush(stdout);
     	} else if (read_size == -1){
         	perror("recv failed");
     	}
 
-    	if (sock < 0){
-    		printf ("SOCK < 0");
+    	if (client_sock < 0){
+    		printf ("El puerto esta siendo usado.\n");
     		exit(1);
     	}
     }
@@ -186,7 +186,12 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
 }
 
 void srv_send_data(Connection * coneccion, Datagram * sdData){
+	
+	Datagram data;
+	memcpy(&data, sdData, sizeof data);
 
+	write(client_sock, &data, sizeof data);
+    close(client_sock);
 }
 
 void clt_init_channel(void){
