@@ -30,8 +30,10 @@ char * getShowSeats(int showId){
 }
 // ret: ticketId
 char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
-
-	return 7;
+	printf("ping\n");
+	char* ans=malloc(1000);
+	sprintf(ans, "Me dicen %i %i %i %i %s y yo les doy el ID 3\n",showId,  asiento,  tarjeta, secCode, nombre);	
+	return ans;
 }
 // ret: confirmation code
 char * UndoBuyTicket(int ticketId, char* nombre){

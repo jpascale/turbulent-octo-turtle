@@ -62,11 +62,19 @@ void ProcessData(Connection * sender, Datagram * data){
 		strcpy(data->data.text, ans);
 		break;
 		case BUY_TICKET:
-		num=BuyTicket(data->data.buy.showId, data->data.buy.asiento, data->data.buy.tarjeta,data->data.buy.secCode,data->data.buy.nombre);
-		data->data.i=num;
-		printf("%i\n",num);
+		printf("a\n");
+		printf("%i\n",data->data.buy.showId);
+		printf("%i\n",data->data.buy.asiento);
+		printf("%i\n",data->data.buy.tarjeta);
+		printf("%i\n",data->data.buy.secCode);
+		printf("%s\n",data->data.buy.nombre);
+
+		ans=BuyTicket(data->data.buy.showId, data->data.buy.asiento, data->data.buy.tarjeta,data->data.buy.secCode,data->data.buy.nombre);
+		printf("b\n");
+		strcpy(data->data.text, ans);
 		break;
 		case UNDO_BUY_TICKET:
+		
 		break;
 		default:
 			printf("Comando no soportado!\n");

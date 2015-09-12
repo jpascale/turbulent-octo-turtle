@@ -60,14 +60,14 @@ char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre)
 	data.data.buy.asiento=asiento;
 	data.data.buy.tarjeta=tarjeta;
 	data.data.buy.secCode=secCode;
-	data.data.buy.nombre=nombre;
+	memcpy(data.data.buy.nombre,nombre,1024);
 	data.size = sizeof(data);
 	sender.sender_pid=getpid();
 
 	sendData(&sender, &data);
 	receiveData(&sender, &data);
 
-	return data.data.i;
+	return data.data.text;
 
 }
 

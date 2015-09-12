@@ -270,8 +270,8 @@ cgetShowSeats(int i){
 
 void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
 	printf(ANSI_COLOR_CYAN"---- REALIZANDO COMPRA ----\n");
-	int i=BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
-	printf("El server responde %i, deberia ser el ticketID\n");
+	char* answer=BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
+	printf(ANSI_COLOR_GREEN" %s ",answer);
 }
 
 void cexit(){

@@ -9,7 +9,7 @@ typedef struct{
 	int asiento;
 	int tarjeta;
 	int secCode;
-	char* nombre;
+	char nombre[1024];
 }buyStruct;
 
 typedef union{
