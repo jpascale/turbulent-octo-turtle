@@ -23,6 +23,8 @@ void cgetMovieShow(int i);
 void cgetShowSeats(int i);
 void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
 void cexit();
+void cUndoBuyTicket(int ticketId, char* nombre);
+char * caddShow(int time, int roomID, int movieID);
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -102,17 +104,19 @@ void loadCommands(){
 	UndoBuyTicketArgs[0]=INT;
 	UndoBuyTicketArgs[1]=STRING;
 	commands[4].name = "undoBuyTicket";
-	commands[4].function = &UndoBuyTicket;
+	commands[4].function = &cUndoBuyTicket;
 	commands[4].args = UndoBuyTicketArgs;
 	commands[4].argsCant = 2;
 	commands[4].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
 	char* addShowArgs= malloc(1000);
-	addShowArgs[0]=STRING;
+	addShowArgs[0]=INT;
+	addShowArgs[1]=INT;
+	addShowArgs[2]=INT;
 	commands[5].name = "addShow";
-	commands[5].function = &addShow;
+	commands[5].function = &caddShow;
 	commands[5].args = addShowArgs;
-	commands[5].argsCant = 1;
+	commands[5].argsCant = 3;
 	commands[5].desc = "Agrega una pelicula a la cartelera.";
 
 	char* removeShowArgs= malloc(1000);
@@ -161,6 +165,9 @@ void parse(char* buff){
 					break;
 					case 2:
 					commands[index].function(args[1], args[2]);
+					break;
+					case 3:
+					commands[index].function(args[1], args[2], args[3]);
 					break;
 					case 5:
 					commands[index].function(args[1], args[2], args[3], args[4], args[5]);
@@ -272,6 +279,18 @@ void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
 	printf(ANSI_COLOR_CYAN"---- REALIZANDO COMPRA ----\n");
 	char* answer=BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
 	printf(ANSI_COLOR_GREEN" %s ",answer);
+}
+
+void cUndoBuyTicket(int ticketId, char* nombre){
+	printf(ANSI_COLOR_CYAN"---- DESHACIENDO COMPRA ----\n");
+	char* answer=UndoBuyTicket(ticketId, nombre);
+	printf(ANSI_COLOR_GREEN" %s ",answer);	
+}
+
+char * caddShow(int time, int roomID, int movieID){
+	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
+	char* answer=addShow(time,roomID,movieID);
+	printf(ANSI_COLOR_GREEN" %s ",answer);	
 }
 
 void cexit(){

@@ -37,17 +37,27 @@ char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre)
 }
 // ret: confirmation code
 char * UndoBuyTicket(int ticketId, char* nombre){
-
+	char* ans=malloc(1000);
+	sprintf(ans, "Deshago la compra: %i %s y yo les doy el ID 3\n",ticketId, nombre);	
+	return ans;
 }
 char * addShow(int time, int roomID, int movieID){
-
+	char* ans=malloc(1000);
+	sprintf(ans, "Agrego el show %i %i %i y yo les doy el ID 3\n",time,roomID,movieID );	
+	return ans;
 }
-char * removeShow(int movieId){
-
+char * removeShow(int showId){
+	char* ans=malloc(1000);
+	sprintf(ans, "Saco el show %i\n",showId);	
+	return ans;
 }
 char * addMovie(int length, char * title, char * desc){
-
+	char* ans=malloc(1000);
+	sprintf(ans, "Me dicen %i %s %s y yo les doy el ID 6\n",length,title,desc);	
+	return ans;
 }
 char * removeMovie(int movieID){
-
+	char* ans=malloc(1000);
+	sprintf(ans, "Me dicen %i y yo les doy el OK\n",movieID);	
+	return ans;
 }

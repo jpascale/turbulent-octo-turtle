@@ -72,15 +72,36 @@ char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre)
 }
 
 char * UndoBuyTicket(int ticketId, char* nombre){
-	printf("ticketId: %i, nombre: %s\n",ticketId, nombre);
+	data.opcode = UNDO_BUY_TICKET;
+	data.client_pid = getpid();
+	data.data.undoBuy.ticketId=ticketId;
+	memcpy(data.data.undoBuy.nombre,nombre,1024);
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
 }
 
 
 
 char * addShow(int time, int roomID, int movieID){
-printf("E\n");
+	data.opcode = ADD_SHOW;
+	data.client_pid = getpid();
+	data.data.addShow.time=time;
+	data.data.addShow.roomId=roomID;
+	data.data.addShow.movieId=movieID;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
 }
 
-char * removeShow(int movieId){
-printf("movieId: %i \n",movieId);
+char * removeShow(int showId){
+printf("showId: %i \n",showId);
 }

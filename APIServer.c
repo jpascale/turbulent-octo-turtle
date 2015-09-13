@@ -62,19 +62,28 @@ void ProcessData(Connection * sender, Datagram * data){
 		strcpy(data->data.text, ans);
 		break;
 		case BUY_TICKET:
-		printf("a\n");
-		printf("%i\n",data->data.buy.showId);
-		printf("%i\n",data->data.buy.asiento);
-		printf("%i\n",data->data.buy.tarjeta);
-		printf("%i\n",data->data.buy.secCode);
-		printf("%s\n",data->data.buy.nombre);
-
 		ans=BuyTicket(data->data.buy.showId, data->data.buy.asiento, data->data.buy.tarjeta,data->data.buy.secCode,data->data.buy.nombre);
-		printf("b\n");
 		strcpy(data->data.text, ans);
 		break;
 		case UNDO_BUY_TICKET:
-		
+		ans=UndoBuyTicket(data->data.undoBuy.ticketId, data->data.undoBuy.nombre);
+		strcpy(data->data.text, ans);		
+		break;
+		case ADD_SHOW:
+		ans=addShow(data->data.addShow.time,data->data.addShow.roomId,data->data.addShow.movieId);
+		strcpy(data->data.text, ans);		
+		break;
+		case REMOVE_SHOW:
+		//ans=removeShow(int showId);
+		strcpy(data->data.text, ans);		
+		break;
+		case ADD_MOVIE:
+		//ans=addMovie(int length, char * title, char * desc);
+		strcpy(data->data.text, ans);		
+		break;
+		case REMOVE_MOVIE:
+		//ans=removeMovie(int movieID);
+		strcpy(data->data.text, ans);		
 		break;
 		default:
 			printf("Comando no soportado!\n");

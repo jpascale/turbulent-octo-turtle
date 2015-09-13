@@ -2,7 +2,7 @@
 #define _DATAGRAM_H
 
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_SHOW, GET_SHOW_SEATS,
-	BUY_TICKET, UNDO_BUY_TICKET} command;
+	BUY_TICKET, UNDO_BUY_TICKET,ADD_SHOW,REMOVE_SHOW,ADD_MOVIE,REMOVE_MOVIE} command;
 
 typedef struct{
 	int showId;
@@ -12,10 +12,23 @@ typedef struct{
 	char nombre[1024];
 }buyStruct;
 
+typedef struct{
+	int time;
+	int roomId;
+	int movieId;
+}addShowStruct;
+
+typedef struct{
+	int ticketId;
+	char nombre[1024];
+}undoBuyStruct;
+
 typedef union{
 	int i;
 	char text[1024];
 	buyStruct buy;
+	undoBuyStruct undoBuy;
+	addShowStruct addShow;
 }DataStruct;
 
 typedef struct{
