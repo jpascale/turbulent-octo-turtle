@@ -20,7 +20,6 @@ static int callback(void * function, int argc, char **argv, char **azColName){
 
    switch(*((int*)function)){
 		case GET_MOVIE_LIST:
-			printf("entro a get_movie\n" );
 	   		for(i=0; i<argc; i++){
       			k = sprintf(answer, "%s;", argv[i] ? argv[i] : "NULL");
    				answer+=k;
