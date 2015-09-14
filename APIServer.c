@@ -48,7 +48,7 @@ void main(){
 
 void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(2);
+	sleep(0);
 	printf("FIN DEL SLEEP!\n");
 	sender->sender_pid=data->client_pid;
 	char* ans;
@@ -56,6 +56,10 @@ void ProcessData(Connection * sender, Datagram * data){
 	switch(data->opcode){	
 		case GET_MOVIE_LIST:
 		ans=getMovieList();
+		strcpy(data->data.text, ans);
+		break;
+		case GET_MOVIE_DETAILS:
+		ans=getMovieDetails(data->data.i);
 		strcpy(data->data.text, ans);
 		break;
 		case GET_MOVIE_SHOW:

@@ -39,6 +39,19 @@ char * getMovieShow(int movieId){
 	return data.data.text;
 }
 
+char * getMovieDetails(int movieId){
+	data.opcode = GET_MOVIE_DETAILS;
+	data.client_pid = getpid();
+	data.data.i=movieId;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
+}
+
 char * getShowSeats(int showId){
 	data.opcode = GET_SHOW_SEATS;
 	data.client_pid = getpid();

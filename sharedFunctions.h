@@ -5,6 +5,8 @@ char * getMovieList();
 
 char * getMovieShow(int movieId);
 
+char * getMovieDetails(int movieId);
+
 char * getShowSeats(int showId);
 
 // ret: ticketId
