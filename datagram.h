@@ -13,6 +13,12 @@ typedef struct{
 }buyStruct;
 
 typedef struct{
+	int lenght;
+	char title[1024];
+	char desc[1024];
+}movieStruct;
+
+typedef struct{
 	int time;
 	int roomId;
 	int movieId;
@@ -29,6 +35,7 @@ typedef union{
 	buyStruct buy;
 	undoBuyStruct undoBuy;
 	addShowStruct addShow;
+	movieStruct movie                                                                                                                                                                                                                                                                                                                                                                 
 }DataStruct;
 
 typedef struct{

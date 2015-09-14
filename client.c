@@ -14,7 +14,7 @@
 
 
 #define INPUT_SIZE 		1024
-#define COM_SIZE 		9
+#define COM_SIZE 		11
 #define STRING          0
 #define INT             1
 
@@ -25,6 +25,9 @@ void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
 void cexit();
 void cUndoBuyTicket(int ticketId, char* nombre);
 char * caddShow(int time, int roomID, int movieID);
+char * cremoveShow(int showId);
+char * caddMovie(int length, char * title, char * desc);
+char * cremoveMovie(int movieID);
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -117,25 +120,45 @@ void loadCommands(){
 	commands[5].function = &caddShow;
 	commands[5].args = addShowArgs;
 	commands[5].argsCant = 3;
-	commands[5].desc = "Agrega una pelicula a la cartelera.";
+	commands[5].desc = "Agrega una funcion dada una hora, sala y pelicula.";
 
 	char* removeShowArgs= malloc(1000);
-	removeShowArgs[0]=STRING;
+	removeShowArgs[0]=INT;
 	commands[6].name = "removeShow";
-	commands[6].function = &removeShow;
+	commands[6].function = &cremoveShow;
 	commands[6].args = removeShowArgs;
 	commands[6].argsCant = 1;
-	commands[6].desc = "Remueve una pelicula a la cartelera.";
+	commands[6].desc = "Remueve una funcion medienta su id.";
 
-	commands[7].name = "exit";
-	commands[7].function = &cexit;
-	commands[7].argsCant = 0;
-	commands[7].desc = "Sale del programa.";
 
-	commands[8].name = "help";
-	commands[8].function = &chelp;
-	commands[8].argsCant = 0;
-	commands[8].desc = "I need somebody... ";
+
+	char* addShowArgs= malloc(1000);
+	addShowArgs[0]=INT;
+	addShowArgs[1]=INT;
+	addShowArgs[2]=INT;
+	commands[7].name = "addShow";
+	commands[7].function = &caddShow;
+	commands[7].args = addShowArgs;
+	commands[7].argsCant = 3;
+	commands[7].desc = "Agrega una funcion dada una hora, sala y pelicula.";
+
+	char* removeShowArgs= malloc(1000);
+	removeShowArgs[0]=INT;
+	commands[8].name = "removeShow";
+	commands[8].function = &cremoveShow;
+	commands[8].args = removeShowArgs;
+	commands[8].argsCant = 1;
+	commands[8].desc = "Remueve una funcion medienta su id.";
+
+	commands[9].name = "exit";
+	commands[9].function = &cexit;
+	commands[9].argsCant = 0;
+	commands[9].desc = "Sale del programa.";
+
+	commands[10].name = "help";
+	commands[10].function = &chelp;
+	commands[10].argsCant = 0;
+	commands[10].desc = "I need somebody... ";
 
 }
 
@@ -290,6 +313,23 @@ void cUndoBuyTicket(int ticketId, char* nombre){
 char * caddShow(int time, int roomID, int movieID){
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
 	char* answer=addShow(time,roomID,movieID);
+	printf(ANSI_COLOR_GREEN" %s ",answer);	
+}
+
+char * cremoveShow(int showId){
+	printf(ANSI_COLOR_CYAN"---- REMOVIENDO SHOW ----\n");
+	char* answer=removeShow(showId);
+	printf(ANSI_COLOR_GREEN" %s ",answer);	
+}
+char * caddMovie(int length, char * title, char * desc){
+	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
+	char* answer=addMovie(lenght,title,desc);
+	printf(ANSI_COLOR_GREEN" %s ",answer);	
+}
+
+char * cremoveMovie(int movieID){
+	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
+	char* answer=removeMovie(movieId);
 	printf(ANSI_COLOR_GREEN" %s ",answer);	
 }
 

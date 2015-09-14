@@ -74,7 +74,7 @@ void ProcessData(Connection * sender, Datagram * data){
 		strcpy(data->data.text, ans);		
 		break;
 		case REMOVE_SHOW:
-		//ans=removeShow(int showId);
+		ans=removeShow(data->data.i);
 		strcpy(data->data.text, ans);		
 		break;
 		case ADD_MOVIE:

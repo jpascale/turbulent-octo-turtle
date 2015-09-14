@@ -103,5 +103,14 @@ char * addShow(int time, int roomID, int movieID){
 }
 
 char * removeShow(int showId){
-printf("showId: %i \n",showId);
+data.opcode = REMOVE_SHOW;
+	data.client_pid = getpid();
+	data.data.i=showId;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
 }
