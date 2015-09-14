@@ -15,6 +15,7 @@ void connect(){
 }
 
 char * getMovieList(){
+
 	data.opcode = GET_MOVIE_LIST;
 	data.client_pid = getpid();
 	data.size = sizeof(data);
