@@ -50,20 +50,48 @@ void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(2);
 	printf("FIN DEL SLEEP!\n");
-
-	switch(data->opcode){
-		
+	sender->sender_pid=data->client_pid;
+	char* ans;
+	int num;
+	switch(data->opcode){	
 		case GET_MOVIE_LIST:
-		printf("Llama consultar cartelera de server\n");
+		ans=getMovieList();
+		strcpy(data->data.text, ans);
+		break;
+		case GET_MOVIE_SHOW:
+		ans=getMovieShow(data->data.i);
+		strcpy(data->data.text, ans);
+		break; 
+		case GET_SHOW_SEATS:
+		ans=getShowSeats(data->data.i);
+		strcpy(data->data.text, ans);
+		break;
+		case BUY_TICKET:
+		ans=BuyTicket(data->data.buy.showId, data->data.buy.asiento, data->data.buy.tarjeta,data->data.buy.secCode,data->data.buy.nombre);
+		strcpy(data->data.text, ans);
+		break;
+		case UNDO_BUY_TICKET:
+		ans=UndoBuyTicket(data->data.undoBuy.ticketId, data->data.undoBuy.nombre);
+		strcpy(data->data.text, ans);		
+		break;
+		case ADD_SHOW:
+		ans=addShow(data->data.addShow.time,data->data.addShow.roomId,data->data.addShow.movieId);
+		strcpy(data->data.text, ans);		
+		break;
+		case REMOVE_SHOW:
+		ans=removeShow(data->data.i);
+		strcpy(data->data.text, ans);		
+		break;
+		case ADD_MOVIE:
+		ans=addMovie(data->data.movie.length,data->data.movie.title,data->data.movie.desc);
+		strcpy(data->data.text, ans);		
+		break;
+		case REMOVE_MOVIE:
+		ans=removeMovie(data->data.i);
+		strcpy(data->data.text, ans);		
 		break;
 		default:
-		printf("Comando no soportado\n");
+			printf("Comando no soportado!\n");
+			sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n",data->opcode);
 	}
-	char* hard_ans="NOMBRE1 ; ID1 ; NOMBRE2 ; ID2 ; NOMBRE3 ; ID3";
-	char* lepoDice=malloc(9999);
-	sender->sender_pid=data->client_pid;
-	strcpy( data->data.text, hard_ans);
-	SQLgetMovieList(lepoDice);
-	printf("Lepo dice: %s\n",lepoDice);
-	printf("Copiado: %s\n",hard_ans);
 }

@@ -51,7 +51,7 @@ void receiveData(Connection * sender, Datagram * buffer){
 	}
 	
 	read(fd, buffer, sizeof(int));
-	printf("esto leyo: %s\n", buffer);
+	//printf("estoy leyo: %s\n", buffer);
 	int size = *((int*)buffer);
 	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
 	
