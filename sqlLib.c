@@ -206,11 +206,15 @@ void SQLundoBuyTicket(char * buffer, int ticketID, char* nombre){
 	sprintf(sql_query, "select count(*) from tickets where (ticketID = %i and name = '%s');", ticketID, nombre);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
-	if(auxResp){
+	if(!auxResp){
 		sprintf(answer, "No existe un ticked con ese ID y ese nombre\n");
 		return;
 	}
+	sprintf(sql_query, "delete from tickets where (ticketID = %i);", ticketID);
+	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
+	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	sprintf(answer, "Ticket destruido, las cenizas fueron incineradas\n");
+	return;
 }
 
 		
