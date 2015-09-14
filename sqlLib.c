@@ -49,7 +49,7 @@ static int callback(void * function, int argc, char **argv, char **azColName){
 			break;
 			
 		case BUY_TICKET:
-			sprintf(answer, "Compra realizada, TicketID: %s", argv[0]);
+			sprintf(answer, "Compra realizada, TicketID: %s\n", argv[0]);
 			break;
    		}
 		   
@@ -112,7 +112,7 @@ void SQLbuyTicket(char * buffer, int showID, int asiento, char* nombre){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
 	if(!auxResp){
-		sprintf(answer, "ShowID invalido");
+		sprintf(answer, "ShowID invalido\n");
 		return;
 	}
 	type = COUNT_CHECK;
@@ -121,7 +121,7 @@ void SQLbuyTicket(char * buffer, int showID, int asiento, char* nombre){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
 	if(!auxResp){
-		sprintf(answer, "Asiento invalido");
+		sprintf(answer, "Asiento invalido\n");
 		return;
 	}
 	sprintf(sql_query, "insert into tickets (seatNum, showID, name) values (%i, %i, '%s');", asiento, showID, nombre);
@@ -144,7 +144,7 @@ void SQLaddShow(char * buffer, int time, int roomID, int movieID){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	if(auxResp){
-		sprintf(answer, "Sala no disponible en ese horario");
+		sprintf(answer, "Sala no disponible en ese horario\n");
 		return;
 	}
 	type = COUNT_CHECK;
@@ -153,7 +153,7 @@ void SQLaddShow(char * buffer, int time, int roomID, int movieID){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	if(!auxResp){
-		sprintf(answer, "Sala no existe");
+		sprintf(answer, "Sala no existe\n");
 		return;
 	}
 	type = COUNT_CHECK;
@@ -162,13 +162,13 @@ void SQLaddShow(char * buffer, int time, int roomID, int movieID){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	if(!auxResp){
-		sprintf(answer, "Pelicula no existe");
+		sprintf(answer, "Pelicula no existe\n");
 		return;
 	}
 	sprintf(sql_query, "insert into shows (time, movieID, roomID) values (%i, %i, %i);", time, movieID, roomID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	sprintf(answer, "Show agregado");
+	sprintf(answer, "Show agregado\n");
 	return;
 }
 
@@ -177,7 +177,7 @@ void SQLremoveShow(char * buffer, int showID){
 	sprintf(sql_query, "delete from shows where (showID = %i);", showID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	sprintf(answer, "Show eliminado");
+	sprintf(answer, "Show eliminado\n");
 	return;
 }
 
@@ -186,7 +186,7 @@ void SQLaddMovie(char * buffer, int length, char * title, char * desc){
 	sprintf(sql_query, "insert into movies (length, title, desc) values (%i, '%s', '%s');", length, title, desc);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	sprintf(answer, "Pelicula agregada");
+	sprintf(answer, "Pelicula agregada\n");
 	return;
 }
 
@@ -195,7 +195,7 @@ void SQLremoveMovie(char * buffer, int movieID){
 	sprintf(sql_query, "delete from movies where (movieID = %i);", movieID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	sprintf(answer, "Pelicula eliminado");
+	sprintf(answer, "Pelicula eliminado\n");
 	return;
 }
 
@@ -207,9 +207,10 @@ void SQLundoBuyTicket(char * buffer, int ticketID, char* nombre){
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	if(auxResp){
-		sprintf(answer, "Sala no disponible en ese horario");
+		sprintf(answer, "No existe un ticked con ese ID y ese nombre\n");
 		return;
 	}
+	sprintf(answer, "Ticket destruido, las cenizas fueron incineradas\n");
 }
 
 		
