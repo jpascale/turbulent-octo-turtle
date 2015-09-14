@@ -6,7 +6,7 @@
 #include <stdlib.h>	
 #include "sqlLib.h"
 
-typedef enum {GET_MOVIE_LIST, GET_MOVIE_DETAILS, GET_MOVIE_SHOWS, GET_SHOW_SEATS, COUNT_CHECK,
+typedef enum {GET_MOVIE_LIST, GET_MOVIE_DETAILS, GET_MOVIE_SHOWS, GET_SHOW_SEATS, COUNT_CHECK, BUY_TICKET,
 				UNDO_BUY_TICKET, ADD_SHOW, REMOVE_SHOW, ADD_MOVIE, REMOVE_MOVIE} functions;
 
 sqlite3 * db;
@@ -45,10 +45,12 @@ static int callback(void * function, int argc, char **argv, char **azColName){
 			break;
    		
 		case COUNT_CHECK:
-			printf("count: %s\n", argv[0]);
 			if(argv[0][0]!='0') auxResp = 1;
 			break;
 			
+		case BUY_TICKET:
+			sprintf(answer, "Compra realizada, TicketID: %s", argv[0]);
+			break;
    		}
 		   
    return 0;
@@ -125,7 +127,12 @@ void SQLbuyTicket(char * buffer, int showID, int asiento, char* nombre){
 	sprintf(sql_query, "insert into tickets (seatNum, showID, name) values (%i, %i, '%s');", asiento, showID, nombre);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	sprintf(answer, "Compra realizada");
+	
+	type = BUY_TICKET;
+	sprintf(sql_query, "select ticketID from tickets where(seatNum = %i and showID = %i);", asiento, showID);
+	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
+	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	
 	return;
 }
 
