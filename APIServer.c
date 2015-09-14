@@ -2,6 +2,7 @@
 #include "datagram.h"
 #include "sharedFunctions.h"
 #include "sqlite/sqlite3.h"
+#include "sqlLib.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,15 +15,20 @@ Connection sender;
 
 
 void main(){
-	
 
 	initChannel(1);
 	printf("Server conectado\n");
-
-	int forked_pid;
+	setUpDB();
+	
+	int forked_pid, aux;
 
 	printf("Cargado\n");
-	while(1){
+	char buffer[512], * auxString;
+
+	SQLaddShow(buffer, 334, 2, 12);
+	printf("resultado: %s\n", buffer);
+	
+	/*while(1){
 		receiveData(&sender, &data);
 		printf("Recive:%i \n",data.client_pid);
 
@@ -37,6 +43,7 @@ void main(){
 				exit(0);
 		}
 	}
+	*/
 }
 
 void ProcessData(Connection * sender, Datagram * data){
