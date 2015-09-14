@@ -14,12 +14,13 @@
 
 typedef enum { false, true } bool;
 
+void resetSems(void);
 void fatal(char *s);
 char * getmem(int mem_code);
 void initmutex(void);
 void enter(int code);
 void leave(int code);
-void printfSemStates();
+void printfSemStates(void);
 
 static int bool_server;
 char *msg;
@@ -33,12 +34,7 @@ static sem_t *sdC;
 void initChannel(int b_server){
 	bool_server=b_server;
 	initmutex();	
-	if(bool_server){
-//		setSemToCero(sdA);
-//		setSemToCero(sdC);
-		enter(0);
-		enter(2);
-	}
+	resetSems();
 	memset(buf, 0, SIZE);
 	current=calloc(10000,1);
 }
@@ -66,7 +62,6 @@ void receiveData(Connection * sender, Datagram * buffer){
 		msg=getmem(0);
 	else
 		msg=getmem(sender->sender_pid);
-
 //		printf("Leyendo de memoria, bloqueante\n");
 //		printf("rout, %i\n",getpid());
 	enter((bool_server)?0:2);
@@ -79,6 +74,8 @@ void receiveData(Connection * sender, Datagram * buffer){
 //		printf("Recibido\n");
 	memcpy(buffer,current,*((int*)current));
 //		printfSemStates();
+	if(!bool_server)
+		resetSems();
 }
 
 void
@@ -168,11 +165,29 @@ printfSemStates(){
 	printf("semA: %i,semB: %i,semC: %i\n",a,b,c);
 }
 
-void setSemToCero(sem_t * sem){
+
+// Resetea el estado de los semáforos
+void
+resetSems(){
 	int value;
-	sem_getvalue(sem, &value);
-	while(value!=0){
-		sem_post(sem);
-		sem_getvalue(sem, &value);
+	sem_getvalue(sdA, &value);
+	while(value>0){
+		sem_wait(sdA);
+		sem_getvalue(sdA, &value);
 	}
+	sem_getvalue(sdC, &value);
+	while(value>0){
+		sem_wait(sdC);
+		sem_getvalue(sdC, &value);
+	}
+	sem_getvalue(sdB, &value);
+	while(value>1){
+		sem_wait(sdC);
+		sem_getvalue(sdC, &value);
+	}
+	while(value<1){
+		sem_post(sdC);
+		sem_getvalue(sdC, &value);
+	}
+
 }

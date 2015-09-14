@@ -15,15 +15,11 @@ char * UndoBuyTicket(int ticketId, char* nombre);
 
 char * addShow(int time, int roomID, int movieID);
 
-char * removeShow(int movieId);
+char * removeShow(int showId);
 
 char * addMovie(int length, char * title, char * desc);
 
 char * removeMovie(int movieID);
-
-char * RespString(char* resp);
-
-char * RespInt(int resp);
 
 void connect(void);
 
