@@ -131,24 +131,23 @@ void loadCommands(){
 	commands[6].desc = "Remueve una funcion medienta su id.";
 
 
-
-	char* addShowArgs= malloc(1000);
-	addShowArgs[0]=INT;
-	addShowArgs[1]=INT;
-	addShowArgs[2]=INT;
-	commands[7].name = "addShow";
-	commands[7].function = &caddShow;
-	commands[7].args = addShowArgs;
+	char* addMovieArgs= malloc(1000);
+	addMovieArgs[0]=INT;
+	addMovieArgs[1]=STRING;
+	addMovieArgs[2]=STRING;
+	commands[7].name = "addMovie";
+	commands[7].function = &caddMovie;
+	commands[7].args = addMovieArgs;
 	commands[7].argsCant = 3;
-	commands[7].desc = "Agrega una funcion dada una hora, sala y pelicula.";
+	commands[7].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
 
-	char* removeShowArgs= malloc(1000);
-	removeShowArgs[0]=INT;
-	commands[8].name = "removeShow";
-	commands[8].function = &cremoveShow;
-	commands[8].args = removeShowArgs;
+	char* removeMovieArgs= malloc(1000);
+	removeMovieArgs[0]=INT;
+	commands[8].name = "removeMovie";
+	commands[8].function = &cremoveMovie;
+	commands[8].args = removeMovieArgs;
 	commands[8].argsCant = 1;
-	commands[8].desc = "Remueve una funcion medienta su id.";
+	commands[8].desc = "Remueve una pelicula medienta su id.";
 
 	commands[9].name = "exit";
 	commands[9].function = &cexit;
@@ -213,7 +212,7 @@ int splitArgs(char* args[], char* buffer){
 			args[cont++]=buffer;
 		}
 	}
-	*buffer='\0';
+	//*buffer='\0';
 	return cont;
 }
 
@@ -323,18 +322,17 @@ char * cremoveShow(int showId){
 }
 char * caddMovie(int length, char * title, char * desc){
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
-	char* answer=addMovie(lenght,title,desc);
+	char* answer=addMovie(length,title,desc);
 	printf(ANSI_COLOR_GREEN" %s ",answer);	
 }
 
 char * cremoveMovie(int movieID){
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
-	char* answer=removeMovie(movieId);
+	char* answer=removeMovie(movieID);
 	printf(ANSI_COLOR_GREEN" %s ",answer);	
 }
 
 void cexit(){
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
-
 }

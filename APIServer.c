@@ -78,11 +78,11 @@ void ProcessData(Connection * sender, Datagram * data){
 		strcpy(data->data.text, ans);		
 		break;
 		case ADD_MOVIE:
-		//ans=addMovie(int length, char * title, char * desc);
+		ans=addMovie(data->data.movie.length,data->data.movie.title,data->data.movie.desc);
 		strcpy(data->data.text, ans);		
 		break;
 		case REMOVE_MOVIE:
-		//ans=removeMovie(int movieID);
+		ans=removeMovie(data->data.i);
 		strcpy(data->data.text, ans);		
 		break;
 		default:

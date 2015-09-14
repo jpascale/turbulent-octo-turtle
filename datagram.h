@@ -13,7 +13,7 @@ typedef struct{
 }buyStruct;
 
 typedef struct{
-	int lenght;
+	int length;
 	char title[1024];
 	char desc[1024];
 }movieStruct;
@@ -35,7 +35,7 @@ typedef union{
 	buyStruct buy;
 	undoBuyStruct undoBuy;
 	addShowStruct addShow;
-	movieStruct movie                                                                                                                                                                                                                                                                                                                                                                 
+	movieStruct movie;                                                                                                                                                                                                                                                                                                                                                                 
 }DataStruct;
 
 typedef struct{

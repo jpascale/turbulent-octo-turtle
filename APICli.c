@@ -86,7 +86,6 @@ char * UndoBuyTicket(int ticketId, char* nombre){
 }
 
 
-
 char * addShow(int time, int roomID, int movieID){
 	data.opcode = ADD_SHOW;
 	data.client_pid = getpid();
@@ -103,9 +102,38 @@ char * addShow(int time, int roomID, int movieID){
 }
 
 char * removeShow(int showId){
-data.opcode = REMOVE_SHOW;
+	data.opcode = REMOVE_SHOW;
 	data.client_pid = getpid();
 	data.data.i=showId;
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
+}
+
+char * addMovie(int length, char * title, char * desc){
+	data.opcode = ADD_MOVIE;
+	data.client_pid = getpid();
+	data.data.movie.length=length;
+	memcpy(data.data.movie.title,title,1024);
+	memcpy(data.data.movie.desc,desc,1024);
+	data.size = sizeof(data);
+	sender.sender_pid=getpid();
+
+	sendData(&sender, &data);
+	receiveData(&sender, &data);
+
+	return data.data.text;
+
+}
+
+char * removeMovie(int movieID){
+	data.opcode = REMOVE_MOVIE;
+	data.client_pid = getpid();
+	data.data.i=movieID;
 	data.size = sizeof(data);
 	sender.sender_pid=getpid();
 
