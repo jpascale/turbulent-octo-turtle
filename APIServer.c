@@ -10,7 +10,7 @@
 
 
 void ProcessData(Connection * sender, Datagram * data);
-
+void initializeServer();
 Datagram data;
 Connection sender;
 
@@ -22,7 +22,7 @@ void main(){
 	initChannel(1);
 	printf("Server conectado\n");
 	setUpDB();
-	
+	initializeServer();
 	int forked_pid, aux;
 
 	printf("Cargado\n");
