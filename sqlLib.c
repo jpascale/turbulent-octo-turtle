@@ -71,7 +71,6 @@ void SQLgetMovieDetails(char * buffer, int movieID){
 	sprintf(sql_query, "select title, desc, length, movieID from movies where (movies.movieID = %i);", movieID); 
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-
 	return;
 }
 
@@ -89,6 +88,7 @@ void SQLgetShowSeats(char * buffer, int showID){
 	type = GET_SHOW_SEATS;
 	sprintf(sql_query, "select seatNum from tickets where (tickets.showID = %i);", showID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
+	*answer = '\n';
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	return;
 }
@@ -105,19 +105,19 @@ void SQLbuyTicket(char * buffer, int showID, int asiento, char* nombre){
 		return;
 	}
 	type = COUNT_CHECK;
+	auxResp = 0;	
 	sprintf(sql_query, "select count(*) from shows where (shows.showID = %i);", showID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	auxResp = 0;
 	if(!auxResp){
 		sprintf(answer, "ShowID invalido");
 		return;
 	}
 	type = COUNT_CHECK;
+	auxResp = 0;
 	sprintf(sql_query, "select count(*) from rooms, shows where (shows.showID = %i and shows.roomID = rooms.roomID and rooms.maxCap > %i);", showID, asiento);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
-	auxResp = 0;	
 	if(!auxResp){
 		sprintf(answer, "Asiento invalido");
 		return;
