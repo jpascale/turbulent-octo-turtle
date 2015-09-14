@@ -122,7 +122,7 @@ void SQLbuyTicket(char * buffer, int showID, int asiento, char* nombre){
 		sprintf(answer, "Asiento invalido");
 		return;
 	}
-	sprintf(sql_query, "insert into tickets values (%i, %i, '%s');", asiento, showID, nombre);
+	sprintf(sql_query, "insert into tickets (seatNum, showID, name) values (%i, %i, '%s');", asiento, showID, nombre);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
 	sprintf(answer, "Compra realizada");
