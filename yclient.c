@@ -16,14 +16,14 @@ int main(int argc , char *argv[])
 
     while(1){
 
-        if (read(0, data.data.m.title, sizeof data.data.m.title) > 0){
+        if (read(0, data.data.text, sizeof data.data.text) > 0){
 			
 			sendData(&conn, &data);
 			receiveData(&conn, &data);
 			
-      		printf("DEBUG Server: %s", data.data.m.title);
+      		printf("DEBUG Server: %s", data.data.text);
       	
-			memset(data.data.m.title, 0, sizeof data.data.m.title);
+			memset(data.data.text, 0, sizeof data.data.text);
         }
     }
      
