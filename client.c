@@ -212,16 +212,22 @@ void parse(char* buff){
 }
 
 int splitArgs(char* args[], char* buffer){
-	int cont=1;
-	for(args[0]=buffer;*buffer != '\0'; buffer++){
-		if(*buffer==' '){
-			*buffer='\0';
-			buffer++;
-			args[cont++]=buffer;
+	int i = 0, j = 1, flag = 0;
+	args[0] = buffer;
+	while(buffer[i]){
+		if(buffer[i]==' ' && !flag){
+			buffer[i]=0;
+			args[j++]=buffer + i + 1;
+		}else if(buffer[i]=='\"'){
+			if(!flag)
+				args[j-1]=buffer + i + 1;
+			else
+				buffer[i]=0;
+			flag=1-flag;
 		}
+		i++;
 	}
-	//*buffer='\0';
-	return cont;
+	return j;
 }
 
 int convertArg(char ** args, unsigned  char * argTypes, int cant){
