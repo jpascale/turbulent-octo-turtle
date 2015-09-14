@@ -1,4 +1,6 @@
 #include "sqlite/sqlite3.h"
+#include "sqlLib.h"
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>	
@@ -15,8 +17,10 @@ char sql_query[256];
 
 static int callback(void * function, int argc, char **argv, char **azColName){
    int i, k;
+
    switch(*((int*)function)){
 		case GET_MOVIE_LIST:
+			printf("entro a get_movie\n" );
 	   		for(i=0; i<argc; i++){
       			k = sprintf(answer, "%s;", argv[i] ? argv[i] : "NULL");
    				answer+=k;
@@ -52,6 +56,7 @@ static int callback(void * function, int argc, char **argv, char **azColName){
 
 void SQLgetMovieList(char * buffer){
 	answer = buffer;
+
 	type = GET_MOVIE_LIST;
 	sprintf(sql_query, "select title, movieID from movies;");
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
@@ -61,10 +66,12 @@ void SQLgetMovieList(char * buffer){
 
 void SQLgetMovieDetails(char * buffer, int movieID){
 	answer = buffer;
+
 	type = GET_MOVIE_DETAILS;
 	sprintf(sql_query, "select title, desc, length, movieID from movies where (movies.movieID = %i);", movieID); 
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+
 	return;
 }
 
@@ -169,7 +176,7 @@ void SQLremoveShow(char * buffer, int showID){
 
 void SQLaddMovie(char * buffer, int length, char * title, char * desc){
 	answer = buffer;
-	sprintf(sql_query, "insert into movies (length, title, desc) values (%i, %i, %i);", length, title, desc);
+	sprintf(sql_query, "insert into movies (length, title, desc) values (%i, '%s', '%s');", length, title, desc);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
 	sprintf(answer, "Pelicula agregada");
@@ -189,7 +196,7 @@ void SQLundoBuyTicket(char * buffer, int ticketID, char* nombre){
 	answer = buffer;
 	type = COUNT_CHECK;
 	auxResp = 0;
-	sprintf(sql_query, "select count(*) from tickets where (ticketID = %i and nombre = '%s');", ticketID, name);
+	sprintf(sql_query, "select count(*) from tickets where (ticketID = %i and name = '%s');", ticketID, nombre);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if( rc != SQLITE_OK ) printf("error: %s\n", errMsg);	
 	if(auxResp){

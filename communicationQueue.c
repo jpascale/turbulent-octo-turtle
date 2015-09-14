@@ -65,36 +65,36 @@ void initChannel(int bool_server){
 	switch (bool_server){
 
 		case true:
-			srv_init_channel();
-			break;
+		srv_init_channel();
+		break;
 
 		case false:
-			clt_init_channel();
-			break;
+		clt_init_channel();
+		break;
 	}
 }
 
 void sendData(Connection * connection, Datagram * params){
 	switch (is_server){
 		case true:
-			srv_send_data(connection, params);
-			break;
+		srv_send_data(connection, params);
+		break;
 
 		case false:
-			clt_send_data(connection, params);
-			break;
+		clt_send_data(connection, params);
+		break;
 	}
 }
 
 void receiveData(Connection * connection, Datagram * params){
 	switch (is_server){
 		case true:
-			srv_receive_data(connection, params);
-			break;
+		srv_receive_data(connection, params);
+		break;
 
 		case false:
-			clt_receive_data(connection, params);
-			break;
+		clt_receive_data(connection, params);
+		break;
 	}
 }
 

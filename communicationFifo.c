@@ -54,7 +54,7 @@ void receiveData(Connection * sender, Datagram * buffer){
 	printf("esto leyo: %s\n", buffer);
 	int size = *((int*)buffer);
 	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
-		
+	
 }
 
 void getFifoName(int pid, char * buffer){
