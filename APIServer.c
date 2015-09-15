@@ -11,7 +11,7 @@
 
 
 void ProcessData(Connection * sender, Datagram * data);
-
+void initializeServer();
 Datagram data;
 Connection sender;
 
@@ -23,7 +23,7 @@ void main(){
 	initChannel(1);
 	printf("Server conectado\n");
 	setUpDB();
-	
+	initializeServer();
 	int forked_pid, aux;
 
 	printf("Cargado\n");
@@ -60,6 +60,10 @@ void ProcessData(Connection * sender, Datagram * data){
 	switch(data->opcode){	
 		case GET_MOVIE_LIST:
 		ans=getMovieList();
+		strcpy(data->data.text, ans);
+		break;
+		case GET_MOVIE_DETAILS:
+		ans=getMovieDetails(data->data.i);
 		strcpy(data->data.text, ans);
 		break;
 		case GET_MOVIE_SHOW:
