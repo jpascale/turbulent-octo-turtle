@@ -34,14 +34,17 @@ void loadCommands();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 
+typedef void (* func) ();
+
 struct command
 {
 	char * name;
-	void (* function) ();
+	func function;
 	char * args;
 	int argsCant;
 	char* desc;
 };
+
 
 static struct command commands[COM_SIZE] = {};
 
@@ -70,7 +73,7 @@ int main (int argc, char const *argv[]) {
 void loadCommands(){
 
 	commands[0].name = "getMovieList";
-	commands[0].function = &cgetMovieList;
+	commands[0].function = (func)&cgetMovieList;
 	commands[0].argsCant = 0;
 	commands[0].desc = "Muestra la cartelera disponible!";
 
@@ -78,7 +81,7 @@ void loadCommands(){
 	char* getMovieShowArgs = malloc(1000);
 	getMovieShowArgs[0]=INT;	
 	commands[1].name = "getMovieShow";
-	commands[1].function = &cgetMovieShow;
+	commands[1].function = (func)&cgetMovieShow;
 	commands[1].args = getMovieShowArgs;
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
@@ -86,7 +89,7 @@ void loadCommands(){
 	char* getShowSeatsArgs = malloc(1000);
 	getShowSeatsArgs[0]=INT;
 	commands[2].name = "getShowSeats";
-	commands[2].function = &cgetShowSeats;
+	commands[2].function = (func)&cgetShowSeats;
 	commands[2].args = getShowSeatsArgs;
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
@@ -98,7 +101,7 @@ void loadCommands(){
 	BuyTicketArgs[3]=INT;
 	BuyTicketArgs[4]=STRING;
 	commands[3].name = "buyTickets";
-	commands[3].function = &cBuyTicket;
+	commands[3].function = (func)&cBuyTicket;
 	commands[3].args = BuyTicketArgs;
 	commands[3].argsCant = 5;
 	commands[3].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
@@ -107,7 +110,7 @@ void loadCommands(){
 	UndoBuyTicketArgs[0]=INT;
 	UndoBuyTicketArgs[1]=STRING;
 	commands[4].name = "undoBuyTicket";
-	commands[4].function = &cUndoBuyTicket;
+	commands[4].function = (func)&cUndoBuyTicket;
 	commands[4].args = UndoBuyTicketArgs;
 	commands[4].argsCant = 2;
 	commands[4].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
@@ -117,7 +120,7 @@ void loadCommands(){
 	addShowArgs[1]=INT;
 	addShowArgs[2]=INT;
 	commands[5].name = "addShow";
-	commands[5].function = &caddShow;
+	commands[5].function = (func)&caddShow;
 	commands[5].args = addShowArgs;
 	commands[5].argsCant = 3;
 	commands[5].desc = "Agrega una funcion dada una hora, sala y pelicula.";
@@ -125,7 +128,7 @@ void loadCommands(){
 	char* removeShowArgs= malloc(1000);
 	removeShowArgs[0]=INT;
 	commands[6].name = "removeShow";
-	commands[6].function = &cremoveShow;
+	commands[6].function = (func)&cremoveShow;
 	commands[6].args = removeShowArgs;
 	commands[6].argsCant = 1;
 	commands[6].desc = "Remueve una funcion medienta su id.";
@@ -136,7 +139,7 @@ void loadCommands(){
 	addMovieArgs[1]=STRING;
 	addMovieArgs[2]=STRING;
 	commands[7].name = "addMovie";
-	commands[7].function = &caddMovie;
+	commands[7].function = (func)&caddMovie;
 	commands[7].args = addMovieArgs;
 	commands[7].argsCant = 3;
 	commands[7].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
@@ -144,18 +147,18 @@ void loadCommands(){
 	char* removeMovieArgs= malloc(1000);
 	removeMovieArgs[0]=INT;
 	commands[8].name = "removeMovie";
-	commands[8].function = &cremoveMovie;
+	commands[8].function = (func)&cremoveMovie;
 	commands[8].args = removeMovieArgs;
 	commands[8].argsCant = 1;
 	commands[8].desc = "Remueve una pelicula medienta su id.";
 
 	commands[9].name = "exit";
-	commands[9].function = &cexit;
+	commands[9].function = (func)&cexit;
 	commands[9].argsCant = 0;
 	commands[9].desc = "Sale del programa.";
 
 	commands[10].name = "help";
-	commands[10].function = &chelp;
+	commands[10].function = (func)&chelp;
 	commands[10].argsCant = 0;
 	commands[10].desc = "I need somebody... ";
 

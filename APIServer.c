@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 
 void ProcessData(Connection * sender, Datagram * data);
@@ -27,6 +28,9 @@ void main(){
 
 	printf("Cargado\n");
 	char buffer[512], * auxString;
+	
+	DIR *dir;
+	struct dirent *ent;
 
 	while(1){
 		receiveData(&sender, &data);
@@ -48,7 +52,7 @@ void main(){
 
 void ProcessData(Connection * sender, Datagram * data){
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(2);
+	sleep(0);
 	printf("FIN DEL SLEEP!\n");
 	sender->sender_pid=data->client_pid;
 	char* ans;
@@ -94,4 +98,5 @@ void ProcessData(Connection * sender, Datagram * data){
 			printf("Comando no soportado!\n");
 			sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n",data->opcode);
 	}
+	printf("esto envia: %s\n", data->data.text);
 }
