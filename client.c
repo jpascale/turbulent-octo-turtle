@@ -35,7 +35,7 @@ void loadCommands();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 typedef void (* func) ();
-
+void getLine(char * buffer);
 
 struct command
 {
@@ -68,6 +68,33 @@ int main (int argc, char const *argv[]) {
 	printf(ANSI_COLOR_RESET "Cliente termina\n");
 
 	return 0;
+}
+
+// Tomo el control del input para poder dar más funcionalidades.
+// Si bien le saca portabilidad, en el contexto de evaluacion
+// no va a traer ningun efecto inesperado
+void getLine(char * buffer){
+// Hace que el input de stdin se mande crudo, sin necesidad de enter
+	system ("/bin/stty raw");
+	char c;
+	int i=0;
+	char* iter=buffer;
+	while((c=getchar())!=13){
+		if(c==127){
+			i--;
+			iter[i]=0;
+			printf("\b\b  ");
+		}else{
+			iter[i]=c;
+			i++;
+		}
+	}
+	iter[i]=0;
+// Se restablece el default. Se asume que era el previo al llamado.
+  	system ("/bin/stty cooked");
+// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo 	
+  	printf("\b\b  \b\b\n");
+	printf("%s\n",buffer);
 }
 
 void loadCommands(){
