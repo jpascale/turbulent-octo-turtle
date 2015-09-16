@@ -36,6 +36,7 @@ int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 typedef void (* func) ();
 void getLine(char * buffer);
+int autoComplete(char* buffer,int i,char* completed);
 
 struct command
 {
@@ -61,7 +62,7 @@ int main (int argc, char const *argv[]) {
 
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
-		gets(input);
+		getLine(input);
 		parse(input);
 	}
 
@@ -75,15 +76,31 @@ int main (int argc, char const *argv[]) {
 // no va a traer ningun efecto inesperado
 void getLine(char * buffer){
 // Hace que el input de stdin se mande crudo, sin necesidad de enter
-	system ("/bin/stty raw");
 	char c;
+	char completed[100];
+	completed[0]=0;
 	int i=0;
 	char* iter=buffer;
+	system ("/bin/stty raw");
 	while((c=getchar())!=13){
 		if(c==127){
 			i--;
 			iter[i]=0;
-			printf("\b\b  ");
+			fprintf(stdout, "\b\b\b   \b\b\b");
+		}else if(c=='\t'){
+			fprintf(stdout, "\b \b");
+		
+			if(autoComplete(buffer,i,completed)==1){
+				int m;
+				for(m=0;m<=i+2;m++)	
+					fprintf(stdout, "\b");		
+				printf("%s",completed);
+				
+				for(m=0;completed[m]!=0;m++){
+					buffer[m]=completed[m];
+				}
+				i=m;
+			}
 		}else{
 			iter[i]=c;
 			i++;
@@ -91,10 +108,34 @@ void getLine(char * buffer){
 	}
 	iter[i]=0;
 // Se restablece el default. Se asume que era el previo al llamado.
-  	system ("/bin/stty cooked");
+	system ("/bin/stty cooked");
 // Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo 	
-  	printf("\b\b  \b\b\n");
+	printf("\b\b  \b\b\n");
 	printf("%s\n",buffer);
+}
+
+//ret 0 if not match or multiple matches
+int autoComplete(char* buffer,int i,char* completed){
+	char matches=0,flag;
+	char* matched;
+	int aux,c;
+	char* currentCom;
+	for(c=0;c<COM_SIZE && matches<2;c++){
+		currentCom=commands[c].name;
+		for(aux=0,flag=0;!flag && currentCom[aux]!=0 && aux<i;aux++){
+			if(currentCom[aux]!=buffer[aux]){
+				flag=1;
+			}
+		}
+		if(!flag && aux==i && currentCom[aux]!=0){
+			matches++;
+			matched=commands[c].name;
+		}
+	}
+	if(matches==1){
+		strcpy(completed, matched);
+	}
+	return matches;
 }
 
 void loadCommands(){
