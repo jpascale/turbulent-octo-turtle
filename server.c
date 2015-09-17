@@ -8,8 +8,7 @@
 #include "datagram.h"
 #include "sharedFunctions.h"
 #include "sqlLib.h"
-#define NAME "/tmp/fifo"
-#define MAGIC_NUMBER_TO_AVOID_WARNINGS 12
+
 
 char* ans;
 

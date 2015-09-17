@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
+#include <signal.h>
+
+
 
 
 void ProcessData(Connection * sender, Datagram * data);
@@ -17,8 +19,7 @@ Connection sender;
 
 
 void main(){
-
-	
+	signal(SIGINT, handOff);
 	setUpDB();
 	initChannel(1);
 	printf("Server conectado\n");

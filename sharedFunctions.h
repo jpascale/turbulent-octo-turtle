@@ -25,6 +25,6 @@ char * removeMovie(int movieID);
 
 void connect(void);
 
-void handOff(void);
+void handOff(int sig);
 
 #endif

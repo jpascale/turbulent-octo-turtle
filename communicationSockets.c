@@ -245,3 +245,8 @@ void clt_receive_data(Connection * connection, Datagram * sdData){
 
    	return;
 }
+
+void handOff(int sig){
+    printf("Termina por señal %d\n", sig);
+    exit(0);
+}

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <signal.h>
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -17,6 +18,11 @@
 #define COM_SIZE 		12
 #define STRING          0
 #define INT             1
+
+#define NEW_LINE 		13
+#define BACKSPACE		127
+#define TAB				'\t'
+
 
 void cgetMovieList();
 void cgetMovieShow(int movieId);
@@ -35,7 +41,9 @@ void loadCommands();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 typedef void (* func) ();
-
+void getLine(char * buffer);
+int autoComplete(char* buffer,int i,char* completed);
+void csignal(int sig);
 
 typedef void (* func) ();
 
@@ -53,7 +61,8 @@ static struct command commands[COM_SIZE] = {};
 
 
 int main (int argc, char const *argv[]) {
-
+	
+	signal(SIGINT, csignal);
 	loadCommands();
 	connect();
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
@@ -64,13 +73,96 @@ int main (int argc, char const *argv[]) {
 
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
-		gets(input);
+		getLine(input);
 		parse(input);
 	}
 
 	printf(ANSI_COLOR_RESET "Cliente termina\n");
 
 	return 0;
+}
+
+// Tomo el control del input para poder dar más funcionalidades.
+// Si bien le saca portabilidad, en el contexto de evaluacion
+// no va a traer ningun efecto inesperado
+void getLine(char * buffer){
+// Hace que el input de stdin se mande crudo, sin necesidad de enter
+	char c;
+	char completed[100];
+	completed[0]=0;
+	int i=0;
+	char* iter=buffer;
+	system ("/bin/stty raw -echo isig");
+	while((c=getchar())!=NEW_LINE){
+		if(c==BACKSPACE){
+			printf("\b  \b\b");
+			i--;
+			iter[i]=0;
+		}else if(c==TAB){
+			if(autoComplete(buffer,i,completed)==1){
+				int m;
+				for(m=0;m<i;m++)	
+					fprintf(stdout, "\b");		
+				printf("%s",completed);
+				
+				for(m=0;completed[m]!=0;m++){
+					buffer[m]=completed[m];
+				}
+				i=m;
+			}
+		}else if (c == '\033') { 
+			//Ingreso una flecha. Por el momento no estan soportadas
+			// if the first value is esc
+    		getchar(); // skip the [
+		 	switch(getchar()) { // the real value
+		        case 'A':
+		            // code for arrow up
+		            break;
+		        case 'B':
+		            // code for arrow down
+		            break;
+		        case 'C':
+		            // code for arrow right
+		            break;
+		        case 'D':
+		            // code for arrow left
+		            break;
+    		}
+		}else{
+			putc(c,stdout);
+			iter[i]=c;
+			i++;
+		}
+	}
+	iter[i]=0;
+// Se restablece el default. Se asume que era el previo al llamado.
+	system ("/bin/stty cooked echo");
+// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo 	
+	printf("\n");
+}
+
+//ret 0 if not match or multiple matches
+int autoComplete(char* buffer,int i,char* completed){
+	char matches=0,flag;
+	char* matched;
+	int aux,c;
+	char* currentCom;
+	for(c=0;c<COM_SIZE && matches<2;c++){
+		currentCom=commands[c].name;
+		for(aux=0,flag=0;!flag && currentCom[aux]!=0 && aux<i;aux++){
+			if(currentCom[aux]!=buffer[aux]){
+				flag=1;
+			}
+		}
+		if(!flag && aux==i && currentCom[aux]!=0){
+			matches++;
+			matched=commands[c].name;
+		}
+	}
+	if(matches==1){
+		strcpy(completed, matched);
+	}
+	return matches;
 }
 
 void loadCommands(){
@@ -366,6 +458,13 @@ char * cremoveMovie(int movieID){
 }
 
 void cexit(){
+
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
+}
+
+void csignal(int sig){
+	system ("/bin/stty cooked echo");
+	printf(ANSI_COLOR_RESET);
+	handOff(sig);
 }
