@@ -48,8 +48,6 @@ struct sockaddr_in server, client;
 //CLIENT
 int sock;
 struct sockaddr_in server;
-char message[100];
-char server_reply[2000];
 
 /*
 **		Module functions
@@ -128,15 +126,15 @@ void srv_init_channel(void){
     }
 
     //Listen
-    listen(socket_desc , 3);
+    listen(socket_desc, 3);
      
     c = sizeof(struct sockaddr_in);
-
+    printf("DEBUG: initServerChannel hecho.\n");
     return;
 }
 
 void srv_receive_data(Connection * connection, Datagram * sdData){
-
+    printf("Ahora viene el accept\n");
  	if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
          
     //__________Receive incoming data____________
@@ -144,14 +142,16 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
         	printf("Accepted %d socket.\n", client_sock);
 
     	int read_size;
-     	Datagram data;
+     	//Datagram data;
+        void * data = calloc(MAX_RDATA_SIZE, 1);
 
      	if (DEBUG)
      		printf("Esperando para leer\n");
 
-    	if ((read_size = recv(client_sock, &data, sizeof data, 0)) > 0){
-    		memcpy(sdData, &data, sizeof data);
-    		return;
+    	if ((read_size = recv(client_sock, data, MAX_RDATA_SIZE, 0)) > 0){
+            printf("DEBUG: Reading size: %d\n", read_size);
+            printf("DEBUG: Structure size: %d\n", *((int*)data));
+    		memcpy(sdData, data, read_size);
     	}
      
     	if (read_size == 0){
@@ -166,6 +166,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
     		printf ("El puerto esta siendo usado.\n");
     		exit(1);
     	}
+        free(data);
     }
      
     if (client_sock < 0)
@@ -181,11 +182,15 @@ void srv_receive_data(Connection * connection, Datagram * sdData){
 
 void srv_send_data(Connection * coneccion, Datagram * sdData){
 	
-	Datagram data;
-	memcpy(&data, sdData, sizeof data);
+	//Datagram data;
+	void * data = malloc(sdData -> size);
+    printf("DEBUG: SendData: sdData->size = %d\n", sdData->size);
+    memcpy(data, sdData, sdData -> size);
 
-	write(client_sock, &data, sizeof data);
+	write(client_sock, data, sdData -> size);
     close(client_sock);
+
+    free(data);
 }
 
 void clt_init_channel(void){
@@ -206,42 +211,52 @@ void clt_init_channel(void){
 
 void clt_send_data(Connection * connection, Datagram * sdData){
 	
-	Datagram data;
-	memcpy(&data, sdData, sizeof data);
+	//Datagram data;
+	void * data = malloc(sdData -> size);
+    memcpy(data, sdData, sdData -> size);
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         printf ("Socket error\n");
     }
+    printf("Hasta aca todo piola\n");
 
-    if (connect(sock, (struct sockaddr *)&server, sizeof(server))>= 0){
-   		
-   		if(send(sock, &data, sizeof data, 0) < 0){
+    int c;
+    if ((c=connect(sock, (struct sockaddr *)&server, sizeof(server)))>= 0){
+        printf("C = %d\n", c);
+        printf("Hasta aca todo piola3\n");   		
+   		if(send(sock, data, *((int * )data), MSG_NOSIGNAL) < 0){
       		puts("Send failed");
-       		return;
    		}else{
    			if (DEBUG)
    				printf("Sent.\n");
        	}
-        
-       	return;
     }
+    printf("ESTO TIENE Q VERSE\n");
+
+    free(data);
+    return;
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData){
     
-	Datagram data;
+	//Datagram data;
 
-    if(recv(sock, &data, sizeof data, 0) < 0){
+    void * data = calloc(MAX_RDATA_SIZE, 1);
+    int bff_size;
+    
+    if((bff_size = recv(sock, data, MAX_RDATA_SIZE, 0)) < 0){
         puts("recv failed"); 
         return;
     }
 
     close(sock);
 
-    memcpy(sdData, &data, sizeof data);
+    memcpy(sdData, data, bff_size);
     
     if (DEBUG)
    		printf("DEBUG: Desconectado.\n");
+
+    free(data);
 
    	return;
 }

@@ -14,7 +14,15 @@ int main(void){
 
 	while (1){
 		receiveData(&conn, &data);
-    	printf("Dat income: %s", data.data.text);
-		sendData(&conn, &data);
+
+    	int c = fork();
+
+    	if (c == 0){
+    		printf("Dat income: %s", data.data.text);
+    		sleep(2);
+			sendData(&conn, &data);
+			exit(0);
+		}
+
 	}
 }
