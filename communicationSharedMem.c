@@ -189,5 +189,21 @@ resetSems(){
 		sem_post(sdC);
 		sem_getvalue(sdC, &value);
 	}
+}
 
+void handOff(int sig){
+// Cierro los semaforos. Cuando no los use nadie, se borran.
+	sem_close(sdA);
+	sem_close(sdB);
+	sem_close(sdC);
+	
+//Cada parte se encarga de cerrar sus canales
+	if(bool_server){
+		msg=getmem(0);
+	}else{
+		msg=getmem(getpid());
+	}
+	shmdt(msg);
+	printf("Termina por señal %d\n", sig);
+	exit(0);
 }

@@ -12,7 +12,6 @@
 void sendData(Connection * connection, Datagram * params);
 void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
-
 void getFifoName(int pid, char * buffer);
 
 int is_server;
@@ -64,4 +63,9 @@ void getFifoName(int pid, char * buffer){
 		buffer++;
 	}
 	*buffer=0;
+}
+
+void handOff(int sig){
+	printf("Servidor termina por señal %d\n", sig);
+	exit(0);
 }

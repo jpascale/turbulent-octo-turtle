@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <signal.h>
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -17,6 +18,11 @@
 #define COM_SIZE 		12
 #define STRING          0
 #define INT             1
+
+#define NEW_LINE 		13
+#define BACKSPACE		127
+#define TAB				'\t'
+
 
 void cgetMovieList();
 void cgetMovieShow(int movieId);
@@ -37,6 +43,7 @@ int splitArgs(char* args[], char* buffer);
 typedef void (* func) ();
 void getLine(char * buffer);
 int autoComplete(char* buffer,int i,char* completed);
+void csignal(int sig);
 
 struct command
 {
@@ -51,7 +58,8 @@ static struct command commands[COM_SIZE] = {};
 
 
 int main (int argc, char const *argv[]) {
-
+	
+	signal(SIGINT, csignal);
 	loadCommands();
 	connect();
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
@@ -81,18 +89,16 @@ void getLine(char * buffer){
 	completed[0]=0;
 	int i=0;
 	char* iter=buffer;
-	system ("/bin/stty raw");
-	while((c=getchar())!=13){
-		if(c==127){
+	system ("/bin/stty raw -echo isig");
+	while((c=getchar())!=NEW_LINE){
+		if(c==BACKSPACE){
+			printf("\b  \b\b");
 			i--;
 			iter[i]=0;
-			fprintf(stdout, "\b\b\b   \b\b\b");
-		}else if(c=='\t'){
-			fprintf(stdout, "\b \b");
-		
+		}else if(c==TAB){
 			if(autoComplete(buffer,i,completed)==1){
 				int m;
-				for(m=0;m<=i+2;m++)	
+				for(m=0;m<i;m++)	
 					fprintf(stdout, "\b");		
 				printf("%s",completed);
 				
@@ -101,17 +107,35 @@ void getLine(char * buffer){
 				}
 				i=m;
 			}
+		}else if (c == '\033') { 
+			//Ingreso una flecha. Por el momento no estan soportadas
+			// if the first value is esc
+    		getchar(); // skip the [
+		 	switch(getchar()) { // the real value
+		        case 'A':
+		            // code for arrow up
+		            break;
+		        case 'B':
+		            // code for arrow down
+		            break;
+		        case 'C':
+		            // code for arrow right
+		            break;
+		        case 'D':
+		            // code for arrow left
+		            break;
+    		}
 		}else{
+			putc(c,stdout);
 			iter[i]=c;
 			i++;
 		}
 	}
 	iter[i]=0;
 // Se restablece el default. Se asume que era el previo al llamado.
-	system ("/bin/stty cooked");
+	system ("/bin/stty cooked echo");
 // Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo 	
-	printf("\b\b  \b\b\n");
-	printf("%s\n",buffer);
+	printf("\n");
 }
 
 //ret 0 if not match or multiple matches
@@ -424,6 +448,13 @@ char * cremoveMovie(int movieID){
 }
 
 void cexit(){
+
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
+}
+
+void csignal(int sig){
+	system ("/bin/stty cooked echo");
+	printf(ANSI_COLOR_RESET);
+	handOff(sig);
 }
