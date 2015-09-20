@@ -9,7 +9,7 @@
 Datagram data;
 Connection sender;
 
-void connect(){
+void __connect(){
 	initChannel(0);	
 	printf("Cliente conectado.\n");
 }

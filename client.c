@@ -61,10 +61,12 @@ static struct command commands[COM_SIZE] = {};
 
 
 int main (int argc, char const *argv[]) {
-	
+	//::::::
+
+	//::::::
 	signal(SIGINT, csignal);
 	loadCommands();
-	connect();
+	__connect();
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
 	char input[INPUT_SIZE];
 	int n;

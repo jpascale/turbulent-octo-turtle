@@ -14,7 +14,6 @@
 */
 void srv_init_channel(void);
 void clt_init_channel(void);
-void create_ioqueue(void);
 void srv_send_data(Connection * connection, Datagram * sdData);
 void srv_receive_data(Connection * connection, Datagram * sdData);
 void clt_send_data(Connection * connection, Datagram * sdData);
@@ -129,12 +128,12 @@ void srv_init_channel(void){
     listen(socket_desc, 3);
      
     c = sizeof(struct sockaddr_in);
-    printf("DEBUG: initServerChannel hecho.\n");
+
     return;
 }
 
 void srv_receive_data(Connection * connection, Datagram * sdData){
-    printf("Ahora viene el accept\n");
+
  	if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))){
          
     //__________Receive incoming data____________
@@ -184,7 +183,6 @@ void srv_send_data(Connection * coneccion, Datagram * sdData){
 	
 	//Datagram data;
 	void * data = malloc(sdData -> size);
-    printf("DEBUG: SendData: sdData->size = %d\n", sdData->size);
     memcpy(data, sdData, sdData -> size);
 
 	write(client_sock, data, sdData -> size);

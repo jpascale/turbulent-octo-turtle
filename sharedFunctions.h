@@ -23,7 +23,7 @@ char * addMovie(int length, char * title, char * desc);
 
 char * removeMovie(int movieID);
 
-void connect(void);
+void __connect(void);
 
 void handOff(int sig);
 
