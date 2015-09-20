@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "sharedFunctions.h"
 #include "datagram.h"
 #include "communication.h"
@@ -10,7 +11,6 @@ Connection sender;
 
 void connect(){
 	initChannel(0);	
-
 	printf("Cliente conectado.\n");
 }
 
@@ -19,7 +19,7 @@ char * getMovieList(){
 	data.client_pid = getpid();
 	data.size = sizeof(data);
 	sender.sender_pid=getpid();
-
+	
 	sendData(&sender, &data);
 	receiveData(&sender, &data);
 

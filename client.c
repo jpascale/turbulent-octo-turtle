@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <signal.h>
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -12,11 +14,15 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-
 #define INPUT_SIZE 		1024
 #define COM_SIZE 		12
 #define STRING          0
 #define INT             1
+
+#define NEW_LINE 		13
+#define BACKSPACE		127
+#define TAB				'\t'
+
 
 void cgetMovieList();
 void cgetMovieShow(int movieId);
@@ -34,21 +40,29 @@ void parse(char* buff);
 void loadCommands();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
+typedef void (* func) ();
+void getLine(char * buffer);
+int autoComplete(char* buffer,int i,char* completed);
+void csignal(int sig);
+
+typedef void (* func) ();
 
 struct command
 {
 	char * name;
-	void (* function) ();
+	func function;
 	char * args;
 	int argsCant;
 	char* desc;
 };
 
+
 static struct command commands[COM_SIZE] = {};
 
 
 int main (int argc, char const *argv[]) {
-
+	
+	signal(SIGINT, csignal);
 	loadCommands();
 	connect();
 	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
@@ -59,7 +73,7 @@ int main (int argc, char const *argv[]) {
 
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
-		gets(input);
+		getLine(input);
 		parse(input);
 	}
 
@@ -68,10 +82,93 @@ int main (int argc, char const *argv[]) {
 	return 0;
 }
 
+// Tomo el control del input para poder dar más funcionalidades.
+// Si bien le saca portabilidad, en el contexto de evaluacion
+// no va a traer ningun efecto inesperado
+void getLine(char * buffer){
+// Hace que el input de stdin se mande crudo, sin necesidad de enter
+	char c;
+	char completed[100];
+	completed[0]=0;
+	int i=0;
+	char* iter=buffer;
+	system ("/bin/stty raw -echo isig");
+	while((c=getchar())!=NEW_LINE){
+		if(c==BACKSPACE){
+			printf("\b  \b\b");
+			i--;
+			iter[i]=0;
+		}else if(c==TAB){
+			if(autoComplete(buffer,i,completed)==1){
+				int m;
+				for(m=0;m<i;m++)	
+					fprintf(stdout, "\b");		
+				printf("%s",completed);
+				
+				for(m=0;completed[m]!=0;m++){
+					buffer[m]=completed[m];
+				}
+				i=m;
+			}
+		}else if (c == '\033') { 
+			//Ingreso una flecha. Por el momento no estan soportadas
+			// if the first value is esc
+    		getchar(); // skip the [
+		 	switch(getchar()) { // the real value
+		        case 'A':
+		            // code for arrow up
+		            break;
+		        case 'B':
+		            // code for arrow down
+		            break;
+		        case 'C':
+		            // code for arrow right
+		            break;
+		        case 'D':
+		            // code for arrow left
+		            break;
+    		}
+		}else{
+			putc(c,stdout);
+			iter[i]=c;
+			i++;
+		}
+	}
+	iter[i]=0;
+// Se restablece el default. Se asume que era el previo al llamado.
+	system ("/bin/stty cooked echo");
+// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo 	
+	printf("\n");
+}
+
+//ret 0 if not match or multiple matches
+int autoComplete(char* buffer,int i,char* completed){
+	char matches=0,flag;
+	char* matched;
+	int aux,c;
+	char* currentCom;
+	for(c=0;c<COM_SIZE && matches<2;c++){
+		currentCom=commands[c].name;
+		for(aux=0,flag=0;!flag && currentCom[aux]!=0 && aux<i;aux++){
+			if(currentCom[aux]!=buffer[aux]){
+				flag=1;
+			}
+		}
+		if(!flag && aux==i && currentCom[aux]!=0){
+			matches++;
+			matched=commands[c].name;
+		}
+	}
+	if(matches==1){
+		strcpy(completed, matched);
+	}
+	return matches;
+}
+
 void loadCommands(){
 
 	commands[0].name = "getMovieList";
-	commands[0].function = &cgetMovieList;
+	commands[0].function = (func)&cgetMovieList;
 	commands[0].argsCant = 0;
 	commands[0].desc = "Muestra la cartelera disponible!";
 
@@ -79,7 +176,7 @@ void loadCommands(){
 	char* getMovieShowArgs = malloc(1000);
 	getMovieShowArgs[0]=INT;	
 	commands[1].name = "getMovieShow";
-	commands[1].function = &cgetMovieShow;
+	commands[1].function = (func)&cgetMovieShow;
 	commands[1].args = getMovieShowArgs;
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
@@ -87,15 +184,16 @@ void loadCommands(){
 	char* getMovieDetailsArgs = malloc(1000);
 	getMovieDetailsArgs[0]=INT;	
 	commands[2].name = "getMovieDetails";
-	commands[2].function = &cgetMovieDetails;
+	commands[2].function = (func)&cgetMovieDetails;
 	commands[2].args = getMovieDetailsArgs;
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra los detalles de una pelicula determinada(movieId).";
 
 	char* getShowSeatsArgs = malloc(1000);
 	getShowSeatsArgs[0]=INT;
+
 	commands[3].name = "getShowSeats";
-	commands[3].function = &cgetShowSeats;
+	commands[3].function = (func)&cgetShowSeats;
 	commands[3].args = getShowSeatsArgs;
 	commands[3].argsCant = 1;
 	commands[3].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
@@ -106,17 +204,20 @@ void loadCommands(){
 	BuyTicketArgs[2]=INT;
 	BuyTicketArgs[3]=INT;
 	BuyTicketArgs[4]=STRING;
+
 	commands[4].name = "buyTickets";
-	commands[4].function = &cBuyTicket;
+	commands[4].function = (func)&cBuyTicket;
 	commands[4].args = BuyTicketArgs;
 	commands[4].argsCant = 5;
 	commands[4].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
+
 	char* UndoBuyTicketArgs= malloc(1000);
 	UndoBuyTicketArgs[0]=INT;
 	UndoBuyTicketArgs[1]=STRING;
+
 	commands[5].name = "undoBuyTicket";
-	commands[5].function = &cUndoBuyTicket;
+	commands[5].function = (func)&cUndoBuyTicket;
 	commands[5].args = UndoBuyTicketArgs;
 	commands[5].argsCant = 2;
 	commands[5].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
@@ -125,8 +226,9 @@ void loadCommands(){
 	addShowArgs[0]=INT;
 	addShowArgs[1]=INT;
 	addShowArgs[2]=INT;
+
 	commands[6].name = "addShow";
-	commands[6].function = &caddShow;
+	commands[6].function = (func)&caddShow;
 	commands[6].args = addShowArgs;
 	commands[6].argsCant = 3;
 	commands[6].desc = "Agrega una funcion dada una hora, sala y pelicula.";
@@ -134,7 +236,7 @@ void loadCommands(){
 	char* removeShowArgs= malloc(1000);
 	removeShowArgs[0]=INT;
 	commands[7].name = "removeShow";
-	commands[7].function = &cremoveShow;
+	commands[7].function = (func)&cremoveShow;
 	commands[7].args = removeShowArgs;
 	commands[7].argsCant = 1;
 	commands[7].desc = "Remueve una funcion medienta su id.";
@@ -143,8 +245,9 @@ void loadCommands(){
 	addMovieArgs[0]=INT;
 	addMovieArgs[1]=STRING;
 	addMovieArgs[2]=STRING;
+
 	commands[8].name = "addMovie";
-	commands[8].function = &caddMovie;
+	commands[8].function = (func)&caddMovie;
 	commands[8].args = addMovieArgs;
 	commands[8].argsCant = 3;
 	commands[8].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
@@ -152,18 +255,19 @@ void loadCommands(){
 	char* removeMovieArgs= malloc(1000);
 	removeMovieArgs[0]=INT;
 	commands[9].name = "removeMovie";
-	commands[9].function = &cremoveMovie;
+	commands[9].function = (func)&cremoveMovie;
 	commands[9].args = removeMovieArgs;
 	commands[9].argsCant = 1;
 	commands[9].desc = "Remueve una pelicula medienta su id.";
 
 	commands[10].name = "exit";
-	commands[10].function = &cexit;
+	commands[10].function = (func)&cexit;
+
 	commands[10].argsCant = 0;
 	commands[10].desc = "Sale del programa.";
 
 	commands[11].name = "help";
-	commands[11].function = &chelp;
+	commands[11].function = (func)&chelp;
 	commands[11].argsCant = 0;
 	commands[11].desc = "I need somebody... ";
 
@@ -354,6 +458,13 @@ char * cremoveMovie(int movieID){
 }
 
 void cexit(){
+
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
+}
+
+void csignal(int sig){
+	system ("/bin/stty cooked echo");
+	printf(ANSI_COLOR_RESET);
+	handOff(sig);
 }

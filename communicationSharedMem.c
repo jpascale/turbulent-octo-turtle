@@ -41,18 +41,17 @@ void initChannel(int b_server){
 
 void sendData(Connection * connection, Datagram * params){
 //	printfSemStates();
-
 	if(bool_server)
 		msg=getmem(connection->sender_pid);
 	else
 		msg=getmem(0);
+//printf("sout, %i\n",getpid());
 	
-	//printf("sout, %i\n",getpid());
-	enter(1);
-	//printf("sin, %i\n",getpid());
+	if(!bool_server)
+		enter(1);
+//printf("sin, %i\n",getpid());
 	memcpy(msg, params,params->size);
 	leave((bool_server)?2:0);
-
 //	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
 }
 
@@ -70,7 +69,8 @@ void receiveData(Connection * sender, Datagram * buffer){
 //		printf("Busco un mensaje de size= %i\n",*((int*)current));
 	memcpy(current, msg,*((int*)current));
 	sprintf(msg,"\0\0\0\0");	
-	leave(1);
+	if(!bool_server)
+		leave(1);
 //		printf("Recibido\n");
 	memcpy(buffer,current,*((int*)current));
 //		printfSemStates();
@@ -189,5 +189,21 @@ resetSems(){
 		sem_post(sdC);
 		sem_getvalue(sdC, &value);
 	}
+}
 
+void handOff(int sig){
+// Cierro los semaforos. Cuando no los use nadie, se borran.
+	sem_close(sdA);
+	sem_close(sdB);
+	sem_close(sdC);
+	
+//Cada parte se encarga de cerrar sus canales
+	if(bool_server){
+		msg=getmem(0);
+	}else{
+		msg=getmem(getpid());
+	}
+	shmdt(msg);
+	printf("Termina por señal %d\n", sig);
+	exit(0);
 }

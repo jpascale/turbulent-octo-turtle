@@ -109,7 +109,7 @@ void srv_init_channel(void){
 	keyin = 0xBEEF0;
 	keyout = 0xBEEF1;
 
-	signal(SIGINT, quit);
+//	signal(SIGINT, quit);
 
 	create_ioqueue();
 }
@@ -120,7 +120,7 @@ void clt_init_channel(void){
 	keyin = 0xBEEF1;
 	keyout = 0xBEEF0;
 
-	signal(SIGINT, quit);
+//	signal(SIGINT, quit);
 
 	create_ioqueue();
 }
@@ -199,8 +199,7 @@ void fatal(char * s){
 	exit(1);
 }
 
-void quit(int sig)
-{
-	printf("Servidor termina por señal %d\n", sig);
+void handOff(int sig){
+	printf("Termina por señal %d\n", sig);
 	exit(0);
 }

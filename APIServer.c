@@ -7,26 +7,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+
+
 
 
 void ProcessData(Connection * sender, Datagram * data);
-
+void initializeServer();
 Datagram data;
 Connection sender;
 
 
 void main(){
-
-	
+	signal(SIGINT, handOff);
 	setUpDB();
 	initChannel(1);
 	printf("Server conectado\n");
 	setUpDB();
-	
+	initializeServer();
 	int forked_pid, aux;
 
 	printf("Cargado\n");
 	char buffer[512], * auxString;
+	
+	DIR *dir;
+	struct dirent *ent;
 
 	while(1){
 		receiveData(&sender, &data);
@@ -98,4 +103,5 @@ void ProcessData(Connection * sender, Datagram * data){
 			printf("Comando no soportado!\n");
 			sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n",data->opcode);
 	}
+	printf("esto envia: %s\n", data->data.text);
 }
