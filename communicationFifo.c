@@ -7,69 +7,64 @@
 
 #include "./datagram.h"
 
-#define NAME "/tmp/fifo"
+#define SERVER_FIFO "/tmp/server.fifo"
 
 void sendData(Connection * connection, Datagram * params);
 void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
-void getFifoName(int pid, char * buffer);
+
+void mypause(int sign);
 
 int is_server;
-int fd, i;
+int fd_read, fd_write, i;
 char fileName[32];
 
 void initChannel(int bool_server){
 	is_server = bool_server;
-	if(bool_server){
-		mknod("/tmp/server.fifo", S_IFIFO|0666, 0);
-		printf("hasta aca server\n");
+	signal(SIGINT, mypause);
+	if(is_server){
+		mknod(SERVER_FIFO, S_IFIFO|0666, 0);
 	}else{
 		sprintf(fileName, "/tmp/fifo_cli%d", getpid());
 		mknod(fileName, S_IFIFO|0666, 0);
-		printf("hasta aca client\n");
+		fd_write = open(SERVER_FIFO, O_WRONLY);
 	}
 }
 
 void sendData(Connection * connection, Datagram * params){
 	
 	if (!is_server){
-		fd = open("/tmp/server.fifo", O_WRONLY);
-		mknod("/tmp/server.fifo", S_IFIFO|0666, 0);
-		write(fd, params, *(int*)params);
+		mknod(SERVER_FIFO, S_IFIFO|0666, 0);
+		write(fd_write, params, *(int*)params);
 	}else{
 		sprintf(fileName, "/tmp/fifo_cli%d", connection->sender_pid);
-		fd = open(fileName, O_WRONLY);
+		fd_write = open(fileName, O_WRONLY);
 		mknod(fileName, S_IFIFO|0666, 0);
-		write(fd, params, *(int*)params);
+		write(fd_write, params, *(int*)params);
 	}
 }
 
 void receiveData(Connection * sender, Datagram * buffer){
 	
-	if(is_server){
-		fd = open("/tmp/server.fifo", O_RDONLY); 
-	}else{
+	if(!is_server){
 		sprintf(fileName, "/tmp/fifo_cli%d", *(((int*)buffer)+2));
-		fd = open(fileName, O_RDONLY);	
+		fd_read = open(fileName, O_RDONLY);
+	}else{
+		fd_read = open(SERVER_FIFO, O_RDONLY);
 	}
-	
-	read(fd, buffer, sizeof(int));
-	printf("esto leyo: %i\n", (int*)buffer);
+	while(!read(fd_read, buffer, sizeof(int)));
 	int size = *((int*)buffer);
-	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
-	
-}
-
-void getFifoName(int pid, char * buffer){
-	while(pid!=0){
-		*buffer = pid%10 + '0';
-		pid/=10;
-		buffer++;
-	}
-	*buffer=0;
+	read(fd_read, ((char*)buffer)+sizeof(int), size - sizeof(int));
+	close(fd_read);
 }
 
 void handOff(int sig){
 	printf("Servidor termina por señal %d\n", sig);
+	exit(0);
+}
+
+void mypause(int sign){
+	close(fd_read);
+	close(fd_write);
 	exit(0);
 }

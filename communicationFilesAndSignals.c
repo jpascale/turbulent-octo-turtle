@@ -11,65 +11,125 @@
 int leftStringMatch(char * begin, char * string);
 void mypause(int sign);
 
-int is_server, reading = 0, fd, aux;
+int is_server, reading = 0, fd, server_pid, aux = 1;
 DIR *dir;
 struct dirent *ent;	
 sigset_t mask, oldmask;
-char auxS[32];
+char auxS[32], writeFileName[32], readFileName[32];
 
 initChannel(int bool_server){
 	is_server = bool_server;
-	if(is_server){
-		signal(SIGUSR1, mypause);
-		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY);
-		aux = getpid();
-		printf("mi pid es: %i\n",  aux);
-		write(fd, &aux, sizeof(int));
-		dir = opendir ("/tmp/");
+	signal(SIGUSR1, mypause);
+	signal(SIGUSR2, mypause);
+	if(is_server){//server
+		remove("/tmp/server_pid");
+		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY, 777);
+		server_pid = getpid();
+		printf("mi pid es: %i\n",  server_pid);
+		printf("escribio %i caracteres\n", write(fd, &server_pid, sizeof(int)));
+		close(fd);
+		fd = open("/tmp/server_pid", O_RDONLY);
+		read(fd, auxS, sizeof(int));
+		server_pid = *((int*)auxS);
+		printf("server pid es: %i\n",  server_pid);
+		close(fd);
+		reading = 0;
+	}else{ //client
+		fd = open("/tmp/server_pid", O_RDONLY | O_CREAT, 777);
+		read(fd, auxS, sizeof(int));
+		server_pid = *((int*)auxS);
+		printf("Mi pid es: %i\n",  getpid());
+		sprintf(writeFileName, "/tmp/request_%d", getpid());
+		sprintf(readFileName, "/tmp/response_%d", getpid());
+		close(fd);
 	}
 }
 
 sendData(Connection * connection, Datagram * params){
-	fd = open("/tmp/server_pid", O_RDONLY);
-	read(fd, auxS, sizeof(int));
-	aux = *((int*)auxS);
-	printf("server pid es: %i\n",  aux);
-	kill(aux, SIGUSR1);
 	
+	if(is_server){
+		sprintf(writeFileName, "/tmp/response_%i", connection->sender_pid);
+		fd = open(writeFileName, O_CREAT | O_WRONLY, 777);
+		write(fd, params, *(int*)params);
+		printf("enviando señal a: %i\n", connection->sender_pid);
+		kill(connection->sender_pid, SIGUSR1);
+		close(fd);
+	}else{
+		fd = open(writeFileName, O_CREAT | O_WRONLY, 777);
+		write(fd, params, *(int*)params);
+		kill(server_pid, SIGUSR1);
+		close(fd);
+	}
 }
 
 receiveData(Connection * sender, Datagram * buffer){
+	if(is_server){ //server
+		printf("entro a receive\n");
+		while(1){	
+			if(!reading){
+				if(aux){
+					sigemptyset (&mask);
+					sigaddset (&mask, SIGUSR1);	
+					sigprocmask (SIG_BLOCK, &mask, &oldmask);
+					aux = 0;
+				}
+				
+				printf("SERVER: soy %i\n", getpid());
+				printf("durmiendo\n");
+				
+				sigsuspend(&oldmask);
 
-	sigemptyset (&mask);
-	sigaddset (&mask, SIGUSR1);
-	
-	sigprocmask (SIG_BLOCK, &mask, &oldmask);
-	sleep(20);
-	printf("termino el sleep\n");
-	sigsuspend(&oldmask);
-	printf("libre!\n");
-	while(1);
-	/*if(is_server){
-		sigprocmask();
-		if(reading){
+				printf("desperto\n");
+				reading = 1;
+				dir = opendir ("/tmp/");
+			}	
+			printf("leyendo archivos\n");
 			while ((ent = readdir (dir)) != NULL && !leftStringMatch("request", ent->d_name));
 			if(ent != NULL){
-				sprintf(buffer, "/tmp/%s", ent->d_name);
-				fd = open(buffer, O_RDONLY);
+				sprintf(readFileName, "/tmp/%s", ent->d_name);
+				printf("current file: %s\n", readFileName);
+				if((fd = open(readFileName, O_RDONLY))<0)
+					printf("no pude leer\n");
 				read(fd, buffer, sizeof(int));
 				//printf("esto leyo: %i\n", (int*)buffer);
 				int size = *((int*)buffer);
 				read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
+				if(!remove(readFileName))
+					printf("borrado: %s\n", readFileName);
+				else
+					printf("no borrado: %s\n", readFileName);
+				close(fd);
 				return;
-			}else{
-				sigsuspend();
 			}
-  			//closedir (dir);
-		}else{
-			sigsuspend();
+			printf("no hay mas archivos\n");
+			reading = 0;		
+			closedir (dir);
 		}
-	}*/
+	}else{ //client
+		if(aux){
+			sigemptyset (&mask);
+			sigaddset (&mask, SIGUSR1);	
+			sigprocmask (SIG_BLOCK, &mask, &oldmask);
+			aux = 0;
+		}
+		printf("esperando señal\n");
+		sigsuspend(&oldmask);
+		printf("llego señal\n");
+		if((fd = open(readFileName, O_RDONLY))<0)
+			printf("no pude abrir\n");
+		read(fd, buffer, sizeof(int));
+		printf("esto leyo: %i\n", (int*)buffer);
+		int size = *((int*)buffer);
+		read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
+		if(!remove(readFileName))
+			printf("borrado: %s\n", readFileName);
+		else
+			printf("no borrado: %s\n", readFileName);
+		close(fd);
+	}
+	return;
 }
+
 leftStringMatch(char * begin, char * string){
 	int match = 1;
 	while (*begin!=0 && match) if(*(begin++)!=*(string++)) match = 0;
@@ -77,5 +137,11 @@ leftStringMatch(char * begin, char * string){
 }
 
 void mypause(int sign){
+	signal(SIGUSR1, mypause);
 	printf("entro a la señal\n");
+}
+
+void handOff(int sig){
+	printf("Servidor termina por señal %d\n", sig);
+	exit(0);
 }

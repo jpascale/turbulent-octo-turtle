@@ -341,10 +341,10 @@ int convertArg(char ** args, unsigned  char * argTypes, int cant){
 	for(j=1; j<=cant; j++){	
 		switch(argTypes[j-1]){
 			case INT:
-			args[j]=atoi(args[j]);
-			break;
+				args[j]=(char *)atoi(args[j]);
+				break;
 			default:
-			break;
+				break;
 		}
 	}
 }
@@ -401,6 +401,7 @@ void cgetMovieList(){
 			}
 		}
 	}
+	
 }
 
 void
