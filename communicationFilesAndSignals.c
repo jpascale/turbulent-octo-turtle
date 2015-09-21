@@ -21,7 +21,7 @@ initChannel(int bool_server){
 	is_server = bool_server;
 	signal(SIGUSR1, mypause);
 	signal(SIGUSR2, mypause);
-	if(is_server){//server
+	if(is_server){ //server
 		remove("/tmp/server_pid");
 		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY, 777);
 		server_pid = getpid();
