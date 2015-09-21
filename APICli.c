@@ -19,7 +19,7 @@ char * getMovieList(){
 	data.client_pid = getpid();
 	data.size = sizeof(data);
 	sender.sender_pid=getpid();
-
+	
 	sendData(&sender, &data);
 	receiveData(&sender, &data);
 

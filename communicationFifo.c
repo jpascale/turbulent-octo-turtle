@@ -15,16 +15,20 @@ void initChannel(int bool_server);
 void getFifoName(int pid, char * buffer);
 
 int is_server;
+int fd, i;
+char fileName[32];
 
 void initChannel(int bool_server){
 	is_server = bool_server;
 	if(bool_server){
 		mknod("/tmp/server.fifo", S_IFIFO|0666, 0);
+		printf("hasta aca server\n");
+	}else{
+		sprintf(fileName, "/tmp/fifo_cli%d", getpid());
+		mknod(fileName, S_IFIFO|0666, 0);
+		printf("hasta aca client\n");
 	}
 }
-
-int fd, i;
-char fileName[32];
 
 void sendData(Connection * connection, Datagram * params){
 	
@@ -50,7 +54,7 @@ void receiveData(Connection * sender, Datagram * buffer){
 	}
 	
 	read(fd, buffer, sizeof(int));
-	//printf("estoy leyo: %s\n", buffer);
+	printf("esto leyo: %i\n", (int*)buffer);
 	int size = *((int*)buffer);
 	read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
 	

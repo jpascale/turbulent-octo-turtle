@@ -45,6 +45,8 @@ void getLine(char * buffer);
 int autoComplete(char* buffer,int i,char* completed);
 void csignal(int sig);
 
+typedef void (* func) ();
+
 struct command
 {
 	char * name;
@@ -53,6 +55,7 @@ struct command
 	int argsCant;
 	char* desc;
 };
+
 
 static struct command commands[COM_SIZE] = {};
 
@@ -188,6 +191,7 @@ void loadCommands(){
 
 	char* getShowSeatsArgs = malloc(1000);
 	getShowSeatsArgs[0]=INT;
+
 	commands[3].name = "getShowSeats";
 	commands[3].function = (func)&cgetShowSeats;
 	commands[3].args = getShowSeatsArgs;
@@ -200,15 +204,18 @@ void loadCommands(){
 	BuyTicketArgs[2]=INT;
 	BuyTicketArgs[3]=INT;
 	BuyTicketArgs[4]=STRING;
+
 	commands[4].name = "buyTickets";
 	commands[4].function = (func)&cBuyTicket;
 	commands[4].args = BuyTicketArgs;
 	commands[4].argsCant = 5;
 	commands[4].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
+
 	char* UndoBuyTicketArgs= malloc(1000);
 	UndoBuyTicketArgs[0]=INT;
 	UndoBuyTicketArgs[1]=STRING;
+
 	commands[5].name = "undoBuyTicket";
 	commands[5].function = (func)&cUndoBuyTicket;
 	commands[5].args = UndoBuyTicketArgs;
@@ -219,6 +226,7 @@ void loadCommands(){
 	addShowArgs[0]=INT;
 	addShowArgs[1]=INT;
 	addShowArgs[2]=INT;
+
 	commands[6].name = "addShow";
 	commands[6].function = (func)&caddShow;
 	commands[6].args = addShowArgs;
@@ -237,6 +245,7 @@ void loadCommands(){
 	addMovieArgs[0]=INT;
 	addMovieArgs[1]=STRING;
 	addMovieArgs[2]=STRING;
+
 	commands[8].name = "addMovie";
 	commands[8].function = (func)&caddMovie;
 	commands[8].args = addMovieArgs;
@@ -253,6 +262,7 @@ void loadCommands(){
 
 	commands[10].name = "exit";
 	commands[10].function = (func)&cexit;
+
 	commands[10].argsCant = 0;
 	commands[10].desc = "Sale del programa.";
 
@@ -457,4 +467,5 @@ void csignal(int sig){
 	system ("/bin/stty cooked echo");
 	printf(ANSI_COLOR_RESET);
 	handOff(sig);
+	exit(1);
 }
