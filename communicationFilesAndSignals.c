@@ -35,7 +35,6 @@ sendData(Connection * connection, Datagram * params){
 	aux = *((int*)auxS);
 	printf("server pid es: %i\n",  aux);
 	kill(aux, SIGUSR1);
-	
 }
 
 receiveData(Connection * sender, Datagram * buffer){

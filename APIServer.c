@@ -11,7 +11,6 @@
 
 
 
-
 void ProcessData(Connection * sender, Datagram * data);
 void initializeServer();
 Datagram data;
@@ -23,15 +22,12 @@ void main(){
 	setUpDB();
 	initChannel(1);
 	printf("Server conectado\n");
-	setUpDB();
 	initializeServer();
 	int forked_pid, aux;
 
 	printf("Cargado\n");
 	char buffer[512], * auxString;
-	
-	DIR *dir;
-	struct dirent *ent;
+
 
 	while(1){
 		receiveData(&sender, &data);
@@ -52,9 +48,6 @@ void main(){
 }
 
 void ProcessData(Connection * sender, Datagram * data){
-	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(0);
-	printf("FIN DEL SLEEP!\n");
 	sender->sender_pid=data->client_pid;
 	char* ans;
 	int num;

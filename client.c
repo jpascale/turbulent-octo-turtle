@@ -467,4 +467,5 @@ void csignal(int sig){
 	system ("/bin/stty cooked echo");
 	printf(ANSI_COLOR_RESET);
 	handOff(sig);
+	exit(1);
 }
