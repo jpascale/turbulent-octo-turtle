@@ -16,7 +16,6 @@
 #define READ 1
 #define WRITE 0
 
-struct flock fl = {F_WRLCK, SEEK_SET,   0,      0,     0 };
 int fd;
 void lock_db(int is_reader);
 void unlock_db(void);
@@ -25,7 +24,6 @@ char* ans;
 
 void connect(){
 	ans=malloc(1024);
-	fl.l_pid = getpid();
 	setUpDB();
 
 }
@@ -75,6 +73,10 @@ char * UndoBuyTicket(int ticketId, char* nombre){
 	return ans;
 }
 char * addShow(int time, int roomID, int movieID){
+	fork();
+fork();
+		
+
 	lock_db(WRITE);
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(30);
@@ -111,39 +113,40 @@ void handOff(int sig){
 	}
 }
 
-
-
 void lock_db(int is_reader){
+	struct flock fl = {F_WRLCK, SEEK_SET,   0,      0,     0 };
+	fl.l_pid = getpid();
+
 	printf("Lockeando como escritura\n");
-    if (is_reader){
-        fl.l_type = F_RDLCK;
+	if (is_reader){
+		fl.l_type = F_RDLCK;
 		printf("Cambiado a lectura\n");
 	}
-    if ((fd = open(DB_PATH, O_RDWR)) == -1) {
-        perror("open");
-        exit(1);
-    }
-    printf("Trying to get lock...");
+	if ((fd = open(DB_PATH, O_RDWR)) == -1) {
+		perror("open");
+		exit(1);
+	}
+	printf("Trying to get lock...");
 
-    if (fcntl(fd, F_SETLKW, &fl) == -1) {
-        perror("fcntl");
-        exit(1);
-    }
+	if (fcntl(fd, F_SETLKW, &fl) == -1) {
+		perror("fcntl");
+		exit(1);
+	}
 
-    printf("got lock\n");
-    locked=1;
+	printf("got lock\n");
+	locked=1;
 }
 
 void unlock_db(void){
+	struct flock fl = {F_UNLCK, SEEK_SET,   0,      0,     0 };
+	fl.l_pid = getpid();
 
-    fl.l_type = F_UNLCK;  /* set to unlock same region */
+	if (fcntl(fd, F_SETLKW, &fl) == -1) {
+		perror("fcntl");
+		exit(1);
+	}
 
-    if (fcntl(fd, F_SETLKW, &fl) == -1) {
-        perror("fcntl");
-        exit(1);
-    }
-
-    printf("Unlocked.\n");
-    locked=0;
-    close(fd);
+	printf("Unlocked.\n");
+	locked=0;
+	close(fd);
 }
