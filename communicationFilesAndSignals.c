@@ -60,6 +60,7 @@ sendData(Connection * connection, Datagram * params){
 		kill(server_pid, SIGUSR1);
 		close(fd);
 	}
+
 }
 
 receiveData(Connection * sender, Datagram * buffer){

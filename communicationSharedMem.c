@@ -11,7 +11,8 @@
 #include <unistd.h>
 
 #define SIZE 1000
-
+#define CLIENT_CANAL_PREFIX "mem_client"
+#define SERVER_CANAL "mem_server"
 typedef enum { false, true } bool;
 
 void resetSems(void);
@@ -45,24 +46,28 @@ void sendData(Connection * connection, Datagram * params){
 		msg=getmem(connection->sender_pid);
 	else
 		msg=getmem(0);
-//printf("sout, %i\n",getpid());
-	
+	if(msg==-1)
+		return;
+
 	if(!bool_server)
 		enter(1);
-//printf("sin, %i\n",getpid());
 	memcpy(msg, params,params->size);
 	leave((bool_server)?2:0);
 //	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
 }
 
 void receiveData(Connection * sender, Datagram * buffer){
+	// Si no estaba abierto el canal al server, no hay nada que leer =/
+	if(bool_server==0 && msg==-1)
+		return;
 
 	if(bool_server)
 		msg=getmem(0);
 	else
 		msg=getmem(sender->sender_pid);
 //		printf("Leyendo de memoria, bloqueante\n");
-//		printf("rout, %i\n",getpid());
+	if(msg==-1)
+		return;
 	enter((bool_server)?0:2);
 //		printf("rin, %i\n",getpid());
 	memcpy(current, msg,sizeof(int));	
@@ -90,23 +95,42 @@ getmem(int mem_code)
 {
 	int fd;
 	char * mem;
-	char * name= malloc(16);
-
+	char name[16];
+	char error_flag=0;
 	if(mem_code == 0){
-		strcpy(name,"mem_cliServ");
+		strcpy(name,SERVER_CANAL);
 	}else{
-		sprintf(name,"mem_cli%i",mem_code);
+		sprintf(name,"%s%i",CLIENT_CANAL_PREFIX,mem_code);
 	}
 
-	if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 )
-		fatal("sh_open");
-	ftruncate(fd, SIZE);
-	if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
-		fatal("mmap");
-	close(fd);
-
-//	printf("Memoria pedida: %s\n",name);
-	return mem;
+	if ( (fd = shm_open(name, O_RDWR, 0666)) == -1 ){
+		if(mem_code==0){
+			if(bool_server==0){
+				printf("El server no esta corriendo\n");
+				error_flag=1;
+			}else{
+				if ((fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 ){
+					fatal("sh_open");
+				}
+			}
+		}else{
+			if(bool_server!=0){
+				printf("El cleinte no abrio canal de vuelta. ¿Tocaste el cliente?\n");
+				error_flag=1;
+			}else{
+				if ( (fd = shm_open(name, O_RDWR|O_CREAT, 0666)) == -1 ){
+					fatal("sh_open");
+				}
+			}
+		}
+	}
+	if(!error_flag){
+		ftruncate(fd, SIZE);
+		if ( !(mem = mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
+			fatal("mmap");
+		close(fd);
+	}
+	return (error_flag==1)?-1:mem;
 }
 
 
@@ -192,17 +216,24 @@ resetSems(){
 }
 
 void handOff(int sig){
+	char name[16];
+
 // Cierro los semaforos. Cuando no los use nadie, se borran.
 	sem_close(sdA);
 	sem_close(sdB);
 	sem_close(sdC);
 	
 //Cada parte se encarga de cerrar sus canales
+
 	if(bool_server){
 		msg=getmem(0);
+		strcpy(name,SERVER_CANAL);
 	}else{
 		msg=getmem(getpid());
+		sprintf(name,"%s%i",CLIENT_CANAL_PREFIX,getpid());
 	}
+	shm_unlink(name);
+
 	shmdt(msg);
 	printf("Termina por señal %d\n", sig);
 	exit(0);
