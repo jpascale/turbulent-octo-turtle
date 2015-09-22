@@ -73,10 +73,6 @@ char * UndoBuyTicket(int ticketId, char* nombre){
 	return ans;
 }
 char * addShow(int time, int roomID, int movieID){
-	fork();
-fork();
-		
-
 	lock_db(WRITE);
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(30);

@@ -422,7 +422,13 @@ void
 cgetShowSeats(int showId){
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
 	char* answer=getShowSeats(showId);
-	printf(ANSI_COLOR_MAGENTA" %s ",answer);
+	printf("%s\n",answer);
+	int sits_num=110;
+
+	for(int i=0;i<sits_num;i++){
+//		if(i)
+
+	}
 }
 
 void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
