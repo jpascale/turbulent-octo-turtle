@@ -422,19 +422,14 @@ void
 cgetShowSeats(int showId){
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
 	char* answer=getShowSeats(showId);
-	printf("%s\n",answer);
-	int sits_num=110;
-
-	for(int i=0;i<sits_num;i++){
-//		if(i)
-
-	}
+	printf(ANSI_COLOR_MAGENTA"Asientos ocupados  en el show" ANSI_COLOR_GREEN" %i:\n",showId);
+	printf(ANSI_COLOR_RED "%s\n",answer);
 }
 
 void cBuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
-	printf(ANSI_COLOR_CYAN"---- REALIZANDO COMPRA ----\n");
+	printf(ANSI_COLOR_CYAN "---- REALIZANDO COMPRA ----\n");
 	char* answer=BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
-	printf(ANSI_COLOR_MAGENTA" %s ",answer);
+	printf(ANSI_COLOR_MAGENTA " %s ",answer);
 }
 
 void cUndoBuyTicket(int ticketId, char* nombre){

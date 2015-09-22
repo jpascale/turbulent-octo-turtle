@@ -22,10 +22,9 @@ void unlock_db(void);
 char locked=0;
 char* ans;
 
-void connect(){
+void __connect(){
 	ans=malloc(1024);
 	setUpDB();
-
 }
 
 char * getMovieList(){
