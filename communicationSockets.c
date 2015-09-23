@@ -148,7 +148,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
             printf("Esperando para leer\n");
 
         if ((read_size = recv(client_sock, data, MAX_RDATA_SIZE, 0)) > 0) {
-            if (DEBUG){
+            if (DEBUG) {
                 printf("DEBUG: Reading size: %d\n", read_size);
                 printf("DEBUG: Structure size: %d\n", *((int*)data));
             }
@@ -184,7 +184,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
 int srv_send_data(Connection * coneccion, Datagram * sdData) {
 
     //Datagram data;
-    void * data = malloc(sdData -> size);
+    void * data = calloc(sdData -> size, 1);
     memcpy(data, sdData, sdData -> size);
 
     write(client_sock, data, sdData -> size);
@@ -204,7 +204,7 @@ void clt_init_channel(void) {
     {
         printf("Could not create socket");
     }
-    
+
     if (DEBUG)
         printf("Socket created\n");
 
@@ -216,7 +216,7 @@ void clt_init_channel(void) {
 int clt_send_data(Connection * connection, Datagram * sdData) {
 
     //Datagram data;
-    void * data = malloc(sdData -> size);
+    void * data = calloc(sdData -> size, 1);
     memcpy(data, sdData, sdData -> size);
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -232,7 +232,8 @@ int clt_send_data(Connection * connection, Datagram * sdData) {
             if (DEBUG)
                 printf("Sent.\n");
         }
-    }
+    }else
+        return -1;
 
     free(data);
     return 0;

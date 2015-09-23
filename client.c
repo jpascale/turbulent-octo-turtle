@@ -31,10 +31,10 @@ void cgetShowSeats(int showId);
 void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre);
 void cexit();
 void cUndoBuyTicket(int ticketId, char* nombre);
-char * caddShow(int time, int roomID, int movieID);
-char * cremoveShow(int showId);
-char * caddMovie(int length, char * title, char * desc);
-char * cremoveMovie(int movieID);
+void caddShow(int time, int roomID, int movieID);
+void cremoveShow(int showId);
+void caddMovie(int length, char * title, char * desc);
+void cremoveMovie(int movieID);
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -77,7 +77,7 @@ int main (int argc, char const *argv[]) {
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
 		//	getLine(input);
-		fgets(input, INPUT_SIZE, stdin);
+		fgets(input, INPUT_SIZE - 16, stdin);
 		int len = strlen(input);
 		if (len > 0 && input[len - 1] == '\n')
 			input[len - 1] = '\0';
@@ -182,7 +182,7 @@ void loadCommands() {
 	commands[0].desc = "Muestra la cartelera disponible!";
 
 
-	char* getMovieShowArgs = malloc(1000);
+	char* getMovieShowArgs = calloc(1, sizeof(int));
 	getMovieShowArgs[0] = INT;
 	commands[1].name = "getMovieShow";
 	commands[1].function = (func)&cgetMovieShow;
@@ -190,7 +190,7 @@ void loadCommands() {
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
 
-	char* getMovieDetailsArgs = malloc(1000);
+	char* getMovieDetailsArgs = calloc(1, sizeof(int));
 	getMovieDetailsArgs[0] = INT;
 	commands[2].name = "gmd";
 	commands[2].function = (func)&cgetMovieDetails;
@@ -198,22 +198,20 @@ void loadCommands() {
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra los detalles de una pelicula determinada(movieId).";
 
-	char* getShowSeatsArgs = malloc(1000);
+	char* getShowSeatsArgs = calloc(1, sizeof(int));
 	getShowSeatsArgs[0] = INT;
-
 	commands[3].name = "getShowSeats";
 	commands[3].function = (func)&cgetShowSeats;
 	commands[3].args = getShowSeatsArgs;
 	commands[3].argsCant = 1;
 	commands[3].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
 
-	char* BuyTicketArgs = malloc(1000);
+	char* BuyTicketArgs = calloc(5, sizeof(int));
 	BuyTicketArgs[0] = INT;
 	BuyTicketArgs[1] = INT;
 	BuyTicketArgs[2] = INT;
 	BuyTicketArgs[3] = INT;
 	BuyTicketArgs[4] = STRING;
-
 	commands[4].name = "buyTickets";
 	commands[4].function = (func)&cBuyTicket;
 	commands[4].args = BuyTicketArgs;
@@ -221,28 +219,26 @@ void loadCommands() {
 	commands[4].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
 
-	char* UndoBuyTicketArgs = malloc(1000);
+	char* UndoBuyTicketArgs = calloc(2, sizeof(int));
 	UndoBuyTicketArgs[0] = INT;
 	UndoBuyTicketArgs[1] = STRING;
-
 	commands[5].name = "undoBuyTicket";
 	commands[5].function = (func)&cUndoBuyTicket;
 	commands[5].args = UndoBuyTicketArgs;
 	commands[5].argsCant = 2;
 	commands[5].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
-	char* addShowArgs = malloc(1000);
+	char* addShowArgs = calloc(3, sizeof(int));
 	addShowArgs[0] = INT;
 	addShowArgs[1] = INT;
 	addShowArgs[2] = INT;
-
 	commands[6].name = "addShow";
 	commands[6].function = (func)&caddShow;
 	commands[6].args = addShowArgs;
 	commands[6].argsCant = 3;
 	commands[6].desc = "Agrega una funcion dada una hora, sala y pelicula.";
 
-	char* removeShowArgs = malloc(1000);
+	char* removeShowArgs = calloc(1, sizeof(int));
 	removeShowArgs[0] = INT;
 	commands[7].name = "removeShow";
 	commands[7].function = (func)&cremoveShow;
@@ -250,18 +246,17 @@ void loadCommands() {
 	commands[7].argsCant = 1;
 	commands[7].desc = "Remueve una funcion medienta su id.";
 
-	char* addMovieArgs = malloc(1000);
+	char* addMovieArgs = calloc(3, sizeof(int));
 	addMovieArgs[0] = INT;
 	addMovieArgs[1] = STRING;
 	addMovieArgs[2] = STRING;
-
 	commands[8].name = "addMovie";
 	commands[8].function = (func)&caddMovie;
 	commands[8].args = addMovieArgs;
 	commands[8].argsCant = 3;
 	commands[8].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
 
-	char* removeMovieArgs = malloc(1000);
+	char* removeMovieArgs = calloc(1, sizeof(int));
 	removeMovieArgs[0] = INT;
 	commands[9].name = "removeMovie";
 	commands[9].function = (func)&cremoveMovie;
@@ -392,7 +387,7 @@ void chelp() {
 void cgetMovieList() {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO CARTELERA ----\n");
 	char* answer = getMovieList();
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -436,7 +431,7 @@ void
 cgetMovieShow(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieShow(movieId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -447,7 +442,7 @@ void
 cgetMovieDetails(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieDetails(movieId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -458,7 +453,7 @@ void
 cgetShowSeats(int showId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
 	char* answer = getShowSeats(showId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -469,7 +464,7 @@ cgetShowSeats(int showId) {
 void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre) {
 	printf(ANSI_COLOR_CYAN "---- REALIZANDO COMPRA ----\n");
 	char* answer = BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -479,46 +474,46 @@ void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre)
 void cUndoBuyTicket(int ticketId, char* nombre) {
 	printf(ANSI_COLOR_CYAN"---- DESHACIENDO COMPRA ----\n");
 	char* answer = UndoBuyTicket(ticketId, nombre);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * caddShow(int time, int roomID, int movieID) {
+void caddShow(int time, int roomID, int movieID) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
 	char* answer = addShow(time, roomID, movieID);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * cremoveShow(int showId) {
+void cremoveShow(int showId) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO SHOW ----\n");
 	char* answer = removeShow(showId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
-char * caddMovie(int length, char * title, char * desc) {
+void caddMovie(int length, char * title, char * desc) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
 	char* answer = addMovie(length, title, desc);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * cremoveMovie(int movieID) {
+void cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
 	char* answer = removeMovie(movieID);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -533,7 +528,6 @@ void cexit() {
 void cclear() {
 	printf("\e[1;1H\e[2J");
 }
-
 
 void csignal(int sig) {
 	printf(ANSI_COLOR_RESET);

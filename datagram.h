@@ -1,6 +1,8 @@
 #ifndef _DATAGRAM_H
 #define _DATAGRAM_H
 
+#define MAX_STR_SIZE 1024
+
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_DETAILS, GET_MOVIE_SHOW, GET_SHOW_SEATS,
               BUY_TICKET, UNDO_BUY_TICKET, ADD_SHOW, REMOVE_SHOW, ADD_MOVIE, REMOVE_MOVIE
              } command;
@@ -10,13 +12,13 @@ typedef struct {
 	int asiento;
 	int tarjeta;
 	int secCode;
-	char nombre[1024];
+	char nombre[MAX_STR_SIZE];
 } buyStruct;
 
 typedef struct {
 	int length;
-	char title[1024];
-	char desc[1024];
+	char title[MAX_STR_SIZE];
+	char desc[MAX_STR_SIZE];
 } movieStruct;
 
 typedef struct {
@@ -27,12 +29,12 @@ typedef struct {
 
 typedef struct {
 	int ticketId;
-	char nombre[1024];
+	char nombre[MAX_STR_SIZE];
 } undoBuyStruct;
 
 typedef union {
 	int i;
-	char text[1024];
+	char text[MAX_STR_SIZE];
 	buyStruct buy;
 	undoBuyStruct undoBuy;
 	addShowStruct addShow;
@@ -47,8 +49,8 @@ typedef struct {
 } Datagram;
 
 typedef struct {
-	char title[1024];
-	char desc[1024];
+	char title[MAX_STR_SIZE];
+	char desc[MAX_STR_SIZE];
 	int length;
 	int movieId;
 } Movie;

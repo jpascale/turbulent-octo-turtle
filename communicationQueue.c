@@ -20,9 +20,9 @@
 void srv_init_channel(void);
 void clt_init_channel(void);
 void create_ioqueue(void);
-void srv_send_data(Connection * connection, Datagram * sdData);
+int srv_send_data(Connection * connection, Datagram * sdData);
 void srv_receive_data(Connection * connection, Datagram * sdData);
-void clt_send_data(Connection * connection, Datagram * sdData);
+int clt_send_data(Connection * connection, Datagram * sdData);
 void clt_receive_data(Connection * connection, Datagram * sdData);
 void quit(int sig);
 void fatal(char * s);
@@ -74,14 +74,14 @@ void initChannel(int bool_server) {
 	}
 }
 
-void sendData(Connection * connection, Datagram * params) {
+int sendData(Connection * connection, Datagram * params) {
 	switch (is_server) {
 	case true:
-		srv_send_data(connection, params);
+		return srv_send_data(connection, params);
 		break;
 
 	case false:
-		clt_send_data(connection, params);
+		return clt_send_data(connection, params);
 		break;
 	}
 }
@@ -137,7 +137,7 @@ void create_ioqueue(void) {
 
 }
 
-void srv_send_data(Connection * connection, Datagram * sdData) {
+int srv_send_data(Connection * connection, Datagram * sdData) {
 
 	n = sdData->size;
 	msg.mtype = sdData->client_pid;
@@ -148,6 +148,8 @@ void srv_send_data(Connection * connection, Datagram * sdData) {
 	int i;
 	for (i = 0; i < 1024; i++)
 		*(msg.mdata + 12 + i) = '\0';
+
+	return 0;
 
 }
 
@@ -165,7 +167,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
 	}
 }
 
-void clt_send_data(Connection * connection, Datagram * sdData) {
+int clt_send_data(Connection * connection, Datagram * sdData) {
 
 	msg.mtype = getpid();
 	n = sdData->size;
@@ -175,9 +177,8 @@ void clt_send_data(Connection * connection, Datagram * sdData) {
 
 	memcpy((void *)msg.mdata, sdData, n);
 
-	msgsnd(qout, &msg, n, 0);
+	return msgsnd(qout, &msg, n, 0);
 
-	return;
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData) {
