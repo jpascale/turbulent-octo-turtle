@@ -20,6 +20,7 @@
 int fd;
 void lock_db(int is_reader);
 void unlock_db(void);
+void simulateDelay();
 char locked = 0;
 char* ans;
 
@@ -30,9 +31,7 @@ void __connect() {
 
 char * getMovieList() {
 	lock_db(READ);
-	printf("Entro al sleep.\n");
-	sleep(SLEEP_TIME);
-	printf("FIN DEL SLEEP!\n");
+	simulateDelay();
 	SQLgetMovieList(ans);
 	unlock_db();
 	return ans;
@@ -40,6 +39,7 @@ char * getMovieList() {
 
 char * getMovieShow(int movieId) {
 	lock_db(READ);
+	simulateDelay();
 	SQLgetMovieShow(ans, movieId);
 	unlock_db();
 	return ans;
@@ -47,6 +47,7 @@ char * getMovieShow(int movieId) {
 
 char * getMovieDetails(int movieId) {
 	lock_db(READ);
+	simulateDelay();
 	SQLgetMovieDetails(ans, movieId);
 	unlock_db();
 	return ans;
@@ -54,6 +55,7 @@ char * getMovieDetails(int movieId) {
 
 char * getShowSeats(int showId) {
 	lock_db(READ);
+	simulateDelay();
 	SQLgetShowSeats(ans, showId);
 	unlock_db();
 	return ans;
@@ -61,6 +63,7 @@ char * getShowSeats(int showId) {
 // ret: ticketId
 char * BuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre) {
 	lock_db(WRITE);
+	simulateDelay();
 	SQLbuyTicket(ans, showId, asiento, nombre);
 	unlock_db();
 	return ans;
@@ -68,12 +71,14 @@ char * BuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre
 // ret: confirmation code
 char * UndoBuyTicket(int ticketId, char* nombre) {
 	lock_db(WRITE);
+	simulateDelay();
 	SQLundoBuyTicket(ans, ticketId, nombre);
 	unlock_db();
 	return ans;
 }
 char * addShow(int time, int roomID, int movieID) {
 	lock_db(WRITE);
+	simulateDelay();
 	printf("Entro al sleep. \n");
 	sleep(SLEEP_TIME);
 	printf("FIN DEL SLEEP!\n");
@@ -83,18 +88,21 @@ char * addShow(int time, int roomID, int movieID) {
 }
 char * removeShow(int showId) {
 	lock_db(WRITE);
+	simulateDelay();
 	SQLremoveShow(ans, showId);
 	unlock_db();
 	return ans;
 }
 char * addMovie(int length, char * title, char * desc) {
 	lock_db(WRITE);
+	simulateDelay();
 	SQLaddMovie(ans, length, title, desc);
 	unlock_db();
 	return ans;
 }
 char * removeMovie(int movieID) {
 	lock_db(WRITE);
+	simulateDelay();
 	SQLremoveMovie(ans, movieID);
 	unlock_db();
 	return ans;
@@ -145,4 +153,10 @@ void unlock_db(void) {
 	printf("Unlocked.\n");
 	locked = 0;
 	close(fd);
+}
+
+void simulateDelay() {
+	printf("Entro al sleep.\n");
+	sleep(SLEEP_TIME);
+	printf("FIN DEL SLEEP!\n");
 }
