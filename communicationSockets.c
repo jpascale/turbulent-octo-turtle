@@ -14,9 +14,9 @@
 */
 void srv_init_channel(void);
 void clt_init_channel(void);
-void srv_send_data(Connection * connection, Datagram * sdData);
+int srv_send_data(Connection * connection, Datagram * sdData);
 void srv_receive_data(Connection * connection, Datagram * sdData);
-void clt_send_data(Connection * connection, Datagram * sdData);
+int clt_send_data(Connection * connection, Datagram * sdData);
 void clt_receive_data(Connection * connection, Datagram * sdData);
 
 
@@ -70,14 +70,14 @@ void initChannel(int bool_server) {
     }
 }
 
-void sendData(Connection * connection, Datagram * params) {
+int sendData(Connection * connection, Datagram * params) {
     switch (is_server) {
     case true:
-        srv_send_data(connection, params);
+        return srv_send_data(connection, params);
         break;
 
     case false:
-        clt_send_data(connection, params);
+        return clt_send_data(connection, params);
         break;
     }
 }
@@ -181,7 +181,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
 
 }
 
-void srv_send_data(Connection * coneccion, Datagram * sdData) {
+int srv_send_data(Connection * coneccion, Datagram * sdData) {
 
     //Datagram data;
     void * data = malloc(sdData -> size);
@@ -191,6 +191,8 @@ void srv_send_data(Connection * coneccion, Datagram * sdData) {
     close(client_sock);
 
     free(data);
+
+    return 0;
 }
 
 void clt_init_channel(void) {
@@ -211,7 +213,7 @@ void clt_init_channel(void) {
     server.sin_port = htons(port);
 }
 
-void clt_send_data(Connection * connection, Datagram * sdData) {
+int clt_send_data(Connection * connection, Datagram * sdData) {
 
     //Datagram data;
     void * data = malloc(sdData -> size);
@@ -224,7 +226,8 @@ void clt_send_data(Connection * connection, Datagram * sdData) {
     int c;
     if ((c = connect(sock, (struct sockaddr *)&server, sizeof(server))) >= 0) {
         if (send(sock, data, *((int * )data), MSG_NOSIGNAL) < 0) {
-            puts("Send failed");
+            //puts("Send failed");
+            return -1;
         } else {
             if (DEBUG)
                 printf("Sent.\n");
@@ -232,7 +235,7 @@ void clt_send_data(Connection * connection, Datagram * sdData) {
     }
 
     free(data);
-    return;
+    return 0;
 }
 
 void clt_receive_data(Connection * connection, Datagram * sdData) {
