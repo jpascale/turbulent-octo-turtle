@@ -9,7 +9,7 @@
 Datagram data;
 Connection sender;
 
-void __connect(){
+void __connect() {
 	initChannel(0);
 	printf("Cliente conectado.\n");
 }
@@ -32,7 +32,7 @@ char * getMovieShow(int movieId) {
 	data.data.i = movieId;
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
-	
+
 	communicate(&sender, &data);
 
 	return data.data.text;
@@ -147,10 +147,10 @@ char * removeMovie(int movieID) {
 	return data.data.text;
 }
 
-void communicate(Connection * sender, Datagram * data){
-	if(sendData(sender, data)!=-1)
+void communicate(Connection * sender, Datagram * data) {
+	if (sendData(sender, data) != -1)
 		receiveData(sender, data);
-	else{
+	else {
 		(*data).data.text[0] = 0;
 	}
 }

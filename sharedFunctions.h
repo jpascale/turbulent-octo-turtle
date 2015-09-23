@@ -10,7 +10,7 @@ char * getMovieDetails(int movieId);
 char * getShowSeats(int showId);
 
 // ret: ticketId
-char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre);
+char * BuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre);
 
 // ret: confirmation code
 char * UndoBuyTicket(int ticketId, char* nombre);

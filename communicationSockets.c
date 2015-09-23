@@ -148,7 +148,7 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
             printf("Esperando para leer\n");
 
         if ((read_size = recv(client_sock, data, MAX_RDATA_SIZE, 0)) > 0) {
-            if (DEBUG){
+            if (DEBUG) {
                 printf("DEBUG: Reading size: %d\n", read_size);
                 printf("DEBUG: Structure size: %d\n", *((int*)data));
             }
@@ -204,7 +204,7 @@ void clt_init_channel(void) {
     {
         printf("Could not create socket");
     }
-    
+
     if (DEBUG)
         printf("Socket created\n");
 
