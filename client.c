@@ -77,7 +77,7 @@ int main (int argc, char const *argv[]) {
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
 		//	getLine(input);
-		fgets(input, INPUT_SIZE-16, stdin);
+		fgets(input, INPUT_SIZE - 16, stdin);
 		int len = strlen(input);
 		if (len > 0 && input[len - 1] == '\n')
 			input[len - 1] = '\0';
@@ -392,7 +392,7 @@ void chelp() {
 void cgetMovieList() {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO CARTELERA ----\n");
 	char* answer = getMovieList();
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -436,7 +436,7 @@ void
 cgetMovieShow(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieShow(movieId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -447,7 +447,7 @@ void
 cgetMovieDetails(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieDetails(movieId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -458,7 +458,7 @@ void
 cgetShowSeats(int showId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
 	char* answer = getShowSeats(showId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -469,7 +469,7 @@ cgetShowSeats(int showId) {
 void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre) {
 	printf(ANSI_COLOR_CYAN "---- REALIZANDO COMPRA ----\n");
 	char* answer = BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -479,7 +479,7 @@ void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre)
 void cUndoBuyTicket(int ticketId, char* nombre) {
 	printf(ANSI_COLOR_CYAN"---- DESHACIENDO COMPRA ----\n");
 	char* answer = UndoBuyTicket(ticketId, nombre);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -489,7 +489,7 @@ void cUndoBuyTicket(int ticketId, char* nombre) {
 void caddShow(int time, int roomID, int movieID) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
 	char* answer = addShow(time, roomID, movieID);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -499,7 +499,7 @@ void caddShow(int time, int roomID, int movieID) {
 void cremoveShow(int showId) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO SHOW ----\n");
 	char* answer = removeShow(showId);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -508,7 +508,7 @@ void cremoveShow(int showId) {
 void caddMovie(int length, char * title, char * desc) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
 	char* answer = addMovie(length, title, desc);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
@@ -518,7 +518,7 @@ void caddMovie(int length, char * title, char * desc) {
 void cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
 	char* answer = removeMovie(movieID);
-	if(answer[0]==0){
+	if (answer[0] == 0) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
