@@ -28,7 +28,7 @@ main(int argc, char **argv)
 		printf("Cliente envia: %.*s", n, data.data.m.title);
 		sendData(&conn, &data);
 		receiveData(&conn, &data);
-		
+
 		//TODO: Remove this
 		int i;
 		for (i = 0; i < 1024; i++)
@@ -36,4 +36,4 @@ main(int argc, char **argv)
 	}
 	printf("Cliente termina\n");
 	return 0;
- }
+}

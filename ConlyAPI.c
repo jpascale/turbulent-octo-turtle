@@ -19,15 +19,15 @@
 int fd;
 void lock_db(int is_reader);
 void unlock_db(void);
-char locked=0;
+char locked = 0;
 char* ans;
 
-void __connect(){
-	ans=malloc(1024);
+void __connect() {
+	ans = malloc(1024);
 	setUpDB();
 }
 
-char * getMovieList(){
+char * getMovieList() {
 	lock_db(READ);
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(10);
@@ -37,83 +37,83 @@ char * getMovieList(){
 	return ans;
 }
 
-char * getMovieShow(int movieId){
+char * getMovieShow(int movieId) {
 	lock_db(READ);
-	SQLgetMovieShow(ans,movieId);
+	SQLgetMovieShow(ans, movieId);
 	unlock_db();
 	return ans;
 }
 
-char * getMovieDetails(int movieId){
+char * getMovieDetails(int movieId) {
 	lock_db(READ);
-	SQLgetMovieDetails(ans,movieId);
+	SQLgetMovieDetails(ans, movieId);
 	unlock_db();
 	return ans;
 }
 
-char * getShowSeats(int showId){
+char * getShowSeats(int showId) {
 	lock_db(READ);
-	SQLgetShowSeats(ans,showId);
+	SQLgetShowSeats(ans, showId);
 	unlock_db();
 	return ans;
 }
 // ret: ticketId
-char * BuyTicket(int showId, int asiento, int tarjeta,int secCode, char* nombre){
+char * BuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre) {
 	lock_db(WRITE);
-	SQLbuyTicket(ans,showId,asiento,nombre);
+	SQLbuyTicket(ans, showId, asiento, nombre);
 	unlock_db();
 	return ans;
 }
 // ret: confirmation code
-char * UndoBuyTicket(int ticketId, char* nombre){
+char * UndoBuyTicket(int ticketId, char* nombre) {
 	lock_db(WRITE);
-	SQLundoBuyTicket(ans,ticketId,nombre);
-	unlock_db();	
+	SQLundoBuyTicket(ans, ticketId, nombre);
+	unlock_db();
 	return ans;
 }
-char * addShow(int time, int roomID, int movieID){
+char * addShow(int time, int roomID, int movieID) {
 	lock_db(WRITE);
 	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(30);
 	printf("FIN DEL SLEEP!\n");
-	SQLaddShow(ans,time,roomID,movieID);
-	unlock_db();	
-	return ans;
-}
-char * removeShow(int showId){
-	lock_db(WRITE);
-	SQLremoveShow(ans,showId);
+	SQLaddShow(ans, time, roomID, movieID);
 	unlock_db();
 	return ans;
 }
-char * addMovie(int length, char * title, char * desc){
+char * removeShow(int showId) {
 	lock_db(WRITE);
-	SQLaddMovie(ans,length,title,desc);
+	SQLremoveShow(ans, showId);
 	unlock_db();
 	return ans;
 }
-char * removeMovie(int movieID){
+char * addMovie(int length, char * title, char * desc) {
 	lock_db(WRITE);
-	SQLremoveMovie(ans,movieID);
+	SQLaddMovie(ans, length, title, desc);
+	unlock_db();
+	return ans;
+}
+char * removeMovie(int movieID) {
+	lock_db(WRITE);
+	SQLremoveMovie(ans, movieID);
 	unlock_db();
 	return ans;
 }
 
-void handOff(int sig){
-	if(locked){
+void handOff(int sig) {
+	if (locked) {
 		unlock_db();
 		printf("Quita el lock por signal\n");
-	}else{
+	} else {
 		printf("No estaba lockeado cuando llego la signal\n");
 	}
 }
 
-void lock_db(int is_reader){
+void lock_db(int is_reader) {
 	struct flock fl = {F_WRLCK, SEEK_SET,   0,      0,     0 };
 	fl.l_pid = getpid();
 
 	printf("Lockeando como escritura\n");
-	if (is_reader){
+	if (is_reader) {
 		fl.l_type = F_RDLCK;
 		printf("Cambiado a lectura\n");
 	}
@@ -129,10 +129,10 @@ void lock_db(int is_reader){
 	}
 
 	printf("got lock\n");
-	locked=1;
+	locked = 1;
 }
 
-void unlock_db(void){
+void unlock_db(void) {
 	struct flock fl = {F_UNLCK, SEEK_SET,   0,      0,     0 };
 	fl.l_pid = getpid();
 
@@ -142,6 +142,6 @@ void unlock_db(void){
 	}
 
 	printf("Unlocked.\n");
-	locked=0;
+	locked = 0;
 	close(fd);
 }

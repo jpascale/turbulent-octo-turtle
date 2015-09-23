@@ -15,12 +15,12 @@ main(int argc, char **argv)
 {
 
 	initChannel(1);
-	
+
 	Connection conn;
 	Datagram data;
 
-	while (1){
+	while (1) {
 		receiveData(&conn, &data);
 		sendData(&conn, &data);
 	}
- }
+}

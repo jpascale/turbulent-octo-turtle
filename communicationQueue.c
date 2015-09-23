@@ -49,7 +49,7 @@ struct
 {
 	long mtype;
 	char mdata[MAX_RDATA_SIZE];
-} 
+}
 msg;
 
 /*
@@ -60,39 +60,39 @@ msg;
 **	Init the communication channel
 **	Receives 1 for server and 0 for client
 */
-void initChannel(int bool_server){
+void initChannel(int bool_server) {
 
-	switch (bool_server){
+	switch (bool_server) {
 
-		case true:
+	case true:
 		srv_init_channel();
 		break;
 
-		case false:
+	case false:
 		clt_init_channel();
 		break;
 	}
 }
 
-void sendData(Connection * connection, Datagram * params){
-	switch (is_server){
-		case true:
+void sendData(Connection * connection, Datagram * params) {
+	switch (is_server) {
+	case true:
 		srv_send_data(connection, params);
 		break;
 
-		case false:
+	case false:
 		clt_send_data(connection, params);
 		break;
 	}
 }
 
-void receiveData(Connection * connection, Datagram * params){
-	switch (is_server){
-		case true:
+void receiveData(Connection * connection, Datagram * params) {
+	switch (is_server) {
+	case true:
 		srv_receive_data(connection, params);
 		break;
 
-		case false:
+	case false:
 		clt_receive_data(connection, params);
 		break;
 	}
@@ -103,7 +103,7 @@ void receiveData(Connection * connection, Datagram * params){
 **		Functions only declared in this module
 */
 
-void srv_init_channel(void){
+void srv_init_channel(void) {
 	is_server = true;
 
 	keyin = 0xBEEF0;
@@ -114,7 +114,7 @@ void srv_init_channel(void){
 	create_ioqueue();
 }
 
-void clt_init_channel(void){
+void clt_init_channel(void) {
 	is_server = false;
 
 	keyin = 0xBEEF1;
@@ -125,19 +125,19 @@ void clt_init_channel(void){
 	create_ioqueue();
 }
 
-void create_ioqueue(void){
+void create_ioqueue(void) {
 
-	if ( (qin = msgget(keyin, 0666|IPC_CREAT)) == -1 )
+	if ( (qin = msgget(keyin, 0666 | IPC_CREAT)) == -1 )
 		fatal("Error msgget qin");
-	
-	if ( (qout = msgget(keyout, 0666|IPC_CREAT)) == -1 )
+
+	if ( (qout = msgget(keyout, 0666 | IPC_CREAT)) == -1 )
 		fatal("Error msgget qout");
 
 	return;
 
 }
 
-void srv_send_data(Connection * connection, Datagram * sdData){
+void srv_send_data(Connection * connection, Datagram * sdData) {
 
 	n = sdData->size;
 	msg.mtype = sdData->client_pid;
@@ -151,21 +151,21 @@ void srv_send_data(Connection * connection, Datagram * sdData){
 
 }
 
-void srv_receive_data(Connection * connection, Datagram * sdData){
-	
+void srv_receive_data(Connection * connection, Datagram * sdData) {
+
 	void * rdata = (void *)sdData;
 
 	if ( (n = msgrcv(qin, &msg, sizeof msg.mdata, 0, 0)) > 0 )
 	{
 		printf("Servidor: %s", msg.mdata + 12);
-		
+
 		memcpy(rdata, msg.mdata, n);
 
 		return;
 	}
 }
 
-void clt_send_data(Connection * connection, Datagram * sdData){
+void clt_send_data(Connection * connection, Datagram * sdData) {
 
 	msg.mtype = getpid();
 	n = sdData->size;
@@ -180,10 +180,10 @@ void clt_send_data(Connection * connection, Datagram * sdData){
 	return;
 }
 
-void clt_receive_data(Connection * connection, Datagram * sdData){
+void clt_receive_data(Connection * connection, Datagram * sdData) {
 
 	n = msgrcv(qin, &msg, sizeof msg.mdata, msg.mtype, 0);
-	
+
 	memcpy((void * )sdData, (void *)msg.mdata, *((int *)msg.mdata));
 
 	if ( n > 0 )
@@ -194,12 +194,12 @@ void clt_receive_data(Connection * connection, Datagram * sdData){
 		*(msg.mdata + 12 + i) = '\0';
 }
 
-void fatal(char * s){
+void fatal(char * s) {
 	perror(s);
 	exit(1);
 }
 
-void handOff(int sig){
+void handOff(int sig) {
 	printf("Termina por señal %d\n", sig);
 	exit(0);
 }
