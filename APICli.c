@@ -150,6 +150,7 @@ char * removeMovie(int movieID) {
 void communicate(Connection * sender, Datagram * data){
 	if(sendData(sender, data)!=-1)
 		receiveData(sender, data);
-	else
+	else{
 		(*data).data.text[0] = 0;
+	}
 }

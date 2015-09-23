@@ -31,10 +31,10 @@ void cgetShowSeats(int showId);
 void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre);
 void cexit();
 void cUndoBuyTicket(int ticketId, char* nombre);
-char * caddShow(int time, int roomID, int movieID);
-char * cremoveShow(int showId);
-char * caddMovie(int length, char * title, char * desc);
-char * cremoveMovie(int movieID);
+void caddShow(int time, int roomID, int movieID);
+void cremoveShow(int showId);
+void caddMovie(int length, char * title, char * desc);
+void cremoveMovie(int movieID);
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -77,7 +77,7 @@ int main (int argc, char const *argv[]) {
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
 		//	getLine(input);
-		fgets(input, INPUT_SIZE, stdin);
+		fgets(input, INPUT_SIZE-16, stdin);
 		int len = strlen(input);
 		if (len > 0 && input[len - 1] == '\n')
 			input[len - 1] = '\0';
@@ -486,7 +486,7 @@ void cUndoBuyTicket(int ticketId, char* nombre) {
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * caddShow(int time, int roomID, int movieID) {
+void caddShow(int time, int roomID, int movieID) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
 	char* answer = addShow(time, roomID, movieID);
 	if(answer[0]==0){
@@ -496,7 +496,7 @@ char * caddShow(int time, int roomID, int movieID) {
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * cremoveShow(int showId) {
+void cremoveShow(int showId) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO SHOW ----\n");
 	char* answer = removeShow(showId);
 	if(answer[0]==0){
@@ -505,7 +505,7 @@ char * cremoveShow(int showId) {
 	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
-char * caddMovie(int length, char * title, char * desc) {
+void caddMovie(int length, char * title, char * desc) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
 	char* answer = addMovie(length, title, desc);
 	if(answer[0]==0){
@@ -515,7 +515,7 @@ char * caddMovie(int length, char * title, char * desc) {
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
-char * cremoveMovie(int movieID) {
+void cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
 	char* answer = removeMovie(movieID);
 	if(answer[0]==0){
@@ -533,7 +533,6 @@ void cexit() {
 void cclear() {
 	printf("\e[1;1H\e[2J");
 }
-
 
 void csignal(int sig) {
 	printf(ANSI_COLOR_RESET);
