@@ -306,19 +306,19 @@ void parse(char* buff) {
 			} else {
 				convertArg(args, commands[index].args, commands[index].argsCant);
 				switch (commands[index].argsCant) {
-				case 0:
+					case 0:
 					commands[index].function();
 					break;
-				case 1:
+					case 1:
 					commands[index].function(args[1]);
 					break;
-				case 2:
+					case 2:
 					commands[index].function(args[1], args[2]);
 					break;
-				case 3:
+					case 3:
 					commands[index].function(args[1], args[2], args[3]);
 					break;
-				case 5:
+					case 5:
 					commands[index].function(args[1], args[2], args[3], args[4], args[5]);
 					break;
 				}
@@ -358,10 +358,10 @@ int convertArg(char ** args, unsigned  char * argTypes, int cant) {
 	int  j;
 	for (j = 1; j <= cant; j++) {
 		switch (argTypes[j - 1]) {
-		case INT:
+			case INT:
 			args[j] = (char *)atoi(args[j]);
 			break;
-		default:
+			default:
 			break;
 		}
 	}
@@ -434,7 +434,37 @@ cgetMovieShow(int movieId) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
-	printf(ANSI_COLOR_MAGENTA" %s ", answer);
+	char* aux1;
+	char* aux2;
+	int cont = 0;
+	int flag = 0;
+	while (!flag) {
+		if (cont == 0) {
+			aux1 = answer;
+			cont = 1;
+		} else {
+			while (answer[0] != ';' && answer[0] != '\0') {
+				answer++;
+			}
+			if (cont == 1) {
+				if (answer[0] == ';') {
+					answer[0] = '\0';
+					answer++;
+					aux2 = answer;
+					cont = 2;
+				} else {
+					flag = 1;
+				}
+			} else {
+				answer[0] = '\0';
+				answer++;
+				printf(ANSI_COLOR_MAGENTA"Horario:"ANSI_COLOR_BLUE " %s " ANSI_COLOR_MAGENTA " ShowID:"ANSI_COLOR_BLUE" %s\n", aux1, aux2);
+				cont = 0;
+				if (answer[0] == '\0')
+					flag = 1;
+			}
+		}
+	}
 }
 
 void
@@ -445,7 +475,35 @@ cgetMovieDetails(int movieId) {
 		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
 		return;
 	}
-	printf(ANSI_COLOR_MAGENTA" %s ", answer);
+
+	char* aux = answer;
+	int flag = 0;
+	int arg_num = 0;
+	while (!flag) {
+		while (answer[0] != ';' && answer[0] != '\0') {
+			answer++;
+		}
+		if (answer[0] == ';') {
+			answer[0] = '\0';
+			switch (arg_num) {
+				case 0:	printf(ANSI_COLOR_MAGENTA"Titulo:");
+				break;
+				case 1:	printf(ANSI_COLOR_MAGENTA"Descripcion:");
+				break;
+				case 2:	printf(ANSI_COLOR_MAGENTA"Horario:");
+				break;
+				case 3:	printf(ANSI_COLOR_MAGENTA"MovieID:");
+				break;
+			}
+			printf(ANSI_COLOR_GREEN" %s\n"ANSI_COLOR_RESET, aux);
+			answer++;
+			aux = answer;
+			arg_num++;
+		} else {
+			flag = 1;
+		}
+	}
+//printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
 void
