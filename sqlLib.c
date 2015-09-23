@@ -29,13 +29,14 @@ static int callback(void * function, int argc, char **argv, char **azColName) {
 
 	case GET_MOVIE_DETAILS:
 		for (i = 0; i < argc; i++) {
-			k = sprintf(answer, "%s: %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+			k = sprintf(answer, "%s;", argv[i] ? argv[i] : "NULL");
 			answer += k;
 		}
 		break;
 
 	case GET_MOVIE_SHOWS:
-		k = sprintf(answer, "%s: %s, %s: %s\n ", azColName[0], argv[0] ? argv[0] : "NULL", azColName[1], argv[1] ? argv[1] : "NULL");
+
+		k = sprintf(answer, "%s;%s;", argv[0] ? argv[0] : "NULL", argv[1] ? argv[1] : "NULL");
 		answer += k;
 		break;
 
@@ -63,6 +64,7 @@ void SQLgetMovieList(char * buffer) {
 	sprintf(sql_query, "select title, movieID from movies;");
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 
@@ -73,6 +75,7 @@ void SQLgetMovieDetails(char * buffer, int movieID) {
 	sprintf(sql_query, "select title, desc, length, movieID from movies where (movies.movieID = %i);", movieID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 
@@ -82,6 +85,7 @@ void SQLgetMovieShow(char * buffer, int movieID) {
 	sprintf(sql_query, "select time, showID from shows where (shows.movieID = %i);", movieID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 

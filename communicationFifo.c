@@ -10,10 +10,6 @@
 
 #define SERVER_FIFO "/tmp/server.fifo"
 
-// void sendData(Connection * connection, Datagram * params);
-// void receiveData(Connection * sender, Datagram * buffer);
-// void initChannel(int bool_server);
-
 int is_server;
 int fd_read, fd_write, i;
 char fileName[32];
@@ -23,20 +19,32 @@ void initChannel(int bool_server) {
 	if (is_server) {
 		mknod(SERVER_FIFO, S_IFIFO | 0666, 0);
 	} else {
-		sprintf(fileName, "/tmp/fifo_cli%d", getpid());
+		sprintf(fileName, "/tmp/fifo_cli%d", getpid());		
 		mknod(fileName, S_IFIFO | 0666, 0);
-		fd_write = open(SERVER_FIFO, O_WRONLY);
+		if(!access (SERVER_FIFO, F_OK)){
+			printf("existe server.fifo en init\n");
+			fd_write = open(SERVER_FIFO, O_WRONLY);
+		}
+		else{
+			printf("no existe server.fifo en init\n");
+			fd_write = -1;
+		}
 	}
 }
 
 int sendData(Connection * connection, Datagram * params) {
 
 	if (!is_server) {
-		if(fd_write<0 && (fd_write = open(SERVER_FIFO, O_WRONLY)<0))
-			return -1;
-		mknod(SERVER_FIFO, S_IFIFO | 0666, 0);
-		write(fd_write, params, *(int*)params);
-		
+		if(fd_write<0 || access(SERVER_FIFO, F_OK)){
+			if(access(SERVER_FIFO, F_OK)){
+				fd_write = -1;
+				return -1;
+			}
+			else{
+				fd_write = open(SERVER_FIFO, O_WRONLY);
+			}
+		}
+		write(fd_write, params, *(int*)params);	
 	} else {
 		sprintf(fileName, "/tmp/fifo_cli%d", connection->sender_pid);
 		fd_write = open(fileName, O_WRONLY);
@@ -63,7 +71,18 @@ void receiveData(Connection * sender, Datagram * buffer) {
 void handOff(int sig) {
 	close(fd_read);
 	close(fd_write);
-	printf("Servidor termina por señal %d\n", sig);
+
+	if(is_server){
+		if(!remove(SERVER_FIFO))
+			printf("Server stopped correctly\n");
+		else
+			printf("Server's communication file could not be removed\n");
+	}else{
+		if(!remove(fileName))
+			printf("Client stopped correctly\n");
+		else
+			printf("Client's communication file could not be removed\n");	
+	}
 	exit(0);
 }
 

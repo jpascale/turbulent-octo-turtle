@@ -147,6 +147,7 @@ char * removeMovie(int movieID) {
 	return data.data.text;
 }
 
+
 void communicate(Connection * sender, Datagram * data) {
 	if (sendData(sender, data) != -1)
 		receiveData(sender, data);
