@@ -9,11 +9,12 @@
 #include "sharedFunctions.h"
 #include "sqlLib.h"
 
+#define BUFFER_SIZE 1024
 
 char* ans;
 
 void initializeServer() {
-	ans = malloc(1024);
+	ans = calloc(BUFFER_SIZE, 1);
 }
 
 char * getMovieList() {

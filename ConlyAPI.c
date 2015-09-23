@@ -17,6 +17,8 @@
 #define READ 1
 #define WRITE 0
 
+#define BUFFER_SIZE 1014
+
 int fd;
 void lock_db(int is_reader);
 void unlock_db(void);
@@ -25,7 +27,7 @@ char locked = 0;
 char* ans;
 
 void __connect() {
-	ans = malloc(1024);
+	ans = calloc(BUFFER_SIZE, 1);
 	setUpDB();
 }
 
@@ -79,9 +81,6 @@ char * UndoBuyTicket(int ticketId, char* nombre) {
 char * addShow(int time, int roomID, int movieID) {
 	lock_db(WRITE);
 	simulateDelay();
-	printf("Entro al sleep. \n");
-	sleep(SLEEP_TIME);
-	printf("FIN DEL SLEEP!\n");
 	SQLaddShow(ans, time, roomID, movieID);
 	unlock_db();
 	return ans;
