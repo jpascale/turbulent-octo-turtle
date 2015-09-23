@@ -9,7 +9,7 @@
 #include <string.h>
 #include <signal.h>
 
-#define SLEEP_TIME 5
+#define SLEEP_TIME 0
 
 void ProcessData(Connection * sender, Datagram * data);
 void initializeServer();

@@ -64,6 +64,7 @@ void SQLgetMovieList(char * buffer) {
 	sprintf(sql_query, "select title, movieID from movies;");
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 
@@ -74,6 +75,7 @@ void SQLgetMovieDetails(char * buffer, int movieID) {
 	sprintf(sql_query, "select title, desc, length, movieID from movies where (movies.movieID = %i);", movieID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 
@@ -83,6 +85,7 @@ void SQLgetMovieShow(char * buffer, int movieID) {
 	sprintf(sql_query, "select time, showID from shows where (shows.movieID = %i);", movieID);
 	rc = sqlite3_exec(db, sql_query, callback, (void*) &type, &errMsg);
 	if ( rc != SQLITE_OK ) printf("error: %s\n", errMsg);
+	*answer = '\n';
 	return;
 }
 
