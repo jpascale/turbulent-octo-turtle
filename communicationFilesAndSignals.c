@@ -37,11 +37,11 @@ initChannel(int bool_server) {
 	} else { //client
 		fd = open("/tmp/server_pid", O_RDONLY | O_CREAT, 777);
 		read(fd, auxS, sizeof(int));
+		close(fd);
 		server_pid = *((int*)auxS);
 		printf("Mi pid es: %i\n",  getpid());
 		sprintf(writeFileName, "/tmp/request_%d", getpid());
 		sprintf(readFileName, "/tmp/response_%d", getpid());
-		close(fd);
 	}
 }
 
@@ -142,7 +142,19 @@ void mypause(int sign) {
 	printf("entro a la señal\n");
 }
 
-void handOff(int sig) {
-	printf("Servidor termina por señal %d\n", sig);
+<<<<<<< HEAD
+void handOff(int sig){
+	if(is_server){
+		close(fd);
+		if(remove("tmp/server_pid"))
+			printf("Server stopped correctly\n");
+		else
+			printf("Server's communication file could not be removed\n");
+	}else{
+		close(fd);
+		if(remove(readFileName) &&
+			remove(writeFileName))
+			printf("Communication files where removed\n");
+	}
 	exit(0);
 }
