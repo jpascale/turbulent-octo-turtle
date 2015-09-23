@@ -182,7 +182,7 @@ void loadCommands() {
 	commands[0].desc = "Muestra la cartelera disponible!";
 
 
-	char* getMovieShowArgs = malloc(1000);
+	char* getMovieShowArgs = calloc(1, sizeof(int));
 	getMovieShowArgs[0] = INT;
 	commands[1].name = "getMovieShow";
 	commands[1].function = (func)&cgetMovieShow;
@@ -190,7 +190,7 @@ void loadCommands() {
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
 
-	char* getMovieDetailsArgs = malloc(1000);
+	char* getMovieDetailsArgs = calloc(1, sizeof(int));
 	getMovieDetailsArgs[0] = INT;
 	commands[2].name = "getMovieDetails";
 	commands[2].function = (func)&cgetMovieDetails;
@@ -198,22 +198,20 @@ void loadCommands() {
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra los detalles de una pelicula determinada(movieId).";
 
-	char* getShowSeatsArgs = malloc(1000);
+	char* getShowSeatsArgs = calloc(1, sizeof(int));
 	getShowSeatsArgs[0] = INT;
-
 	commands[3].name = "getShowSeats";
 	commands[3].function = (func)&cgetShowSeats;
 	commands[3].args = getShowSeatsArgs;
 	commands[3].argsCant = 1;
 	commands[3].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
 
-	char* BuyTicketArgs = malloc(1000);
+	char* BuyTicketArgs = calloc(5, sizeof(int));
 	BuyTicketArgs[0] = INT;
 	BuyTicketArgs[1] = INT;
 	BuyTicketArgs[2] = INT;
 	BuyTicketArgs[3] = INT;
 	BuyTicketArgs[4] = STRING;
-
 	commands[4].name = "buyTickets";
 	commands[4].function = (func)&cBuyTicket;
 	commands[4].args = BuyTicketArgs;
@@ -221,28 +219,26 @@ void loadCommands() {
 	commands[4].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
 
-	char* UndoBuyTicketArgs = malloc(1000);
+	char* UndoBuyTicketArgs = calloc(2, sizeof(int));
 	UndoBuyTicketArgs[0] = INT;
 	UndoBuyTicketArgs[1] = STRING;
-
 	commands[5].name = "undoBuyTicket";
 	commands[5].function = (func)&cUndoBuyTicket;
 	commands[5].args = UndoBuyTicketArgs;
 	commands[5].argsCant = 2;
 	commands[5].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
-	char* addShowArgs = malloc(1000);
+	char* addShowArgs = calloc(3, sizeof(int));
 	addShowArgs[0] = INT;
 	addShowArgs[1] = INT;
 	addShowArgs[2] = INT;
-
 	commands[6].name = "addShow";
 	commands[6].function = (func)&caddShow;
 	commands[6].args = addShowArgs;
 	commands[6].argsCant = 3;
 	commands[6].desc = "Agrega una funcion dada una hora, sala y pelicula.";
 
-	char* removeShowArgs = malloc(1000);
+	char* removeShowArgs = calloc(1, sizeof(int));
 	removeShowArgs[0] = INT;
 	commands[7].name = "removeShow";
 	commands[7].function = (func)&cremoveShow;
@@ -250,18 +246,17 @@ void loadCommands() {
 	commands[7].argsCant = 1;
 	commands[7].desc = "Remueve una funcion medienta su id.";
 
-	char* addMovieArgs = malloc(1000);
+	char* addMovieArgs = calloc(3, sizeof(int));
 	addMovieArgs[0] = INT;
 	addMovieArgs[1] = STRING;
 	addMovieArgs[2] = STRING;
-
 	commands[8].name = "addMovie";
 	commands[8].function = (func)&caddMovie;
 	commands[8].args = addMovieArgs;
 	commands[8].argsCant = 3;
 	commands[8].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
 
-	char* removeMovieArgs = malloc(1000);
+	char* removeMovieArgs = calloc(1, sizeof(int));
 	removeMovieArgs[0] = INT;
 	commands[9].name = "removeMovie";
 	commands[9].function = (func)&cremoveMovie;
