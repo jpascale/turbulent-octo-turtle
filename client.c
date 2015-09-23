@@ -23,7 +23,15 @@
 #define BACKSPACE		127
 #define TAB				'\t'
 
+/*
+**		Messages defines
+*/
+#define MSG_PROMPT ANSI_COLOR_GREEN":):" ANSI_COLOR_RED 
+#define MSG_CLIENT_CONNECTED ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n"
 
+/*
+**		Private function declares
+*/
 void cgetMovieList();
 void cgetMovieShow(int movieId);
 void cgetMovieDetails(int movieId);
@@ -68,13 +76,13 @@ int main (int argc, char const *argv[]) {
 	signal(SIGINT, csignal);
 	loadCommands();
 	__connect();
-	printf(ANSI_COLOR_GREEN"CLIENTE CONECTADO, abriendo shell..."ANSI_COLOR_RESET"\n");
+	printf(MSG_CLIENT_CONNECTED);
 	char input[INPUT_SIZE];
 	int n;
 
 	while (1) {
 
-		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
+		printf(MSG_PROMPT);
 		fflush(stdout);
 		//	getLine(input);
 		fgets(input, INPUT_SIZE - 16, stdin);
@@ -88,91 +96,6 @@ int main (int argc, char const *argv[]) {
 
 	return 0;
 }
-
-/*
-// Tomo el control del input para poder dar más funcionalidades.
-// Si bien le saca portabilidad, en el contexto de evaluacion
-// no va a traer ningun efecto inesperado
-void getLine(char * buffer) {
-// Hace que el input de stdin se mande crudo, sin necesidad de enter
-	char c;
-	char completed[100];
-	completed[0] = 0;
-	int i = 0;
-	char* iter = buffer;
-	system ("/bin/stty raw -echo isig");
-	while ((c = getchar()) != NEW_LINE) {
-		if (c == BACKSPACE) {
-			printf("\b  \b\b");
-			i--;
-			iter[i] = 0;
-		} else if (c == TAB) {
-			if (autoComplete(buffer, i, completed) == 1) {
-				int m;
-				for (m = 0; m < i; m++)
-					fprintf(stdout, "\b");
-				printf("%s", completed);
-
-				for (m = 0; completed[m] != 0; m++) {
-					buffer[m] = completed[m];
-				}
-				i = m;
-			}
-		} else if (c == '\033') {
-			//Ingreso una flecha. Por el momento no estan soportadas
-			// if the first value is esc
-			getchar(); // skip the [
-			switch (getchar()) { // the real value
-			case 'A':
-				// code for arrow up
-				break;
-			case 'B':
-				// code for arrow down
-				break;
-			case 'C':
-				// code for arrow right
-				break;
-			case 'D':
-				// code for arrow left
-				break;
-			}
-		} else {
-			putc(c, stdout);
-			iter[i] = c;
-			i++;
-		}
-	}
-	iter[i] = 0;
-// Se restablece el default. Se asume que era el previo al llamado.
-	system ("/bin/stty cooked echo");
-// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo
-	printf("\n");
-}
-
-//ret 0 if not match or multiple matches
-int autoComplete(char* buffer, int i, char* completed) {
-	char matches = 0, flag;
-	char* matched;
-	int aux, c;
-	char* currentCom;
-	for (c = 0; c < COM_SIZE && matches < 2; c++) {
-		currentCom = commands[c].name;
-		for (aux = 0, flag = 0; !flag && currentCom[aux] != 0 && aux < i; aux++) {
-			if (currentCom[aux] != buffer[aux]) {
-				flag = 1;
-			}
-		}
-		if (!flag && aux == i && currentCom[aux] != 0) {
-			matches++;
-			matched = commands[c].name;
-		}
-	}
-	if (matches == 1) {
-		strcpy(completed, matched);
-	}
-	return matches;
-}
-*/
 
 void loadCommands() {
 
@@ -262,7 +185,7 @@ void loadCommands() {
 	commands[9].function = (func)&cremoveMovie;
 	commands[9].args = removeMovieArgs;
 	commands[9].argsCant = 1;
-	commands[9].desc = "Remueve una pelicula medienta su id.";
+	commands[9].desc = "Remueve una pelicula mediante su id.";
 
 	commands[10].name = "exit";
 	commands[10].function = (func)&cexit;
