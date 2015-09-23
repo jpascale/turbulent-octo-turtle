@@ -47,9 +47,7 @@ void main() {
 
 void ProcessData(Connection * sender, Datagram * data) {
 
-	printf("#FORK: Entro al sleep. 'ATIENDE SERVER...'\n");
 	sleep(0);
-	printf("FIN DEL SLEEP!\n");
 	sender->sender_pid = data->client_pid;
 	char* ans;
 	int num;
@@ -99,5 +97,4 @@ void ProcessData(Connection * sender, Datagram * data) {
 		printf("Comando no soportado!\n");
 		sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n", data->opcode);
 	}
-	printf("#FORK: esto envia: %s\n", data->data.text);
 }

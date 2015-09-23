@@ -25,8 +25,7 @@ initChannel(int bool_server) {
 		remove("/tmp/server_pid");
 		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY, 777);
 		server_pid = getpid();
-		printf("mi pid es: %i\n",  server_pid);
-		printf("escribio %i caracteres\n", write(fd, &server_pid, sizeof(int)));
+		write(fd, &server_pid, sizeof(int));
 		close(fd);
 		fd = open("/tmp/server_pid", O_RDONLY);
 		read(fd, auxS, sizeof(int));
@@ -51,7 +50,6 @@ sendData(Connection * connection, Datagram * params) {
 		sprintf(writeFileName, "/tmp/response_%i", connection->sender_pid);
 		fd = open(writeFileName, O_CREAT | O_WRONLY, 777);
 		write(fd, params, *(int*)params);
-		printf("enviando señal a: %i\n", connection->sender_pid);
 		kill(connection->sender_pid, SIGUSR1);
 		close(fd);
 	} else {
@@ -65,7 +63,6 @@ sendData(Connection * connection, Datagram * params) {
 
 receiveData(Connection * sender, Datagram * buffer) {
 	if (is_server) { //server
-		printf("entro a receive\n");
 		while (1) {
 			if (!reading) {
 				if (aux) {
@@ -75,22 +72,16 @@ receiveData(Connection * sender, Datagram * buffer) {
 					aux = 0;
 				}
 
-				printf("SERVER: soy %i\n", getpid());
-				printf("durmiendo\n");
-
 				sigsuspend(&oldmask);
 
-				printf("desperto\n");
 				reading = 1;
 				dir = opendir ("/tmp/");
 			}
-			printf("leyendo archivos\n");
 			while ((ent = readdir (dir)) != NULL && !leftStringMatch("request", ent->d_name));
 			if (ent != NULL) {
 				sprintf(readFileName, "/tmp/%s", ent->d_name);
-				printf("current file: %s\n", readFileName);
-				if ((fd = open(readFileName, O_RDONLY)) < 0)
-					printf("no pude leer\n");
+				fd = open(readFileName, O_RDONLY);
+
 				read(fd, buffer, sizeof(int));
 				//printf("esto leyo: %i\n", (int*)buffer);
 				int size = *((int*)buffer);
@@ -102,7 +93,6 @@ receiveData(Connection * sender, Datagram * buffer) {
 				close(fd);
 				return;
 			}
-			printf("no hay mas archivos\n");
 			reading = 0;
 			closedir (dir);
 		}
@@ -113,13 +103,9 @@ receiveData(Connection * sender, Datagram * buffer) {
 			sigprocmask (SIG_BLOCK, &mask, &oldmask);
 			aux = 0;
 		}
-		printf("esperando señal\n");
 		sigsuspend(&oldmask);
-		printf("llego señal\n");
-		if ((fd = open(readFileName, O_RDONLY)) < 0)
-			printf("no pude abrir\n");
+		fd = open(readFileName, O_RDONLY);
 		read(fd, buffer, sizeof(int));
-		printf("esto leyo: %i\n", (int*)buffer);
 		int size = *((int*)buffer);
 		read(fd, ((char*)buffer) + sizeof(int), size - sizeof(int));
 		if (!remove(readFileName))
@@ -142,7 +128,6 @@ void mypause(int sign) {
 	printf("entro a la señal\n");
 }
 
-<<<<<<< HEAD
 void handOff(int sig){
 	if(is_server){
 		close(fd);
@@ -156,5 +141,6 @@ void handOff(int sig){
 			remove(writeFileName))
 			printf("Communication files where removed\n");
 	}
+
 	exit(0);
 }

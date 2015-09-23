@@ -23,3 +23,7 @@ sockets:
 
 	gcc client.c APICli.c communicationSockets.c -lrt -pthread -o client
 	gcc server.c APIServer.c communicationSockets.c sqlite/sqlite3.c sqlLib.c -lrt -pthread -ldl -o server
+
+conly:
+	
+	gcc -o conly client.c ConlyAPI.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl

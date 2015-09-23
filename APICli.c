@@ -21,8 +21,7 @@ char * getMovieList() {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -33,9 +32,8 @@ char * getMovieShow(int movieId) {
 	data.data.i = movieId;
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
-
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -47,8 +45,7 @@ char * getMovieDetails(int movieId) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -60,8 +57,7 @@ char * getShowSeats(int showId) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -78,8 +74,7 @@ char * BuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 
@@ -93,8 +88,7 @@ char * UndoBuyTicket(int ticketId, char* nombre) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -109,8 +103,7 @@ char * addShow(int time, int roomID, int movieID) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -122,8 +115,7 @@ char * removeShow(int showId) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 }
@@ -137,8 +129,7 @@ char * addMovie(int length, char * title, char * desc) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
 
@@ -151,8 +142,14 @@ char * removeMovie(int movieID) {
 	data.size = sizeof(data);
 	sender.sender_pid = getpid();
 
-	sendData(&sender, &data);
-	receiveData(&sender, &data);
+	communicate(&sender, &data);
 
 	return data.data.text;
+}
+
+void communicate(Connection * sender, Datagram * data){
+	if(sendData(sender, data)!=-1)
+		receiveData(sender, data);
+	else
+		(*data).data.text[0] = 0;
 }
