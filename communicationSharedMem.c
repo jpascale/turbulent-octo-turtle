@@ -40,34 +40,30 @@ void initChannel(int b_server) {
 	current = calloc(10000, 1);
 }
 
-void sendData(Connection * connection, Datagram * params) {
+int sendData(Connection * connection, Datagram * params) {
 //	printfSemStates();
 	if (bool_server)
 		msg = getmem(connection->sender_pid);
 	else
 		msg = getmem(0);
 	if (msg == -1)
-		return;
+		return -1;
 
 	if (!bool_server)
 		enter(1);
 	memcpy(msg, params, params->size);
 	leave((bool_server) ? 2 : 0);
 //	printf("Paquete escrito en memoria por %i de size %i\n",params->client_pid, params->size);
+	return 0;
 }
 
 void receiveData(Connection * sender, Datagram * buffer) {
 	// Si no estaba abierto el canal al server, no hay nada que leer =/
-	if (bool_server == 0 && msg == -1)
-		return;
-
 	if (bool_server)
 		msg = getmem(0);
 	else
 		msg = getmem(sender->sender_pid);
 //		printf("Leyendo de memoria, bloqueante\n");
-	if (msg == -1)
-		return;
 	enter((bool_server) ? 0 : 2);
 //		printf("rin, %i\n",getpid());
 	memcpy(current, msg, sizeof(int));

@@ -293,8 +293,8 @@ void parse(char* buff) {
 	char* args[6];
 
 	cant = splitArgs(args, buff);
-	
-	if(cant==-1){
+
+	if (cant == -1) {
 		printf(ANSI_COLOR_RED "No injection allowed\n" ANSI_COLOR_RESET);
 		return;
 	}
@@ -336,12 +336,12 @@ void parse(char* buff) {
 }
 
 int splitArgs(char* args[], char* buffer) {
-	int i = 0, m=0, j = 1, flag = 0, error=0;
+	int i = 0, m = 0, j = 1, flag = 0, error = 0;
 	args[0] = buffer;
 	while (buffer[i] && !error) {
-		if(buffer[i]=='\''){
-			error=1;
-		}else if (buffer[i] == ' ' && !flag) {
+		if (buffer[i] == '\'') {
+			error = 1;
+		} else if (buffer[i] == ' ' && !flag) {
 			buffer[i] = 0;
 			args[j++] = buffer + i + 1;
 		} else if (buffer[i] == '\"') {
@@ -353,7 +353,7 @@ int splitArgs(char* args[], char* buffer) {
 		}
 		i++;
 	}
-	if(error){
+	if (error) {
 		return -1;
 	}
 	return j;
@@ -392,6 +392,11 @@ void chelp() {
 void cgetMovieList() {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO CARTELERA ----\n");
 	char* answer = getMovieList();
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
+
 	char* aux1;
 	char* aux2;
 	int cont = 0;
@@ -431,6 +436,10 @@ void
 cgetMovieShow(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieShow(movieId);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
@@ -438,6 +447,10 @@ void
 cgetMovieDetails(int movieId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO FUNCIONES ----\n");
 	char* answer = getMovieDetails(movieId);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
@@ -445,6 +458,10 @@ void
 cgetShowSeats(int showId) {
 	printf(ANSI_COLOR_CYAN"---- CONSULTANDO ASIENTOS ----\n");
 	char* answer = getShowSeats(showId);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA"Asientos ocupados  en el show" ANSI_COLOR_GREEN" %i:\n", showId);
 	printf(ANSI_COLOR_RED "%s\n", answer);
 }
@@ -452,35 +469,59 @@ cgetShowSeats(int showId) {
 void cBuyTicket(int showId, int asiento, int tarjeta, int secCode, char* nombre) {
 	printf(ANSI_COLOR_CYAN "---- REALIZANDO COMPRA ----\n");
 	char* answer = BuyTicket(showId,  asiento,  tarjeta, secCode, nombre);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA " %s ", answer);
 }
 
 void cUndoBuyTicket(int ticketId, char* nombre) {
 	printf(ANSI_COLOR_CYAN"---- DESHACIENDO COMPRA ----\n");
 	char* answer = UndoBuyTicket(ticketId, nombre);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
 char * caddShow(int time, int roomID, int movieID) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO SHOW ----\n");
 	char* answer = addShow(time, roomID, movieID);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
 char * cremoveShow(int showId) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO SHOW ----\n");
 	char* answer = removeShow(showId);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 char * caddMovie(int length, char * title, char * desc) {
 	printf(ANSI_COLOR_CYAN"---- AGREGANDO PELICULA ----\n");
 	char* answer = addMovie(length, title, desc);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
 char * cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_CYAN"---- REMOVIENDO PELICULA ----\n");
 	char* answer = removeMovie(movieID);
+	if(answer[0]==0){
+		printf(ANSI_COLOR_RED"Server not found\n"ANSI_COLOR_RESET);
+		return;
+	}
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
@@ -489,7 +530,7 @@ void cexit() {
 	exit(0);
 }
 
-void cclear(){
+void cclear() {
 	printf("\e[1;1H\e[2J");
 }
 
