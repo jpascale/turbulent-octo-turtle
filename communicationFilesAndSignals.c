@@ -28,7 +28,7 @@ initChannel(int bool_server) {
 		close(fd);
 		reading = 0;
 	} else { //client
-		fd = open("/tmp/server_pid", O_RDONLY | O_CREAT, 777);
+		fd = open("/tmp/server_pid", O_RDONLY);
 		read(fd, auxS, sizeof(int));
 		close(fd);
 		server_pid = *((int*)auxS);
