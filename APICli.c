@@ -10,11 +10,8 @@ Datagram data;
 Connection sender;
 
 void __connect(){
-	fork();
-	fork();
 	initChannel(0);	
 	printf("Cliente conectado.\n");
-	cgetMovieList();
 }
 
 char * getMovieList(){
