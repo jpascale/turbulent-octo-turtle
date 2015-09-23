@@ -142,7 +142,6 @@ void mypause(int sign) {
 	printf("entro a la señal\n");
 }
 
-<<<<<<< HEAD
 void handOff(int sig){
 	if(is_server){
 		close(fd);

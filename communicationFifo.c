@@ -13,15 +13,12 @@ void sendData(Connection * connection, Datagram * params);
 void receiveData(Connection * sender, Datagram * buffer);
 void initChannel(int bool_server);
 
-void mypause(int sign);
-
 int is_server;
 int fd_read, fd_write, i;
 char fileName[32];
 
 void initChannel(int bool_server) {
 	is_server = bool_server;
-	signal(SIGINT, mypause);
 	if (is_server) {
 		mknod(SERVER_FIFO, S_IFIFO | 0666, 0);
 	} else {
@@ -59,12 +56,8 @@ void receiveData(Connection * sender, Datagram * buffer) {
 }
 
 void handOff(int sig) {
-	printf("Servidor termina por señal %d\n", sig);
-	exit(0);
-}
-
-void mypause(int sign) {
 	close(fd_read);
 	close(fd_write);
+	printf("Servidor termina por señal %d\n", sig);
 	exit(0);
 }

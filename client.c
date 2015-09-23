@@ -15,7 +15,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 #define INPUT_SIZE 		1024
-#define COM_SIZE 		12
+#define COM_SIZE 		13
 #define STRING          0
 #define INT             1
 
@@ -44,6 +44,7 @@ typedef void (* func) ();
 //void getLine(char * buffer);
 //int autoComplete(char* buffer, int i, char* completed);
 void csignal(int sig);
+void cclear();
 
 typedef void (* func) ();
 
@@ -75,8 +76,11 @@ int main (int argc, char const *argv[]) {
 
 		printf(ANSI_COLOR_GREEN":):" ANSI_COLOR_RED );
 		fflush(stdout);
-	//	getLine(input);
-		gets(input);
+		//	getLine(input);
+		fgets(input, INPUT_SIZE, stdin);
+		int len = strlen(input);
+		if (len > 0 && input[len - 1] == '\n')
+			input[len - 1] = '\0';
 		parse(input);
 	}
 
@@ -276,6 +280,11 @@ void loadCommands() {
 	commands[11].argsCant = 0;
 	commands[11].desc = "I need somebody... ";
 
+	commands[12].name = "clear";
+	commands[12].function = (func)&cclear;
+	commands[12].argsCant = 0;
+	commands[12].desc = "No explanation. It's pretty clear =D";
+
 }
 
 void parse(char* buff) {
@@ -284,6 +293,12 @@ void parse(char* buff) {
 	char* args[6];
 
 	cant = splitArgs(args, buff);
+	
+	if(cant==-1){
+		printf(ANSI_COLOR_RED "No injection allowed\n" ANSI_COLOR_RESET);
+		return;
+	}
+
 	// The first input is not a parameter
 	cant -= 1;
 
@@ -321,10 +336,12 @@ void parse(char* buff) {
 }
 
 int splitArgs(char* args[], char* buffer) {
-	int i = 0, j = 1, flag = 0;
+	int i = 0, m=0, j = 1, flag = 0, error=0;
 	args[0] = buffer;
-	while (buffer[i]) {
-		if (buffer[i] == ' ' && !flag) {
+	while (buffer[i] && !error) {
+		if(buffer[i]=='\''){
+			error=1;
+		}else if (buffer[i] == ' ' && !flag) {
 			buffer[i] = 0;
 			args[j++] = buffer + i + 1;
 		} else if (buffer[i] == '\"') {
@@ -335,6 +352,9 @@ int splitArgs(char* args[], char* buffer) {
 			flag = 1 - flag;
 		}
 		i++;
+	}
+	if(error){
+		return -1;
 	}
 	return j;
 }
@@ -465,13 +485,16 @@ char * cremoveMovie(int movieID) {
 }
 
 void cexit() {
-
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
 	exit(0);
 }
 
+void cclear(){
+	printf("\e[1;1H\e[2J");
+}
+
+
 void csignal(int sig) {
-	system ("/bin/stty cooked echo");
 	printf(ANSI_COLOR_RESET);
 	handOff(sig);
 	exit(1);
