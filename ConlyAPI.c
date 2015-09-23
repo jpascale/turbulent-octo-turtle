@@ -12,6 +12,7 @@
 #include "sharedFunctions.h"
 #include "sqlLib.h"
 
+#define SLEEP_TIME 5
 #define DB_PATH "test.db"
 #define READ 1
 #define WRITE 0
@@ -29,8 +30,8 @@ void __connect() {
 
 char * getMovieList() {
 	lock_db(READ);
-	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(10);
+	printf("Entro al sleep.\n");
+	sleep(SLEEP_TIME);
 	printf("FIN DEL SLEEP!\n");
 	SQLgetMovieList(ans);
 	unlock_db();
@@ -73,8 +74,8 @@ char * UndoBuyTicket(int ticketId, char* nombre) {
 }
 char * addShow(int time, int roomID, int movieID) {
 	lock_db(WRITE);
-	printf("Entro al sleep. 'ATIENDE SERVER...'\n");
-	sleep(30);
+	printf("Entro al sleep. \n");
+	sleep(SLEEP_TIME);
 	printf("FIN DEL SLEEP!\n");
 	SQLaddShow(ans, time, roomID, movieID);
 	unlock_db();

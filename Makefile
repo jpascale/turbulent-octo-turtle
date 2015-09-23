@@ -8,22 +8,22 @@ files: client.c APICli.c communicationFilesAndSignals.c server.c APIServer.c
 	gcc communicationFilesAndSignals.c APICli.c client.c -o client
 	gcc communicationFilesAndSignals.c APIServer.c server.c sqlite/sqlite3.c sqlLib.c -o server -lpthread -ldl
 
-shared:
+shared:client.c APICli.c communicationSharedMem.c server.c APIServer.c
 
 	gcc client.c APICli.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h -lrt -pthread -o client
 
 	gcc -o server server.c APIServer.c communicationSharedMem.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl
 
-queues:
+queues:client.c APICli.c communicationQueue.c server.c APIServer.c
 
 	gcc client.c APICli.c communicationQueue.c -lrt -pthread -o client
 	gcc server.c APIServer.c communicationQueue.c sqlite/sqlite3.c sqlLib.c -lrt -pthread -ldl -o server
 
-sockets:
+sockets:client.c APICli.c communicationSockets.c server.c APIServer.c
 
 	gcc client.c APICli.c communicationSockets.c -lrt -pthread -o client
 	gcc server.c APIServer.c communicationSockets.c sqlite/sqlite3.c sqlLib.c -lrt -pthread -ldl -o server
 
-conly:
+conly:client.c APICli.c ConlyAPI.c
 	
 	gcc -o conly client.c ConlyAPI.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl

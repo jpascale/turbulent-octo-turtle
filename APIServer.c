@@ -9,7 +9,7 @@
 #include <string.h>
 #include <signal.h>
 
-
+#define SLEEP_TIME 5
 
 void ProcessData(Connection * sender, Datagram * data);
 void initializeServer();
@@ -47,7 +47,7 @@ void main() {
 
 void ProcessData(Connection * sender, Datagram * data) {
 
-	sleep(0);
+	sleep(SLEEP_TIME);
 	sender->sender_pid = data->client_pid;
 	char* ans;
 	int num;
