@@ -13,15 +13,15 @@ void mypause(int sign);
 
 int is_server, reading = 0, fd, server_pid, aux = 1;
 DIR *dir;
-struct dirent *ent;	
+struct dirent *ent;
 sigset_t mask, oldmask;
 char auxS[32], writeFileName[32], readFileName[32];
 
-initChannel(int bool_server){
+initChannel(int bool_server) {
 	is_server = bool_server;
 	signal(SIGUSR1, mypause);
 	signal(SIGUSR2, mypause);
-	if(is_server){ //server
+	if (is_server) { //server
 		remove("/tmp/server_pid");
 		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY, 777);
 		server_pid = getpid();
@@ -34,7 +34,7 @@ initChannel(int bool_server){
 		printf("server pid es: %i\n",  server_pid);
 		close(fd);
 		reading = 0;
-	}else{ //client
+	} else { //client
 		fd = open("/tmp/server_pid", O_RDONLY | O_CREAT, 777);
 		read(fd, auxS, sizeof(int));
 		close(fd);
@@ -45,56 +45,57 @@ initChannel(int bool_server){
 	}
 }
 
-sendData(Connection * connection, Datagram * params){
-	
-	if(is_server){
+sendData(Connection * connection, Datagram * params) {
+
+	if (is_server) {
 		sprintf(writeFileName, "/tmp/response_%i", connection->sender_pid);
 		fd = open(writeFileName, O_CREAT | O_WRONLY, 777);
 		write(fd, params, *(int*)params);
 		printf("enviando señal a: %i\n", connection->sender_pid);
 		kill(connection->sender_pid, SIGUSR1);
 		close(fd);
-	}else{
+	} else {
 		fd = open(writeFileName, O_CREAT | O_WRONLY, 777);
 		write(fd, params, *(int*)params);
 		kill(server_pid, SIGUSR1);
 		close(fd);
 	}
+
 }
 
-receiveData(Connection * sender, Datagram * buffer){
-	if(is_server){ //server
+receiveData(Connection * sender, Datagram * buffer) {
+	if (is_server) { //server
 		printf("entro a receive\n");
-		while(1){	
-			if(!reading){
-				if(aux){
+		while (1) {
+			if (!reading) {
+				if (aux) {
 					sigemptyset (&mask);
-					sigaddset (&mask, SIGUSR1);	
+					sigaddset (&mask, SIGUSR1);
 					sigprocmask (SIG_BLOCK, &mask, &oldmask);
 					aux = 0;
 				}
-				
+
 				printf("SERVER: soy %i\n", getpid());
 				printf("durmiendo\n");
-				
+
 				sigsuspend(&oldmask);
 
 				printf("desperto\n");
 				reading = 1;
 				dir = opendir ("/tmp/");
-			}	
+			}
 			printf("leyendo archivos\n");
 			while ((ent = readdir (dir)) != NULL && !leftStringMatch("request", ent->d_name));
-			if(ent != NULL){
+			if (ent != NULL) {
 				sprintf(readFileName, "/tmp/%s", ent->d_name);
 				printf("current file: %s\n", readFileName);
-				if((fd = open(readFileName, O_RDONLY))<0)
+				if ((fd = open(readFileName, O_RDONLY)) < 0)
 					printf("no pude leer\n");
 				read(fd, buffer, sizeof(int));
 				//printf("esto leyo: %i\n", (int*)buffer);
 				int size = *((int*)buffer);
-				read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
-				if(!remove(readFileName))
+				read(fd, ((char*)buffer) + sizeof(int), size - sizeof(int));
+				if (!remove(readFileName))
 					printf("borrado: %s\n", readFileName);
 				else
 					printf("no borrado: %s\n", readFileName);
@@ -102,26 +103,26 @@ receiveData(Connection * sender, Datagram * buffer){
 				return;
 			}
 			printf("no hay mas archivos\n");
-			reading = 0;		
+			reading = 0;
 			closedir (dir);
 		}
-	}else{ //client
-		if(aux){
+	} else { //client
+		if (aux) {
 			sigemptyset (&mask);
-			sigaddset (&mask, SIGUSR1);	
+			sigaddset (&mask, SIGUSR1);
 			sigprocmask (SIG_BLOCK, &mask, &oldmask);
 			aux = 0;
 		}
 		printf("esperando señal\n");
 		sigsuspend(&oldmask);
 		printf("llego señal\n");
-		if((fd = open(readFileName, O_RDONLY))<0)
+		if ((fd = open(readFileName, O_RDONLY)) < 0)
 			printf("no pude abrir\n");
 		read(fd, buffer, sizeof(int));
 		printf("esto leyo: %i\n", (int*)buffer);
 		int size = *((int*)buffer);
-		read(fd, ((char*)buffer)+sizeof(int), size - sizeof(int));
-		if(!remove(readFileName))
+		read(fd, ((char*)buffer) + sizeof(int), size - sizeof(int));
+		if (!remove(readFileName))
 			printf("borrado: %s\n", readFileName);
 		else
 			printf("no borrado: %s\n", readFileName);
@@ -130,17 +131,18 @@ receiveData(Connection * sender, Datagram * buffer){
 	return;
 }
 
-leftStringMatch(char * begin, char * string){
+leftStringMatch(char * begin, char * string) {
 	int match = 1;
-	while (*begin!=0 && match) if(*(begin++)!=*(string++)) match = 0;
+	while (*begin != 0 && match) if (*(begin++) != *(string++)) match = 0;
 	return match;
 }
 
-void mypause(int sign){
+void mypause(int sign) {
 	signal(SIGUSR1, mypause);
 	printf("entro a la señal\n");
 }
 
+<<<<<<< HEAD
 void handOff(int sig){
 	if(is_server){
 		close(fd);
