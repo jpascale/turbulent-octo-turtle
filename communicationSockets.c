@@ -29,7 +29,7 @@ typedef enum { false, true } bool;
 #define server_ip "127.0.0.1"
 #define port 8000
 
-#define DEBUG true
+#define DEBUG false
 
 /*
 **      Global declares
@@ -105,7 +105,7 @@ void srv_init_channel(void) {
     //Create socket
     socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_desc == -1) {
-        printf("Could not create socket\n");
+        printf("Could not create socket.\n");
     }
 
     //Prepare the sockaddr_in structure
@@ -148,8 +148,10 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
             printf("Esperando para leer\n");
 
         if ((read_size = recv(client_sock, data, MAX_RDATA_SIZE, 0)) > 0) {
-            printf("DEBUG: Reading size: %d\n", read_size);
-            printf("DEBUG: Structure size: %d\n", *((int*)data));
+            if (DEBUG){
+                printf("DEBUG: Reading size: %d\n", read_size);
+                printf("DEBUG: Structure size: %d\n", *((int*)data));
+            }
             memcpy(sdData, data, read_size);
         }
 
@@ -200,7 +202,9 @@ void clt_init_channel(void) {
     {
         printf("Could not create socket");
     }
-    printf("Socket created\n");
+    
+    if (DEBUG)
+        printf("Socket created\n");
 
     server.sin_addr.s_addr = inet_addr(server_ip);
     server.sin_family = AF_INET;
@@ -216,12 +220,9 @@ void clt_send_data(Connection * connection, Datagram * sdData) {
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf ("Socket error\n");
     }
-    printf("Hasta aca todo piola\n");
 
     int c;
     if ((c = connect(sock, (struct sockaddr *)&server, sizeof(server))) >= 0) {
-        printf("C = %d\n", c);
-        printf("Hasta aca todo piola3\n");
         if (send(sock, data, *((int * )data), MSG_NOSIGNAL) < 0) {
             puts("Send failed");
         } else {
@@ -229,7 +230,6 @@ void clt_send_data(Connection * connection, Datagram * sdData) {
                 printf("Sent.\n");
         }
     }
-    printf("ESTO TIENE Q VERSE\n");
 
     free(data);
     return;
@@ -243,7 +243,7 @@ void clt_receive_data(Connection * connection, Datagram * sdData) {
     int bff_size;
 
     if ((bff_size = recv(sock, data, MAX_RDATA_SIZE, 0)) < 0) {
-        puts("recv failed");
+        puts("Servidor no disponible.\n");
         return;
     }
 
