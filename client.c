@@ -411,7 +411,6 @@ void cgetMovieList() {
 					aux2 = answer;
 					cont = 2;
 				} else {
-					printf("Fin de entrada inesperado\n");
 					flag = 1;
 				}
 			} else {
