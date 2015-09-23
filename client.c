@@ -176,7 +176,7 @@ int autoComplete(char* buffer, int i, char* completed) {
 
 void loadCommands() {
 
-	commands[0].name = "getMovieList";
+	commands[0].name = "gml";
 	commands[0].function = (func)&cgetMovieList;
 	commands[0].argsCant = 0;
 	commands[0].desc = "Muestra la cartelera disponible!";
@@ -192,7 +192,7 @@ void loadCommands() {
 
 	char* getMovieDetailsArgs = malloc(1000);
 	getMovieDetailsArgs[0] = INT;
-	commands[2].name = "getMovieDetails";
+	commands[2].name = "gmd";
 	commands[2].function = (func)&cgetMovieDetails;
 	commands[2].args = getMovieDetailsArgs;
 	commands[2].argsCant = 1;

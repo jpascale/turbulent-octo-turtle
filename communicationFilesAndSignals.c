@@ -20,17 +20,11 @@ char auxS[32], writeFileName[32], readFileName[32];
 initChannel(int bool_server) {
 	is_server = bool_server;
 	signal(SIGUSR1, mypause);
-	signal(SIGUSR2, mypause);
 	if (is_server) { //server
 		remove("/tmp/server_pid");
 		fd = open("/tmp/server_pid", O_CREAT | O_WRONLY, 777);
 		server_pid = getpid();
 		write(fd, &server_pid, sizeof(int));
-		close(fd);
-		fd = open("/tmp/server_pid", O_RDONLY);
-		read(fd, auxS, sizeof(int));
-		server_pid = *((int*)auxS);
-		printf("server pid es: %i\n",  server_pid);
 		close(fd);
 		reading = 0;
 	} else { //client
@@ -131,15 +125,16 @@ void mypause(int sign) {
 void handOff(int sig){
 	if(is_server){
 		close(fd);
-		if(remove("tmp/server_pid"))
+		if(!remove("/tmp/server_pid"))
 			printf("Server stopped correctly\n");
 		else
 			printf("Server's communication file could not be removed\n");
 	}else{
 		close(fd);
-		if(remove(readFileName) &&
-			remove(writeFileName))
+		if(!remove(readFileName) && !remove(writeFileName))
 			printf("Communication files where removed\n");
+		else
+			printf("Client's communication files could not be removed\n");
 	}
 
 	exit(0);

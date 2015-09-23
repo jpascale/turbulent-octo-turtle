@@ -29,13 +29,14 @@ static int callback(void * function, int argc, char **argv, char **azColName) {
 
 	case GET_MOVIE_DETAILS:
 		for (i = 0; i < argc; i++) {
-			k = sprintf(answer, "%s: %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+			k = sprintf(answer, "%s;", azColName[i], argv[i] ? argv[i] : "NULL");
 			answer += k;
 		}
 		break;
 
 	case GET_MOVIE_SHOWS:
-		k = sprintf(answer, "%s: %s, %s: %s\n ", azColName[0], argv[0] ? argv[0] : "NULL", azColName[1], argv[1] ? argv[1] : "NULL");
+
+		k = sprintf(answer, "%s;%s;", argv[0] ? argv[0] : "NULL", argv[1] ? argv[1] : "NULL");
 		answer += k;
 		break;
 
