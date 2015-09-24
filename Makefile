@@ -24,6 +24,6 @@ sockets:client.c APICli.c communicationSockets.c server.c APIServer.c
 	gcc client.c APICli.c communicationSockets.c -lrt -pthread -o client
 	gcc server.c APIServer.c communicationSockets.c sqlite/sqlite3.c sqlLib.c -lrt -pthread -ldl -o server
 
-conly:client.c APICli.c ConlyAPI.c
+conly:client.c ConlyAPI.c  
 	
-	gcc -o conly client.c ConlyAPI.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl
+	gcc -o client client.c ConlyAPI.c datagram.h communication.h sharedFunctions.h sqlLib.h sqlLib.c ./sqlite/sqlite3.c ./sqlite/sqlite3.h -lrt -pthread -lpthread -ldl

@@ -31,7 +31,7 @@ void __connect() {
 	setUpDB();
 }
 
-char * getMovieList() {
+char * getMovieList() {	
 	lock_db(READ);
 	simulateDelay();
 	SQLgetMovieList(ans);

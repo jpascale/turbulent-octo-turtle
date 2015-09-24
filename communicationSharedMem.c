@@ -46,7 +46,7 @@ int sendData(Connection * connection, Datagram * params) {
 		msg = getmem(connection->sender_pid);
 	else
 		msg = getmem(0);
-	if (msg == -1)
+	if (msg == (char *) - 1)
 		return -1;
 
 	if (!bool_server)
@@ -126,7 +126,7 @@ getmem(int mem_code)
 			fatal("mmap");
 		close(fd);
 	}
-	return (error_flag == 1) ? -1 : mem;
+	return (error_flag == 1) ? (char *) - 1 : mem;
 }
 
 

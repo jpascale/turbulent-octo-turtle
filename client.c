@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
+#include <unistd.h>
+
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -15,7 +17,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 #define INPUT_SIZE 		1024
-#define COM_SIZE 		13
+#define COM_SIZE 		14
 #define STRING          0
 #define INT             1
 
@@ -35,6 +37,7 @@ void caddShow(int time, int roomID, int movieID);
 void cremoveShow(int showId);
 void caddMovie(int length, char * title, char * desc);
 void cremoveMovie(int movieID);
+void csw();
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -280,6 +283,11 @@ void loadCommands() {
 	commands[12].argsCant = 0;
 	commands[12].desc = "No explanation. It's pretty clear =D";
 
+	commands[13].name = "sw";
+	commands[13].function = (func)&csw;
+	commands[13].argsCant = 0;
+	commands[13].desc = "Grab popcorn";
+
 }
 
 void parse(char* buff) {
@@ -306,19 +314,19 @@ void parse(char* buff) {
 			} else {
 				convertArg(args, commands[index].args, commands[index].argsCant);
 				switch (commands[index].argsCant) {
-					case 0:
+				case 0:
 					commands[index].function();
 					break;
-					case 1:
+				case 1:
 					commands[index].function(args[1]);
 					break;
-					case 2:
+				case 2:
 					commands[index].function(args[1], args[2]);
 					break;
-					case 3:
+				case 3:
 					commands[index].function(args[1], args[2], args[3]);
 					break;
-					case 5:
+				case 5:
 					commands[index].function(args[1], args[2], args[3], args[4], args[5]);
 					break;
 				}
@@ -358,10 +366,10 @@ int convertArg(char ** args, unsigned  char * argTypes, int cant) {
 	int  j;
 	for (j = 1; j <= cant; j++) {
 		switch (argTypes[j - 1]) {
-			case INT:
-			args[j] = (char *)atoi(args[j]);
+		case INT:
+			args[j] = atoi(args[j]);
 			break;
-			default:
+		default:
 			break;
 		}
 	}
@@ -486,13 +494,13 @@ cgetMovieDetails(int movieId) {
 		if (answer[0] == ';') {
 			answer[0] = '\0';
 			switch (arg_num) {
-				case 0:	printf(ANSI_COLOR_MAGENTA"Titulo:");
+			case 0:	printf(ANSI_COLOR_MAGENTA"Titulo:");
 				break;
-				case 1:	printf(ANSI_COLOR_MAGENTA"Descripcion:");
+			case 1:	printf(ANSI_COLOR_MAGENTA"Descripcion:");
 				break;
-				case 2:	printf(ANSI_COLOR_MAGENTA"Horario:");
+			case 2:	printf(ANSI_COLOR_MAGENTA"Horario:");
 				break;
-				case 3:	printf(ANSI_COLOR_MAGENTA"MovieID:");
+			case 3:	printf(ANSI_COLOR_MAGENTA"MovieID:");
 				break;
 			}
 			printf(ANSI_COLOR_GREEN" %s\n"ANSI_COLOR_RESET, aux);
@@ -577,8 +585,35 @@ void cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
+
+void csw() {
+	cclear();
+	printf(ANSI_COLOR_RESET);
+	char buf[74];
+	FILE *file;
+	size_t nread;
+	int line=0;
+	file = fopen("telnetTest.txt", "r");
+	if (file) {
+		while ((nread = fread(buf, 1, sizeof buf, file)) > 0){
+			fwrite(buf, 1, nread, stdout);
+			line++;
+			if(line==19){
+				line=0;
+				usleep(300000);
+			}
+		}
+		if (ferror(file)) {
+			printf("Desaparecio la cinta!\n");
+			return;
+		}
+		fclose(file);
+	}
+}
+
 void cexit() {
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
+	handOff(0);
 	exit(0);
 }
 
