@@ -12,7 +12,7 @@
 #include "sharedFunctions.h"
 #include "sqlLib.h"
 
-#define SLEEP_TIME 5
+#define SLEEP_TIME 2
 #define DB_PATH "test.db"
 #define READ 1
 #define WRITE 0

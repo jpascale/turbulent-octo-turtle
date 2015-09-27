@@ -6,7 +6,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
-
 #include "./datagram.h"
 #include "communication.h"
 #include "./sharedFunctions.h"
@@ -132,8 +131,7 @@ int leftStringMatch(char * begin, char * string) {
 }
 
 void mypause(int sign) {
-	signal(SIGUSR1, mypause);
-	printf("entro a la señal\n");
+
 }
 
 void handOff(int sig) {
@@ -143,7 +141,7 @@ void handOff(int sig) {
 			printf("Server stopped correctly\n");
 		else
 			printf("Server's communication file could not be removed\n");
-	} else {
+	}else{
 		close(fd);
 		if (!remove(readFileName) && !remove(writeFileName))
 			printf("Communication files where removed\n");
