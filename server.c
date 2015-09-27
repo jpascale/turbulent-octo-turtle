@@ -21,6 +21,7 @@
 int fd;
 void lock_db(int is_reader);
 void unlock_db(void);
+void serv_close();
 char locked = 0;
 char* ans;
 
@@ -130,4 +131,8 @@ void unlock_db(void) {
 	printf("Unlocked.\n");
 	locked = 0;
 	close(fd);
+}
+
+void serv_close(){
+	free(ans);
 }

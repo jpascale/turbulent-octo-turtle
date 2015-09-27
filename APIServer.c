@@ -105,5 +105,6 @@ void ProcessData(Connection * sender, Datagram * data) {
 
 void shandOff(int sig){
 		closeDatabase();
+		serv_close();
 		handOff(sig);
 	}

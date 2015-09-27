@@ -108,6 +108,9 @@ char * removeMovie(int movieID) {
 }
 
 void handOff(int sig) {
+	free(ans);
+	closeDatabase();
+
 	if (locked) {
 		unlock_db();
 		printf("Quita el lock por signal\n");

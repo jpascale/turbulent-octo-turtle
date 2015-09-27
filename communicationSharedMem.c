@@ -69,7 +69,7 @@ void receiveData(Connection * sender, Datagram * buffer) {
 	memcpy(current, msg, sizeof(int));
 //		printf("Busco un mensaje de size= %i\n",*((int*)current));
 	memcpy(current, msg, *((int*)current));
-	sprintf(msg, "\0\0\0\0");
+//	sprintf(msg, "\0\0\0\0");
 	if (!bool_server)
 		leave(1);
 //		printf("Recibido\n");
@@ -212,6 +212,8 @@ resetSems() {
 }
 
 void handOff(int sig) {
+	free(current);
+
 	char name[16];
 
 // Cierro los semaforos. Cuando no los use nadie, se borran.
