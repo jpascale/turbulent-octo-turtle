@@ -52,8 +52,6 @@ void loadCommands();
 int convertArg(char ** args, unsigned char * argTypes, int cant);
 int splitArgs(char* args[], char* buffer);
 typedef void (* func) ();
-//void getLine(char * buffer);
-//int autoComplete(char* buffer, int i, char* completed);
 void csignal(int sig);
 void cclear();
 void clfree();
@@ -72,11 +70,11 @@ struct command
 
 static struct command commands[COM_SIZE] = {};
 
-
+/*	Initializes the API used by the client for all the communication functions.
+*	If the initialization is correct, a prompt is shown as part of the shell.
+*/
 int main (int argc, char const *argv[]) {
-	//::::::
 
-	//::::::
 	signal(SIGINT, csignal);
 	loadCommands();
 	__connect();
@@ -102,90 +100,7 @@ int main (int argc, char const *argv[]) {
 }
 
 
-/*
-// Tomo el control del input para poder dar más funcionalidades.
-// Si bien le saca portabilidad, en el contexto de evaluacion
-// no va a traer ningun efecto inesperado
-void getLine(char * buffer) {
-// Hace que el input de stdin se mande crudo, sin necesidad de enter
-	char c;
-	char completed[100];
-	completed[0] = 0;
-	int i = 0;
-	char* iter = buffer;
-	system ("/bin/stty raw -echo isig");
-	while ((c = getchar()) != NEW_LINE) {
-		if (c == BACKSPACE) {
-			printf("\b  \b\b");
-			i--;
-			iter[i] = 0;
-		} else if (c == TAB) {
-			if (autoComplete(buffer, i, completed) == 1) {
-				int m;
-				for (m = 0; m < i; m++)
-					fprintf(stdout, "\b");
-				printf("%s", completed);
 
-				for (m = 0; completed[m] != 0; m++) {
-					buffer[m] = completed[m];
-				}
-				i = m;
-			}
-		} else if (c == '\033') {
-			//Ingreso una flecha. Por el momento no estan soportadas
-			// if the first value is esc
-			getchar(); // skip the [
-			switch (getchar()) { // the real value
-			case 'A':
-				// code for arrow up
-				break;
-			case 'B':
-				// code for arrow down
-				break;
-			case 'C':
-				// code for arrow right
-				break;
-			case 'D':
-				// code for arrow left
-				break;
-			}
-		} else {
-			putc(c, stdout);
-			iter[i] = c;
-			i++;
-		}
-	}
-	iter[i] = 0;
-// Se restablece el default. Se asume que era el previo al llamado.
-	system ("/bin/stty cooked echo");
-// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo
-	printf("\n");
-}
-
-//ret 0 if not match or multiple matches
-int autoComplete(char* buffer, int i, char* completed) {
-	char matches = 0, flag;
-	char* matched;
-	int aux, c;
-	char* currentCom;
-	for (c = 0; c < COM_SIZE && matches < 2; c++) {
-		currentCom = commands[c].name;
-		for (aux = 0, flag = 0; !flag && currentCom[aux] != 0 && aux < i; aux++) {
-			if (currentCom[aux] != buffer[aux]) {
-				flag = 1;
-			}
-		}
-		if (!flag && aux == i && currentCom[aux] != 0) {
-			matches++;
-			matched = commands[c].name;
-		}
-	}
-	if (matches == 1) {
-		strcpy(completed, matched);
-	}
-	return matches;
-}
-*/
 char* getMovieShowArgs;
 char* getMovieDetailsArgs;
 char* getShowSeatsArgs;
@@ -195,7 +110,10 @@ char* addShowArgs;
 char* removeShowArgs;
 char* addMovieArgs;
 char* removeMovieArgs;
-
+/*	Initializes the command list for the shell.
+*	Each element of the "commands" array is a single command with information about
+*	its name, function asociated, description and parameter details.
+*/
 void loadCommands() {
 
 	commands[0].name = "gml";
@@ -308,7 +226,10 @@ void loadCommands() {
 	commands[13].desc = "Grab popcorn";
 
 }
-
+/*	Gets an input line from the shell and splits it by spaces.
+*	If the first token is an known function and the arguments match, the function is called.
+*	Otherwise, the function prints an "invalid argument" message and returns.
+*/
 void parse(char* buff) {
 	int index, cant;
 	char flag = 0;
@@ -357,6 +278,9 @@ void parse(char* buff) {
 	}
 }
 
+/*	Splits arguments by spaces. If there are quotes ("), the text inside is considered
+*	as a single token.
+*/
 int splitArgs(char* args[], char* buffer) {
 	int i = 0, m = 0, j = 1, flag = 0, error = 0;
 	args[0] = buffer;
@@ -381,6 +305,9 @@ int splitArgs(char* args[], char* buffer) {
 	return j;
 }
 
+/*	Changes each token into its required type of argument,
+*	depending on the command called.
+*/
 int convertArg(char ** args, unsigned  char * argTypes, int cant) {
 	int  j;
 	for (j = 1; j <= cant; j++) {

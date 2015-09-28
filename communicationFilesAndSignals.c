@@ -21,6 +21,11 @@ struct dirent *ent;
 sigset_t mask, oldmask;
 char auxS[32], writeFileName[32], readFileName[32];
 
+/* 	Initializes the boolean "is_server", creates server's communication file and writes 
+*	it's pid on it, sets client's write and read files names, and saves sever's pid if
+* 	called by client.
+*/	
+
 void initChannel(int bool_server) {
 	is_server = bool_server;
 	signal(SIGUSR1, mypause);
@@ -34,7 +39,6 @@ void initChannel(int bool_server) {
 	} else { //client
 		server_fd = -1;
 		if (!access(SERVER_PID_PATH, F_OK)) {
-			printf("hay server\n");
 			server_fd = open(SERVER_PID_PATH, O_RDONLY);
 			read(server_fd, auxS, sizeof(int));
 			close(server_fd);
@@ -46,6 +50,11 @@ void initChannel(int bool_server) {
 	}
 }
 
+/* 	CLIENT: Checks server existance, and updates the connection if needed. Writes
+*			on server's file and sends a signal to wake up server.
+*	SERVER:	Writes on client's file, and sends a signal to wake up the client.
+*/	
+
 int sendData(Connection * connection, Datagram * params) {
 
 	if (is_server) {
@@ -55,7 +64,7 @@ int sendData(Connection * connection, Datagram * params) {
 		kill(connection->sender_pid, SIGUSR1);
 		close(fd);
 	} else {
-		printf("server_fd: %i\n", server_fd);
+//		printf("server_fd: %i\n", server_fd);
 		if (server_fd < 0 || access(SERVER_PID_PATH, F_OK)) {
 			if (access(SERVER_PID_PATH, F_OK))
 				return -1;
@@ -67,8 +76,14 @@ int sendData(Connection * connection, Datagram * params) {
 		kill(server_pid, SIGUSR1);
 		close(fd);
 	}
-
 }
+
+/*	CLIENT:	On first run sets the signal mask, and waits for a SIGUSR1 signal,
+*			reads from the corresponding client file, and deletes it.
+*	SERVER:	On first run sets the signal mask, and waits for a SIGUSR1 signal,
+*			scans all files in dir /temp/, and if starts with "request" reads it's
+*			content, deletes the file, and returns.
+*/	
 
 void receiveData(Connection * sender, Datagram * buffer) {
 	if (is_server) { //server
@@ -124,15 +139,20 @@ void receiveData(Connection * sender, Datagram * buffer) {
 	return;
 }
 
+//	Checks if the String string starts with the string begin.
+
 int leftStringMatch(char * begin, char * string) {
 	int match = 1;
 	while (*begin != 0 && match) if (*(begin++) != *(string++)) match = 0;
 	return match;
 }
 
-void mypause(int sign) {
+// 	Function to prevent SIGUSR1 from exiting the program.
 
+void mypause(int sign) {
 }
+
+//	Removes communication files after closing them.
 
 void handOff(int sig) {
 	if (is_server) {

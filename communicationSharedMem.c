@@ -32,6 +32,8 @@ static sem_t *sdA;
 static sem_t *sdB;
 static sem_t *sdC;
 
+/*	Initializes the semaphores and allocs a buffer for the datagram.
+*/
 void initChannel(int b_server) {
 	bool_server = b_server;
 	initmutex();
@@ -40,6 +42,10 @@ void initChannel(int b_server) {
 	current = calloc(10000, 1);
 }
 
+/*	CLIENT: Takes down the server memory's sem, writes the datagran on it and locks 
+*	on a second sem.
+*	SERVER: Reads data from its memory, takes down the client sem and writes the answer.
+*/
 int sendData(Connection * connection, Datagram * params) {
 //	printfSemStates();
 	if (bool_server)
@@ -57,6 +63,10 @@ int sendData(Connection * connection, Datagram * params) {
 	return 0;
 }
 
+/*	CLIENT: Enters the client's sem and reads the answer from it.
+*	SERVER: Reads from server's memory. If server's sem is down, the function
+*	is blocked until a client makes an up on it.
+*/
 void receiveData(Connection * sender, Datagram * buffer) {
 	// Si no estaba abierto el canal al server, no hay nada que leer =/
 	if (bool_server)
@@ -86,6 +96,10 @@ fatal(char *s)
 	exit(1);
 }
 
+
+/*	Returns a shared memory. If the argument is 0, the memory returned is from where the
+*	server reads an input. Else, the client's memory will be returned.
+*/
 char *
 getmem(int mem_code)
 {
@@ -129,7 +143,8 @@ getmem(int mem_code)
 	return (error_flag == 1) ? (char *) - 1 : mem;
 }
 
-
+/*	Initializes three semaphores for the communication proccess.
+*/
 
 void
 initmutex(void)
@@ -144,6 +159,8 @@ initmutex(void)
 		fatal("sem_open");
 }
 
+/*	Makes a sem_wait on a semaphore, depending on the parameter received.
+*/
 void
 enter(int code)
 {
@@ -160,6 +177,9 @@ enter(int code)
 	}
 }
 
+
+/*	Makes a sem_post on a semaphore, depending on the parameter received.
+*/
 void
 leave(int code)
 {
@@ -176,6 +196,8 @@ leave(int code)
 	}
 }
 
+/* Debbugging function that prints the sem values.
+*/
 void
 printfSemStates() {
 	int a, b, c;
@@ -186,7 +208,7 @@ printfSemStates() {
 }
 
 
-// Resetea el estado de los semáforos
+// Resets all the semaphores to its initial value.
 void
 resetSems() {
 	int value;
@@ -202,26 +224,28 @@ resetSems() {
 	}
 	sem_getvalue(sdB, &value);
 	while (value > 1) {
-		sem_wait(sdC);
-		sem_getvalue(sdC, &value);
+		sem_wait(sdB);
+		sem_getvalue(sdB, &value);
 	}
 	while (value < 1) {
-		sem_post(sdC);
-		sem_getvalue(sdC, &value);
+		sem_post(sdB);
+		sem_getvalue(sdB, &value);
 	}
 }
 
+/*	Closes all resources used by the proccess. This includes semaphores,
+*	memory segments and buffers
+*/
 void handOff(int sig) {
 	free(current);
-
 	char name[16];
 
-// Cierro los semaforos. Cuando no los use nadie, se borran.
+// Closes semaphores. If they are not used anymore, the function deletes them.
 	sem_close(sdA);
 	sem_close(sdB);
 	sem_close(sdC);
 
-//Cada parte se encarga de cerrar sus canales
+//Each proccess closes its shared memory segment.
 
 	if (bool_server) {
 		msg = getmem(0);

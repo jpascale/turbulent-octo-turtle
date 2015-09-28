@@ -17,7 +17,7 @@
 #include "communication.h"
 
 /*
-**		Private function declares
+**			Private function declares
 */
 void srv_init_channel(void);
 void clt_init_channel(void);
@@ -173,7 +173,6 @@ int clt_send_data(Connection * connection, Datagram * sdData) {
 
 	msg.mtype = getpid();
 	n = sdData->size;
-	sdData->client_pid = msg.mtype;
 
 	void * sdDataptr = (void *) sdData;
 
@@ -189,9 +188,6 @@ void clt_receive_data(Connection * connection, Datagram * sdData) {
 
 	memcpy((void * )sdData, (void *)msg.mdata, *((int *)msg.mdata));
 
-	if ( n > 0 )
-		printf("Cliente recibe: %s", msg.mdata + 12);
-	//TODO: Remove this
 	int i;
 	for (i = 0; i < 1024; i++)
 		*(msg.mdata + 12 + i) = '\0';

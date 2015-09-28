@@ -26,6 +26,9 @@ void simulateDelay();
 char locked = 0;
 char* ans;
 
+
+/*	Initilizes the data base and the buffer to store answers from it.
+*/
 void __connect() {
 	ans = calloc(BUFFER_SIZE, 1);
 	setUpDB();
@@ -107,6 +110,9 @@ char * removeMovie(int movieID) {
 	return ans;
 }
 
+/*	Frees the buffer allocated before and removes the lock from the database file if exists.
+*/
+
 void handOff(int sig) {
 	free(ans);
 	closeDatabase();
@@ -119,6 +125,9 @@ void handOff(int sig) {
 	}
 }
 
+/*	Sets a lock in the database file as reader or writer.	
+*	If it's not possible, the function blocks the procces.
+*/
 void lock_db(int is_reader) {
 	struct flock fl = {F_WRLCK, SEEK_SET,   0,      0,     0 };
 	fl.l_pid = getpid();
@@ -143,6 +152,8 @@ void lock_db(int is_reader) {
 	locked = 1;
 }
 
+/*	Removes the lock from the database file.
+*/
 void unlock_db(void) {
 	struct flock fl = {F_UNLCK, SEEK_SET,   0,      0,     0 };
 	fl.l_pid = getpid();

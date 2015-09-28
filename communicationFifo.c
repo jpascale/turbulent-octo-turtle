@@ -17,6 +17,10 @@ int is_server;
 int fd_read, fd_write, i;
 char fileName[32];
 
+/*	CLIENT:	Initializes server's fifo.
+*	SERVER:	Initializes each client's fifo and opens server's fifo.
+*/
+
 void initChannel(int bool_server) {
 	is_server = bool_server;
 	if (is_server) {
@@ -35,6 +39,9 @@ void initChannel(int bool_server) {
 	}
 }
 
+/*	CLIENT:	Checks if a server is available, and writes on server's fifo.	
+*	SERVER:	Creates client's fifo adn writes on it the response.
+*/	
 int sendData(Connection * connection, Datagram * params) {
 
 	if (!is_server) {
@@ -57,6 +64,9 @@ int sendData(Connection * connection, Datagram * params) {
 	return 0;
 }
 
+/*	CLIENT:	Opens it own fifo, and reads the response from it.
+*	SERVER:	Opens it own fifo, and reads the request from it.
+*/
 void receiveData(Connection * sender, Datagram * buffer) {
 
 	if (!is_server) {
@@ -70,6 +80,8 @@ void receiveData(Connection * sender, Datagram * buffer) {
 	read(fd_read, ((char*)buffer) + sizeof(int), size - sizeof(int));
 	close(fd_read);
 }
+
+//	Removes fifos.
 
 void handOff(int sig) {
 	close(fd_read);

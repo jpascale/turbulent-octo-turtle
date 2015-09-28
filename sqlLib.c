@@ -16,6 +16,8 @@ char *errMsg = 0, *sql_create_rooms, *sql_insert, * sql_get_movie_list,
       * sql_create_movies, * sql_create_shows, *sql_create_seats, *sql_create_tickets, *answer;
 char sql_query[256];
 
+//	Handles the results of a "select" command.
+
 static int callback(void * function, int argc, char **argv, char **azColName) {
 	int i, k;
 
@@ -221,8 +223,8 @@ void SQLundoBuyTicket(char * buffer, int ticketID, char* nombre) {
 	return;
 }
 
+//	If there is no DB, creates one and adds tables, and entries to it.
 
-//creando tablas
 void setUpDB() {
 	int acc = access( "test.db", F_OK );
 	rc = sqlite3_open("test.db", &db);
