@@ -102,31 +102,36 @@ void receiveData(Connection * connection, Datagram * params) {
 
 
 /*
-**		Functions only declared in this module
+**		Private module functions
 */
 
+/*
+**      srv_init_channel: Load the in/out key
+*/
 void srv_init_channel(void) {
 	is_server = true;
 
 	keyin = 0xBEEF0;
 	keyout = 0xBEEF1;
 
-//	signal(SIGINT, quit);
-
 	create_ioqueue();
 }
 
+/*
+**      clt_init_channel: Load the in/out key
+*/
 void clt_init_channel(void) {
 	is_server = false;
 
 	keyin = 0xBEEF1;
 	keyout = 0xBEEF0;
 
-//	signal(SIGINT, quit);
-
 	create_ioqueue();
 }
 
+/*
+**      create_ioqueue: create in/out queue
+*/
 void create_ioqueue(void) {
 
 	if ( (qin = msgget(keyin, 0666 | IPC_CREAT)) == -1 )
@@ -139,6 +144,9 @@ void create_ioqueue(void) {
 
 }
 
+/*
+**      srv_send_data: copy params into a buffer and send them to out queue
+*/
 int srv_send_data(Connection * connection, Datagram * sdData) {
 
 	n = sdData->size;
@@ -146,7 +154,8 @@ int srv_send_data(Connection * connection, Datagram * sdData) {
 	memcpy((void*)msg.mdata, (void*)sdData, sdData->size);
 
 	msgsnd(qout, &msg, n, 0);
-	//TODO: Remove this
+	
+	//Reset bff
 	int i;
 	for (i = 0; i < 1024; i++)
 		*(msg.mdata + 12 + i) = '\0';
@@ -155,6 +164,10 @@ int srv_send_data(Connection * connection, Datagram * sdData) {
 
 }
 
+/*
+**      srv_receive_data: Receive data from the in queue,
+**		copy buffer to data and return it.
+*/
 void srv_receive_data(Connection * connection, Datagram * sdData) {
 
 	void * rdata = (void *)sdData;
@@ -169,6 +182,10 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
 	}
 }
 
+/*
+**      clt_send_data: Load current process pid into package,
+**		copy data to buffer and send it through out queue.
+*/
 int clt_send_data(Connection * connection, Datagram * sdData) {
 
 	msg.mtype = getpid();
@@ -182,6 +199,10 @@ int clt_send_data(Connection * connection, Datagram * sdData) {
 
 }
 
+/*
+**      clt_receive_data: Read from in queue, copy buffer to data
+**		and return it.
+*/
 void clt_receive_data(Connection * connection, Datagram * sdData) {
 
 	n = msgrcv(qin, &msg, sizeof msg.mdata, msg.mtype, 0);
