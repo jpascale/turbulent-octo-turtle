@@ -3,17 +3,19 @@
 #include <string.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <dirent.h>
-
 #include "./datagram.h"
+#include "communication.h"
+#include "./sharedFunctions.h"
 
 #define SERVER_PID_PATH "/tmp/server_pid"
 
 int leftStringMatch(char * begin, char * string);
 void mypause(int sign);
 
-int is_server, reading = 0, fd, server_fd,server_pid, aux = 1;
+int is_server, reading = 0, fd, server_fd, server_pid, aux = 1;
 DIR *dir;
 struct dirent *ent;
 sigset_t mask, oldmask;
@@ -31,7 +33,7 @@ void initChannel(int bool_server) {
 		reading = 0;
 	} else { //client
 		server_fd = -1;
-		if(!access(SERVER_PID_PATH, F_OK)){
+		if (!access(SERVER_PID_PATH, F_OK)) {
 			printf("hay server\n");
 			server_fd = open(SERVER_PID_PATH, O_RDONLY);
 			read(server_fd, auxS, sizeof(int));
@@ -39,7 +41,7 @@ void initChannel(int bool_server) {
 			server_pid = *((int*)auxS);
 			sprintf(writeFileName, "/tmp/request_%d", getpid());
 			sprintf(readFileName, "/tmp/response_%d", getpid());
-		}else
+		} else
 			printf("no hay server\n");
 	}
 }
@@ -54,8 +56,8 @@ int sendData(Connection * connection, Datagram * params) {
 		close(fd);
 	} else {
 		printf("server_fd: %i\n", server_fd);
-		if(server_fd<0 || access(SERVER_PID_PATH, F_OK)){	
-			if(access(SERVER_PID_PATH, F_OK))
+		if (server_fd < 0 || access(SERVER_PID_PATH, F_OK)) {
+			if (access(SERVER_PID_PATH, F_OK))
 				return -1;
 			initChannel(is_server);
 		}
@@ -129,20 +131,19 @@ int leftStringMatch(char * begin, char * string) {
 }
 
 void mypause(int sign) {
-	signal(SIGUSR1, mypause);
-	printf("entro a la señal\n");
+
 }
 
-void handOff(int sig){
-	if(is_server){
+void handOff(int sig) {
+	if (is_server) {
 		close(fd);
-		if(!remove(SERVER_PID_PATH))
+		if (!remove(SERVER_PID_PATH))
 			printf("Server stopped correctly\n");
 		else
 			printf("Server's communication file could not be removed\n");
 	}else{
 		close(fd);
-		if(!remove(readFileName) && !remove(writeFileName))
+		if (!remove(readFileName) && !remove(writeFileName))
 			printf("Communication files where removed\n");
 		else
 			printf("Client's communication files could not be removed\n");

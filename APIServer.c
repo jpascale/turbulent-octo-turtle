@@ -1,6 +1,7 @@
 #include "communication.h"
 #include "datagram.h"
 #include "sharedFunctions.h"
+
 #include "sqlite/sqlite3.h"
 #include "sqlLib.h"
 #include <unistd.h>
@@ -14,12 +15,14 @@
 
 void ProcessData(Connection * sender, Datagram * data);
 void initializeServer();
+void shandOff(int);
+
 Datagram data;
 Connection sender;
 
 
 void main() {
-	signal(SIGINT, handOff);
+	signal(SIGINT, shandOff);
 	setUpDB();
 	initChannel(1);
 	printf("Server conectado\n");
@@ -99,3 +102,9 @@ void ProcessData(Connection * sender, Datagram * data) {
 		sprintf(data->data.text, "COMANDO NO SOPORTADO. OPCODE:%i\n", data->opcode);
 	}
 }
+
+void shandOff(int sig){
+		closeDatabase();
+		serv_close();
+		handOff(sig);
+	}

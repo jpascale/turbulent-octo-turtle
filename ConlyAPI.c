@@ -12,7 +12,7 @@
 #include "sharedFunctions.h"
 #include "sqlLib.h"
 
-#define SLEEP_TIME 5
+#define SLEEP_TIME 2
 #define DB_PATH "test.db"
 #define READ 1
 #define WRITE 0
@@ -31,7 +31,7 @@ void __connect() {
 	setUpDB();
 }
 
-char * getMovieList() {
+char * getMovieList() {	
 	lock_db(READ);
 	simulateDelay();
 	SQLgetMovieList(ans);
@@ -108,6 +108,9 @@ char * removeMovie(int movieID) {
 }
 
 void handOff(int sig) {
+	free(ans);
+	closeDatabase();
+
 	if (locked) {
 		unlock_db();
 		printf("Quita el lock por signal\n");

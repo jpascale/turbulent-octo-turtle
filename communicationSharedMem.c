@@ -46,7 +46,7 @@ int sendData(Connection * connection, Datagram * params) {
 		msg = getmem(connection->sender_pid);
 	else
 		msg = getmem(0);
-	if (msg == -1)
+	if (msg == (char *) - 1)
 		return -1;
 
 	if (!bool_server)
@@ -69,7 +69,7 @@ void receiveData(Connection * sender, Datagram * buffer) {
 	memcpy(current, msg, sizeof(int));
 //		printf("Busco un mensaje de size= %i\n",*((int*)current));
 	memcpy(current, msg, *((int*)current));
-	sprintf(msg, "\0\0\0\0");
+//	sprintf(msg, "\0\0\0\0");
 	if (!bool_server)
 		leave(1);
 //		printf("Recibido\n");
@@ -126,7 +126,7 @@ getmem(int mem_code)
 			fatal("mmap");
 		close(fd);
 	}
-	return (error_flag == 1) ? -1 : mem;
+	return (error_flag == 1) ? (char *) - 1 : mem;
 }
 
 
@@ -212,6 +212,8 @@ resetSems() {
 }
 
 void handOff(int sig) {
+	free(current);
+
 	char name[16];
 
 // Cierro los semaforos. Cuando no los use nadie, se borran.

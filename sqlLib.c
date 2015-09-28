@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "sqlLib.h"
+
 
 typedef enum {GET_MOVIE_LIST, GET_MOVIE_DETAILS, GET_MOVIE_SHOWS, GET_SHOW_SEATS, COUNT_CHECK, BUY_TICKET,
               UNDO_BUY_TICKET, ADD_SHOW, REMOVE_SHOW, ADD_MOVIE, REMOVE_MOVIE
@@ -347,4 +347,8 @@ void setUpDB() {
 
 		//termina de insertar cosas
 	}
+}
+
+void closeDatabase(){
+	sqlite3_close(db);
 }

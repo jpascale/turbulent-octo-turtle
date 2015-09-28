@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <string.h>
 #include <signal.h>
-#include <fcntl.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "./datagram.h"
 #include "./sharedFunctions.h"
+#include "communication.h"
 
 #define SERVER_FIFO "/tmp/server.fifo"
 

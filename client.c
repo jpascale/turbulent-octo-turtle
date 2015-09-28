@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
+#include <unistd.h>
+
 #include "sharedFunctions.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -15,7 +17,7 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 #define INPUT_SIZE 		1024
-#define COM_SIZE 		13
+#define COM_SIZE 		14
 #define STRING          0
 #define INT             1
 
@@ -43,6 +45,7 @@ void caddShow(int time, int roomID, int movieID);
 void cremoveShow(int showId);
 void caddMovie(int length, char * title, char * desc);
 void cremoveMovie(int movieID);
+void csw();
 void chelp();
 void parse(char* buff);
 void loadCommands();
@@ -53,6 +56,7 @@ typedef void (* func) ();
 //int autoComplete(char* buffer, int i, char* completed);
 void csignal(int sig);
 void cclear();
+void clfree();
 
 typedef void (* func) ();
 
@@ -97,6 +101,101 @@ int main (int argc, char const *argv[]) {
 	return 0;
 }
 
+
+/*
+// Tomo el control del input para poder dar más funcionalidades.
+// Si bien le saca portabilidad, en el contexto de evaluacion
+// no va a traer ningun efecto inesperado
+void getLine(char * buffer) {
+// Hace que el input de stdin se mande crudo, sin necesidad de enter
+	char c;
+	char completed[100];
+	completed[0] = 0;
+	int i = 0;
+	char* iter = buffer;
+	system ("/bin/stty raw -echo isig");
+	while ((c = getchar()) != NEW_LINE) {
+		if (c == BACKSPACE) {
+			printf("\b  \b\b");
+			i--;
+			iter[i] = 0;
+		} else if (c == TAB) {
+			if (autoComplete(buffer, i, completed) == 1) {
+				int m;
+				for (m = 0; m < i; m++)
+					fprintf(stdout, "\b");
+				printf("%s", completed);
+
+				for (m = 0; completed[m] != 0; m++) {
+					buffer[m] = completed[m];
+				}
+				i = m;
+			}
+		} else if (c == '\033') {
+			//Ingreso una flecha. Por el momento no estan soportadas
+			// if the first value is esc
+			getchar(); // skip the [
+			switch (getchar()) { // the real value
+			case 'A':
+				// code for arrow up
+				break;
+			case 'B':
+				// code for arrow down
+				break;
+			case 'C':
+				// code for arrow right
+				break;
+			case 'D':
+				// code for arrow left
+				break;
+			}
+		} else {
+			putc(c, stdout);
+			iter[i] = c;
+			i++;
+		}
+	}
+	iter[i] = 0;
+// Se restablece el default. Se asume que era el previo al llamado.
+	system ("/bin/stty cooked echo");
+// Remuevo la marca de ENTER en la pantalla. Asumo \b caracter no destructivo
+	printf("\n");
+}
+
+//ret 0 if not match or multiple matches
+int autoComplete(char* buffer, int i, char* completed) {
+	char matches = 0, flag;
+	char* matched;
+	int aux, c;
+	char* currentCom;
+	for (c = 0; c < COM_SIZE && matches < 2; c++) {
+		currentCom = commands[c].name;
+		for (aux = 0, flag = 0; !flag && currentCom[aux] != 0 && aux < i; aux++) {
+			if (currentCom[aux] != buffer[aux]) {
+				flag = 1;
+			}
+		}
+		if (!flag && aux == i && currentCom[aux] != 0) {
+			matches++;
+			matched = commands[c].name;
+		}
+	}
+	if (matches == 1) {
+		strcpy(completed, matched);
+	}
+	return matches;
+}
+*/
+char* getMovieShowArgs;
+char* getMovieDetailsArgs;
+char* getShowSeatsArgs;
+char* BuyTicketArgs;
+char* UndoBuyTicketArgs;
+char* addShowArgs;
+char* removeShowArgs;
+char* addMovieArgs;
+char* removeMovieArgs;
+
 void loadCommands() {
 
 	commands[0].name = "gml";
@@ -105,7 +204,7 @@ void loadCommands() {
 	commands[0].desc = "Muestra la cartelera disponible!";
 
 
-	char* getMovieShowArgs = calloc(1, sizeof(int));
+	getMovieShowArgs = calloc(1, sizeof(int));
 	getMovieShowArgs[0] = INT;
 	commands[1].name = "getMovieShow";
 	commands[1].function = (func)&cgetMovieShow;
@@ -113,7 +212,7 @@ void loadCommands() {
 	commands[1].argsCant = 1;
 	commands[1].desc = "Muestra las funciones de una pelicula determinada(movieId).";
 
-	char* getMovieDetailsArgs = calloc(1, sizeof(int));
+	getMovieDetailsArgs = calloc(1, sizeof(int));
 	getMovieDetailsArgs[0] = INT;
 	commands[2].name = "gmd";
 	commands[2].function = (func)&cgetMovieDetails;
@@ -121,7 +220,7 @@ void loadCommands() {
 	commands[2].argsCant = 1;
 	commands[2].desc = "Muestra los detalles de una pelicula determinada(movieId).";
 
-	char* getShowSeatsArgs = calloc(1, sizeof(int));
+	getShowSeatsArgs = calloc(1, sizeof(int));
 	getShowSeatsArgs[0] = INT;
 	commands[3].name = "getShowSeats";
 	commands[3].function = (func)&cgetShowSeats;
@@ -129,7 +228,7 @@ void loadCommands() {
 	commands[3].argsCant = 1;
 	commands[3].desc = "Muestra la disponibilidad de asientos para una funcion determinada (showId).";
 
-	char* BuyTicketArgs = calloc(5, sizeof(int));
+	BuyTicketArgs = calloc(5, sizeof(int));
 	BuyTicketArgs[0] = INT;
 	BuyTicketArgs[1] = INT;
 	BuyTicketArgs[2] = INT;
@@ -142,7 +241,7 @@ void loadCommands() {
 	commands[4].desc = "Con showId, asiento, tarjeta, codigo de seguridad y nombre, puedes comprar un ticket.";
 
 
-	char* UndoBuyTicketArgs = calloc(2, sizeof(int));
+	UndoBuyTicketArgs = calloc(2, sizeof(int));
 	UndoBuyTicketArgs[0] = INT;
 	UndoBuyTicketArgs[1] = STRING;
 	commands[5].name = "undoBuyTicket";
@@ -151,7 +250,7 @@ void loadCommands() {
 	commands[5].argsCant = 2;
 	commands[5].desc = "Deshace la compra recibiendo ticketId y nombre del comprador.";
 
-	char* addShowArgs = calloc(3, sizeof(int));
+	addShowArgs = calloc(3, sizeof(int));
 	addShowArgs[0] = INT;
 	addShowArgs[1] = INT;
 	addShowArgs[2] = INT;
@@ -161,7 +260,7 @@ void loadCommands() {
 	commands[6].argsCant = 3;
 	commands[6].desc = "Agrega una funcion dada una hora, sala y pelicula.";
 
-	char* removeShowArgs = calloc(1, sizeof(int));
+	removeShowArgs = calloc(1, sizeof(int));
 	removeShowArgs[0] = INT;
 	commands[7].name = "removeShow";
 	commands[7].function = (func)&cremoveShow;
@@ -169,7 +268,7 @@ void loadCommands() {
 	commands[7].argsCant = 1;
 	commands[7].desc = "Remueve una funcion medienta su id.";
 
-	char* addMovieArgs = calloc(3, sizeof(int));
+	addMovieArgs = calloc(3, sizeof(int));
 	addMovieArgs[0] = INT;
 	addMovieArgs[1] = STRING;
 	addMovieArgs[2] = STRING;
@@ -179,7 +278,7 @@ void loadCommands() {
 	commands[8].argsCant = 3;
 	commands[8].desc = "Agrega una pelicula con su titulo, descripcion y duracion.";
 
-	char* removeMovieArgs = calloc(1, sizeof(int));
+	removeMovieArgs = calloc(1, sizeof(int));
 	removeMovieArgs[0] = INT;
 	commands[9].name = "removeMovie";
 	commands[9].function = (func)&cremoveMovie;
@@ -202,6 +301,11 @@ void loadCommands() {
 	commands[12].function = (func)&cclear;
 	commands[12].argsCant = 0;
 	commands[12].desc = "No explanation. It's pretty clear =D";
+
+	commands[13].name = "sw";
+	commands[13].function = (func)&csw;
+	commands[13].argsCant = 0;
+	commands[13].desc = "Grab popcorn";
 
 }
 
@@ -229,19 +333,19 @@ void parse(char* buff) {
 			} else {
 				convertArg(args, commands[index].args, commands[index].argsCant);
 				switch (commands[index].argsCant) {
-					case 0:
+				case 0:
 					commands[index].function();
 					break;
-					case 1:
+				case 1:
 					commands[index].function(args[1]);
 					break;
-					case 2:
+				case 2:
 					commands[index].function(args[1], args[2]);
 					break;
-					case 3:
+				case 3:
 					commands[index].function(args[1], args[2], args[3]);
 					break;
-					case 5:
+				case 5:
 					commands[index].function(args[1], args[2], args[3], args[4], args[5]);
 					break;
 				}
@@ -281,10 +385,10 @@ int convertArg(char ** args, unsigned  char * argTypes, int cant) {
 	int  j;
 	for (j = 1; j <= cant; j++) {
 		switch (argTypes[j - 1]) {
-			case INT:
-			args[j] = (char *)atoi(args[j]);
+		case INT:
+			args[j] = atoi(args[j]);
 			break;
-			default:
+		default:
 			break;
 		}
 	}
@@ -409,13 +513,13 @@ cgetMovieDetails(int movieId) {
 		if (answer[0] == ';') {
 			answer[0] = '\0';
 			switch (arg_num) {
-				case 0:	printf(ANSI_COLOR_MAGENTA"Titulo:");
+			case 0:	printf(ANSI_COLOR_MAGENTA"Titulo:");
 				break;
-				case 1:	printf(ANSI_COLOR_MAGENTA"Descripcion:");
+			case 1:	printf(ANSI_COLOR_MAGENTA"Descripcion:");
 				break;
-				case 2:	printf(ANSI_COLOR_MAGENTA"Horario:");
+			case 2:	printf(ANSI_COLOR_MAGENTA"Horario:");
 				break;
-				case 3:	printf(ANSI_COLOR_MAGENTA"MovieID:");
+			case 3:	printf(ANSI_COLOR_MAGENTA"MovieID:");
 				break;
 			}
 			printf(ANSI_COLOR_GREEN" %s\n"ANSI_COLOR_RESET, aux);
@@ -500,8 +604,36 @@ void cremoveMovie(int movieID) {
 	printf(ANSI_COLOR_MAGENTA" %s ", answer);
 }
 
+
+void csw() {
+	cclear();
+	printf(ANSI_COLOR_RESET);
+	char buf[74];
+	FILE *file;
+	size_t nread;
+	int line=0;
+	file = fopen("telnetTest.txt", "r");
+	if (file) {
+		while ((nread = fread(buf, 1, sizeof buf, file)) > 0){
+			fwrite(buf, 1, nread, stdout);
+			line++;
+			if(line==19){
+				line=0;
+				usleep(300000);
+			}
+		}
+		if (ferror(file)) {
+			printf("Desaparecio la cinta!\n");
+			return;
+		}
+		fclose(file);
+	}
+}
+
 void cexit() {
 	printf(ANSI_COLOR_BLUE"Saliendo!" ANSI_COLOR_RESET "\n");
+	clfree();
+	handOff(0);
 	exit(0);
 }
 
@@ -511,6 +643,20 @@ void cclear() {
 
 void csignal(int sig) {
 	printf(ANSI_COLOR_RESET);
+	clfree();
 	handOff(sig);
 	exit(1);
 }
+
+void clfree(){
+	free(getMovieShowArgs);
+	free(getMovieDetailsArgs);
+	free(getShowSeatsArgs);
+	free(BuyTicketArgs);
+	free(UndoBuyTicketArgs);
+	free(addShowArgs);
+	free(removeShowArgs);
+	free(addMovieArgs);
+	free(removeMovieArgs);
+
+	printf("free\n");}

@@ -21,4 +21,6 @@ void SQLremoveShow(char * buffer, int showID);
 void SQLaddMovie(char * buffer, int length, char * title, char * desc);
 void SQLremoveMovie(char * buffer, int movieID);
 
+void closeDatabase();
+
 #endif
