@@ -34,19 +34,17 @@ typedef enum { false, true } bool;
 /*
 **      Global declares
 */
-//TODO: Merge if possible
-//SERVER
+
 bool is_server;
 
 int socket_desc;
 int client_sock;
 int c;
 int * new_sock;
-struct sockaddr_in server, client;
 
-//CLIENT
+//server is used to load server config and client to receive incoming connection config
+struct sockaddr_in server, client;
 int sock;
-struct sockaddr_in server;
 
 /*
 **      Module functions
@@ -95,9 +93,13 @@ void receiveData(Connection * connection, Datagram * params) {
 }
 
 /*
-**      Functions only declared in this module
+**      Private module functions
 */
 
+/*
+**      srv_init_channel: Set de server boolean true and
+**      load server socket config
+*/
 void srv_init_channel(void) {
 
     is_server = true;
@@ -132,6 +134,10 @@ void srv_init_channel(void) {
     return;
 }
 
+/*
+**      srv_receive_data: Accept incoming connection, read from
+**      the accepted socket and copy the data into the passing structure.
+*/
 void srv_receive_data(Connection * connection, Datagram * sdData) {
 
     if ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c))) {
@@ -141,7 +147,6 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
             printf("Accepted %d socket.\n", client_sock);
 
         int read_size;
-        //Datagram data;
         void * data = calloc(MAX_RDATA_SIZE, 1);
 
         if (DEBUG)
@@ -181,9 +186,12 @@ void srv_receive_data(Connection * connection, Datagram * sdData) {
 
 }
 
+/*
+**      srv_send_data: Send data to current connection
+**      and close the socket.
+*/
 int srv_send_data(Connection * coneccion, Datagram * sdData) {
 
-    //Datagram data;
     void * data = calloc(sdData -> size, 1);
     memcpy(data, sdData, sdData -> size);
 
@@ -195,6 +203,10 @@ int srv_send_data(Connection * coneccion, Datagram * sdData) {
     return 0;
 }
 
+/*
+**      clt_init_channel: Set server boolean to false
+**      and load client config
+*/
 void clt_init_channel(void) {
     is_server = false;
 
@@ -213,9 +225,13 @@ void clt_init_channel(void) {
     server.sin_port = htons(port);
 }
 
+
+/*
+**      clt_send_data: Copy arguments to buffer, establish connection
+**      with server, and send data.
+*/
 int clt_send_data(Connection * connection, Datagram * sdData) {
 
-    //Datagram data;
     void * data = calloc(sdData -> size, 1);
     memcpy(data, sdData, sdData -> size);
 
@@ -239,9 +255,12 @@ int clt_send_data(Connection * connection, Datagram * sdData) {
     return 0;
 }
 
-void clt_receive_data(Connection * connection, Datagram * sdData) {
 
-    //Datagram data;
+/*
+**      clt_receive_data: Read from established connection, close
+**      the socket and return data. 
+*/
+void clt_receive_data(Connection * connection, Datagram * sdData) {
 
     void * data = calloc(MAX_RDATA_SIZE, 1);
     int bff_size;
